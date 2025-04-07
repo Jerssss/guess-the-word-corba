@@ -1,0 +1,55 @@
+module GameApp {
+    typedef sequence<string> StringList;
+
+    struct Player {
+        long playerID;
+        string fullName;
+        string username;
+        long gameWins;
+    };
+
+    struct Round {
+        long gameID;
+        StringList playersData; // "PattyCat-1" muna as of now
+        long wordLength;
+        long roundNumber;
+    };
+
+    // Exceptions (unchanged)
+    exception AuthenticationException {};
+    exception AlreadyLoggedInException {};
+    exception NoPlayersAvailableException {};
+    exception GameTimeoutException {};
+    exception GameNotFoundException {};
+    exception MaxAttemptsReachedException {};
+
+    interface AuthService {
+        Player login(in string username, in string password)
+            raises(AuthenticationException, AlreadyLoggedInException);
+        void logout(in long pid);
+    };
+
+    interface GameService {
+        long startGame(in long playerID)
+            raises(NoPlayersAvailableException, GameTimeoutException);
+        Round startRound(in long gid) raises(GameNotFoundException);
+
+        string getRandomWord();
+        long getWordLength(in string word);
+        long guessLetter(in long playerID, in char letter)
+            raises(MaxAttemptsReachedException, GameNotFoundException);
+        string getCurrentLetterState(in long playerID);
+        long getRemainingAttempts(in long playerID);
+
+        long getRemainingWaitingTime() raises(GameTimeoutException);
+        long getRemainingRoundTime(in long gid) raises(GameTimeoutException);
+
+        boolean isGameOver(in long playerID);
+        boolean hasWon(in long playerID);
+        string getRoundWinner(in long gid);
+        string getGameWinner(in long gid);
+        void leaveGame(in long pid, in long gid);
+
+        StringList getLeaderboards();
+    };
+};
