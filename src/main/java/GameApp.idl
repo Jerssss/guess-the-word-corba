@@ -15,7 +15,7 @@ module GameApp {
         long roundNumber;
     };
 
-    // Exceptions (unchanged)
+    // Exceptions
     exception AuthenticationException {};
     exception AlreadyLoggedInException {};
     exception NoPlayersAvailableException {};
