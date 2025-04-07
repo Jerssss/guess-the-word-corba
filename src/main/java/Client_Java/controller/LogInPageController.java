@@ -1,4 +1,4 @@
 package Client_Java.controller;
 
-public class a {
+public class LogInPageController {
 }

@@ -1,0 +1,54 @@
+.login-field {
+    -fx-border-color: black;
+    -fx-border-radius: 7px;
+    -fx-border-width: 2px;
+    -fx-background-radius: 7px;
+}
+
+.login-continue-button {
+    -fx-background-color: black;
+    -fx-max-width: 100px;
+    -fx-background-radius: 7px;
+    -fx-border-radius: 7px;
+}
+
+.login-quit-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-max-width: 100px;
+    -fx-background-radius: 7px;
+    -fx-border-radius: 7px;
+}
+
+.lobby-enterGame-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.lobby-about-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.lobby-quit-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.lobby-leaderboard-scrollpane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0; /* if problems arise in managing cards inside this pane, this might be the problem*/
+}
+
+.lobby-leaderboard-scrollpane .viewport {
+    -fx-background-color: transparent;
+}
+
+.lobby-leaderboard-scrollpane .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.lobby-leaderboard-scrollpane .scroll-bar .thumb {
+    -fx-background-color: black;
+}
