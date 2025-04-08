@@ -1,0 +1,71 @@
+-- This is for the Players Table
+CREATE TABLE players (
+    player_id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(50) NOT NULL,
+    game_wins INT DEFAULT 0,
+    is_logged_in BOOLEAN
+) ENGINE=InnoDB;
+
+-- This is for the Games Table
+CREATE TABLE games (
+    game_id INT AUTO_INCREMENT PRIMARY KEY,
+    total_rounds INT,
+    game_winner INT,
+   game_status ENUM('waiting', 'in_progress', 'completed', 'cancelled') DEFAULT 'waiting',
+    start_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    end_time DATETIME,
+
+    FOREIGN KEY (game_winner) REFERENCES players(player_id)
+        ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- This is for the Game Players Table
+--  Not priority table
+CREATE TABLE game_players (
+    game_id INT,
+    player_id INT,
+    PRIMARY KEY (game_id, player_id),
+    FOREIGN KEY (game_id) REFERENCES games(game_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (player_id) REFERENCES players(player_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- This is for the Rounds Table
+CREATE TABLE rounds (
+    round_id INT AUTO_INCREMENT PRIMARY KEY,
+    game_id INT,
+    round_number INT NOT NULL,
+    word_length INT NOT NULL,
+    round_winner INT,
+    start_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    end_time DATETIME,
+    FOREIGN KEY (game_id) REFERENCES games(game_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (round_winner) REFERENCES players(player_id)
+        ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- This is for the Round Guesses Table
+CREATE TABLE round_guesses (
+    guess_id INT AUTO_INCREMENT PRIMARY KEY,
+    round_id INT,
+    player_id INT,
+    guessed_letter CHAR(1),
+    is_correct BOOLEAN,
+    guess_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (round_id) REFERENCES rounds(round_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (player_id) REFERENCES players(player_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- This is for the Settings Table
+--  Not priority table
+CREATE TABLE settings (
+    setting_name VARCHAR(50) PRIMARY KEY,
+    waiting_time INT DEFAULT 10,
+    round_duration INT DEFAULT 30
+) ENGINE=InnoDB;
