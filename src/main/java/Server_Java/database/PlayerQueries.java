@@ -4,7 +4,6 @@ import GameApp.AlreadyLoggedInException;
 import GameApp.AuthenticationException;
 import GameApp.Player;
 
-import javax.management.Query;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -268,7 +267,7 @@ public class PlayerQueries {
      * This method will update the existing player information by the edited player details in the database.
      */
     public static void  saveModifiedPlayerDetails(PlayerAccount playerAccount){
-        query = "UPDATE players SET username = ?, password = ?, game_wins = ?" +
+        query = "UPDATE players SET username = ?, password = ?, game_wins = ? " +
                 "WHERE player_id = ?";
 
         try{
