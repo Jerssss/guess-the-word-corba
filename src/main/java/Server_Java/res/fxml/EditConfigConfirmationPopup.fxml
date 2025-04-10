@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="276.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Server_Java.view.mainmenu.DeletePlayerPopUpView">
+   <children>
+      <Pane>
+         <children>
+            <Pane prefHeight="55.0" prefWidth="800.0" style="-fx-background-color: white;">
+               <children>
+                  <Label alignment="TOP_LEFT" layoutX="19.0" layoutY="17.0" prefHeight="27.0" prefWidth="446.0" text="Confirm Configuration Changes">
+                     <font>
+                        <Font name="Marykate" size="31.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+      <VBox alignment="CENTER" prefHeight="116.0" prefWidth="800.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="60.0" prefWidth="800.0">
+               <children>
+                  <Text fx:id="label" strokeType="OUTSIDE" strokeWidth="0.0" text="Save this new configuration?" textAlignment="CENTER" wrappingWidth="506.73672103881836">
+                     <font>
+                        <Font name="Marykate" size="46.0" />
+                     </font>
+                  </Text>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <HBox alignment="CENTER" prefHeight="39.0" prefWidth="800.0">
+         <children>
+            <Button fx:id="yesButton" mnemonicParsing="false" prefHeight="73.0" prefWidth="114.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Yes" wrapText="true">
+               <font>
+                  <Font name="Marykate" size="44.0" />
+               </font>
+            </Button>
+            <Button fx:id="noButton" mnemonicParsing="false" prefHeight="46.0" prefWidth="107.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="No" wrapText="true">
+               <font>
+                  <Font name="Marykate" size="44.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+   </children>
+</VBox>

@@ -1,4 +1,4 @@
-package Client_Java.view.popups;
+package Client_Java.view.modals;
 
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
