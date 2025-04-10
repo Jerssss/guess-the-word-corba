@@ -15,18 +15,14 @@ public class GameRoomPageController {
 
     private void initialize() {
         // Bind model properties to the view
-        view.getLifeCountLabel().textProperty().bind(model.lifeCountProperty().asString());
+        view.getLifeCountLabel().textProperty().bind(model.remainingAttemptsProperty().asString());
 
-//TODO:   Set up event handlers
-//        view.getBlank().setOnMouseClicked(event -> handleBlankClick('A')); // Example: Guess the letter 'A'
-//        view.getBlank1().setOnMouseClicked(event -> handleBlankClick('B')); // Example: Guess the letter 'B'
-    }
-
-    private void handleBlankClick(char letter) {
-        model.guessLetter(letter);
+//TODO:   //Set up event handlers
+//        view.getBlank().setOnMouseClicked(event -> model.guessLetter('A')); // Example: Guess the letter 'A'
+//        view.getBlank1().setOnMouseClicked(event -> model.guessLetter('B')); // Example: Guess the letter 'B'
     }
 
     public void handleReturnToHome() {
-        model.returnToHome();
+        //TODO: Logic to return to the home screen
     }
 }

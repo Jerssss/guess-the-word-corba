@@ -1,54 +1,43 @@
 package Client_Java.model;
 
+import GameApp.MaxAttemptsReachedException;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import GameApp.GameService;
+import GameApp.GameNotFoundException;
 
 public class GameRoomPageModel {
-    private IntegerProperty lifeCount = new SimpleIntegerProperty(5);
-    private String currentWord;
-    private int roundCount = 0;
+    private IntegerProperty remainingAttempts = new SimpleIntegerProperty(5);
     private int playerWins = 0;
     private int opponentWins = 0;
+    private GameService gameService;
 
-    public IntegerProperty lifeCountProperty() {
-        return lifeCount;
+    public GameRoomPageModel(GameService gameService) {
+        this.gameService = gameService; // Initialize the game service
     }
 
-    public void guessLetter(char letter) {
-        //TODO: Logic for guessing a letter
-        // Update UI and check if the letter is correct
+    public IntegerProperty remainingAttemptsProperty() {
+        return remainingAttempts;
     }
 
-    public void submitWord(String word) {
-        //TODO: Logic for submitting a word
-        // Check if the word matches the currentWord
+    public void decrementAttempts() {
+        remainingAttempts.set(remainingAttempts.get() - 1);
     }
 
-    public void returnToHome() {
-        //TODO: Logic to return to the home screen
+    public void incrementPlayerWins() {
+        playerWins++;
     }
 
-    public void startNewRound() {
-        //TODO: Logic to start a new round
-        // Select a new word and reset attempts
-    }
-
-    public void endRound(boolean playerWon) {
-        // Logic to end the round
-        if (playerWon) {
-            playerWins++;
-        } else {
-            opponentWins++;
+    public String guessLetter(int playerID, char letter) {
+        try {
+            int result = gameService.guessLetter(playerID, letter); // Call the server method
+            return result == 1 ? "Correct!" : "Incorrect!";
+        } catch (GameNotFoundException e) {
+            e.printStackTrace();
+            return "Game not found.";
+        } catch (MaxAttemptsReachedException e) {
+            e.printStackTrace();
+            return "Max attempts have been reached.";
         }
-        if (playerWins == 3 || opponentWins == 3) {
-            endGame();
-        } else {
-            startNewRound();
-        }
-    }
-
-    private void endGame() {
-        //TODO: Logic to end the game
-        // Return to the home screen
     }
 }
