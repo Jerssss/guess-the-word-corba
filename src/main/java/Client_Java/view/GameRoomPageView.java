@@ -13,30 +13,6 @@ public class GameRoomPageView {
     private Pane blank1;
 
     @FXML
-    private Pane blank10;
-
-    @FXML
-    private Pane blank11;
-
-    @FXML
-    private Pane blank12;
-
-    @FXML
-    private Pane blank13;
-
-    @FXML
-    private Pane blank14;
-
-    @FXML
-    private Pane blank15;
-
-    @FXML
-    private Pane blank16;
-
-    @FXML
-    private Pane blank17;
-
-    @FXML
     private Pane blank2;
 
     @FXML
@@ -59,6 +35,30 @@ public class GameRoomPageView {
 
     @FXML
     private Pane blank9;
+
+    @FXML
+    private Pane blank10;
+
+    @FXML
+    private Pane blank11;
+
+    @FXML
+    private Pane blank12;
+
+    @FXML
+    private Pane blank13;
+
+    @FXML
+    private Pane blank14;
+
+    @FXML
+    private Pane blank15;
+
+    @FXML
+    private Pane blank16;
+
+    @FXML
+    private Pane blank17;
 
     @FXML
     private ImageView catBottomHead;
