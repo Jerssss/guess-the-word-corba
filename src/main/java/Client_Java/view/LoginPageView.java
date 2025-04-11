@@ -1,10 +1,14 @@
 package Client_Java.view;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+
+import java.awt.*;
 
 public class LoginPageView {
 
@@ -21,29 +25,50 @@ public class LoginPageView {
     private Button continueButton;
 
     public void initialize() {
-        quitButton.setOnAction(e -> Platform.exit());
+        System.out.println("[DEBUG] Initializing Login View...");
+
+        if (continueButton == null) {
+            System.err.println("[ERROR] continueButton is NULL! Check FXML.");
+        }
+        if (quitButton == null) {
+            System.err.println("[ERROR] quitButton is NULL! Check FXML.");
+        }
     }
 
-    public LoginPageView() {
+    public TextField getUsernameField() {
+        return usernameField;
     }
 
-    public String getUsernameFieldValue() {
-        return usernameField.getText();
+    public void setUsernameField(TextField usernameField) {
+        this.usernameField = usernameField;
     }
 
-    public String getPasswordFieldValue() {
-        return passwordField.getText();
+
+    public PasswordField getPasswordField() {
+        return passwordField;
     }
 
-//    public void initialize(){
-//        messageText.setTex("");
+    public void setPasswordField(PasswordField passwordField) {
+        this.passwordField = passwordField;
+    }
+
+//    public Label getPromptLabel() {
+//       return promptLabel;
+//    }
+//
+//    public void setPromptLabel(String text) {
+//        promptLabel.setText(text);
+//    }
+//
+//    public void setPromptLabelVisible(boolean visible) {
+//        promptLabel.setVisible(visible);
 //    }
 
-//    public  void setMessageText(String message){
-//        messageText.setText(message);
-//    }
+    public void setActionContinueButton(EventHandler<ActionEvent> event) {
+        continueButton.setOnAction(event);
+    }
 
-    public Button getContinueButton() {
-        return continueButton;
+    public void setActionQuitButton(EventHandler<ActionEvent> event) {
+        quitButton.setOnAction(event);
     }
 }
