@@ -62,8 +62,14 @@ public class GameLobbyPageView {
     }
 
     public void setActionQuitButton(EventHandler<ActionEvent> event) {
-        quitButton.setOnAction(event);
+        if (quitButton == null) {
+            System.err.println("[VIEW ERROR] quitButton is NULL!");
+        } else {
+            System.out.println("[VIEW DEBUG] Quit button bound.");
+            quitButton.setOnAction(event);
+        }
     }
+
 
     public void setActionRefreshLeaderboardButton(EventHandler<ActionEvent> event) {
         refreshLeaderboardButton.setOnAction(event);
@@ -104,4 +110,5 @@ public class GameLobbyPageView {
     public Text getRankLabelLB() {
         return rankLabelLB;
     }
+
 }
