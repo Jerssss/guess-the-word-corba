@@ -1,4 +1,4 @@
-package Server_Java.database;
+package Shared_Files;
 
 public class PlayerAccount {
     private int player_id;

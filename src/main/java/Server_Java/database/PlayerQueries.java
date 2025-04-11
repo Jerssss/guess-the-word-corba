@@ -3,6 +3,7 @@ package Server_Java.database;
 import GameApp.AlreadyLoggedInException;
 import GameApp.AuthenticationException;
 import GameApp.Player;
+import Shared_Files.PlayerAccount;
 
 import java.sql.*;
 import java.util.ArrayList;
