@@ -11,7 +11,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
+import java.io.File;
 import java.io.IOException;
+
 
 public class LogInPageController {
     private final LogInPageModel model;
@@ -39,16 +41,11 @@ public class LogInPageController {
             if (player != null) {
                 System.out.println("[INFO] Login successful for: " + player.username);
 
-                // Set logged-in player for use across the app (optional)
+                // Save logged-in player
                 Client_Java.setLoggedInPlayer(player);
 
-                // Load next scene (e.g., MainMenu)
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client_Java/res/fxml/WWMainMenu.fxml"));
-                Parent root = loader.load();
-
-                Client_Java.getStage().setScene(new Scene(root));
-                Client_Java.getStage().setTitle("What's the Word - Main Menu");
-                Client_Java.getStage().show();
+                // Redirect to Game Lobby
+                redirectToGameLobby();
             }
 
         } catch (AuthenticationException e) {
@@ -60,8 +57,29 @@ public class LogInPageController {
         }
     }
 
+
     private void handleQuitButton() {
         System.out.println("[INFO] Exiting application...");
         Platform.exit();
     }
+
+    private void redirectToGameLobby() {
+        try {
+            File fxmlFile = new File("src/main/java/Client_Java/res/fxml/WWGameLobbyPage.fxml");
+            FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
+            Parent root = loader.load();
+
+            Scene lobbyScene = new Scene(root);
+            Client_Java.getStage().setScene(lobbyScene);
+            Client_Java.getStage().setTitle("What's the Word - Game Lobby");
+            Client_Java.getStage().show();
+
+            System.out.println("[INFO] Redirected to Game Lobby.");
+
+        } catch (IOException e) {
+            System.err.println("[ERROR] Failed to load Game Lobby FXML.");
+            e.printStackTrace();
+        }
+    }
+
 }
