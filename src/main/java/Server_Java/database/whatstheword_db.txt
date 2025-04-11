@@ -1,6 +1,6 @@
---database name: whatstheword_db
---user: root
---password:
+-- database name: whatstheword_db
+-- user: root
+-- password:
 
 -- This is for the Players Table
 CREATE TABLE players (
