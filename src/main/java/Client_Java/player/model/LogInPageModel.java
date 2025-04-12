@@ -13,6 +13,6 @@ public class LogInPageModel {
     }
 
     public Player login(String username, String password) throws AlreadyLoggedInException, AuthenticationException{
-        return Client_Model.authService.login(username,password);
+        return PlayerClient_Model.authService.login(username,password);
     }
 }

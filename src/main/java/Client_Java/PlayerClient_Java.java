@@ -1,9 +1,10 @@
 package Client_Java;
 
-import Client_Java.controller.LogInPageController;
-import Client_Java.model.Client_Model;
-import Client_Java.model.LogInPageModel;
-import Client_Java.view.LoginPageView;
+
+import Client_Java.player.controller.LogInPageController;
+import Client_Java.player.model.LogInPageModel;
+import Client_Java.player.model.PlayerClient_Model;
+import Client_Java.player.view.LoginPageView;
 import GameApp.Player;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -14,12 +15,12 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 
-public class Client_Java extends Application {
+public class PlayerClient_Java extends Application {
     public static Stage APPLICATION_STAGE;
     private static Player loggedInPlayer; // Variable to store the logged-in player
 
     public static void main(String[] args) {
-        Client_Model clientModel = new Client_Model();
+        PlayerClient_Model clientModel = new PlayerClient_Model();
         clientModel.init(); // CORBA connection
         launch(args);
     }
@@ -32,7 +33,7 @@ public class Client_Java extends Application {
 
     private void loadLoginGUI() {
         try {
-            File fxmlFile = new File("src/main/java/Client_Java/res/fxml/WWLogInPage.fxml");
+            File fxmlFile = new File("src/main/java/Client_Java/player/res/fxml/WWLogInPage.fxml");
             FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
             Parent root = loader.load();
 
@@ -42,7 +43,7 @@ public class Client_Java extends Application {
                 System.err.println("[ERROR] LoginPageView is NULL after FXML load!");
             } else {
                 System.out.println("[DEBUG] LoginPageView controller loaded successfully.");
-                LogInPageModel model = new LogInPageModel(Client_Model.authService);
+                LogInPageModel model = new LogInPageModel(PlayerClient_Model.authService);
                 new LogInPageController(model, loginPageView);
             }
 

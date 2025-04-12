@@ -65,7 +65,7 @@ public class LogInPageController {
 
     private void redirectToGameLobby() {
         try {
-            File fxmlFile = new File("src/main/java/Client_Java/res/fxml/WWGameLobbyPage.fxml");
+            File fxmlFile = new File("src/main/java/Client_Java/player/res/fxml/WWGameLobbyPage.fxml");
             FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
             Parent root = loader.load();
 

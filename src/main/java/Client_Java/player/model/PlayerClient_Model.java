@@ -8,7 +8,7 @@ import org.omg.CORBA.ORB;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
 
-public class Client_Model {
+public class PlayerClient_Model {
     public static AuthService authService;
     public static GameService gameService;
 

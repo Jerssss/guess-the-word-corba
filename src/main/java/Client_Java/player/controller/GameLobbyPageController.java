@@ -1,9 +1,10 @@
-package Client_Java.controller;
+package Client_Java.player.controller;
 
-import Client_Java.Client_Java;
-import Client_Java.model.GameLobbyModel;
-import Client_Java.view.GameLobbyPageView;
-import Client_Java.view.cards.LobbyLeaderboardCardView;
+
+import Client_Java.PlayerClient_Java;
+import Client_Java.player.model.GameLobbyModel;
+import Client_Java.player.view.GameLobbyPageView;
+import Client_Java.player.view.cards.LobbyLeaderboardCardView;
 import GameApp.Player;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -51,15 +52,15 @@ public class GameLobbyPageController {
         try {
             // Log out directly via database call
             Server_Java.database.PlayerQueries.logout(player.playerID);
-            Client_Java.setLoggedInPlayer(null);
+            PlayerClient_Java.setLoggedInPlayer(null);
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client_Java/res/fxml/WWLoginPage.fxml"));
             Parent root = loader.load();
 
             Scene scene = new Scene(root);
-            Client_Java.getStage().setScene(scene);
-            Client_Java.getStage().setTitle("What's the Word - Login");
-            Client_Java.getStage().show();
+            PlayerClient_Java.getStage().setScene(scene);
+            PlayerClient_Java.getStage().setTitle("What's the Word - Login");
+            PlayerClient_Java.getStage().show();
 
             System.out.println("[INFO] Successfully logged out and returned to login screen.");
         } catch (Exception e) {
@@ -84,7 +85,7 @@ public class GameLobbyPageController {
             String points = split[1];
 
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client_Java/res/fxml/cards/lobby_leaderboard_card.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("src/main/java/Client_Java/player/res/fxml/WWLobbyLeaderboardCard.fxml"));
                 Node card = loader.load();
 
                 LobbyLeaderboardCardView cardView = loader.getController();
