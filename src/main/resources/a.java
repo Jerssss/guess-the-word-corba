@@ -1,4 +1,4 @@
-package Client_Java.model;
+package Client_Java.player.model;
 
 public class a {
 }
