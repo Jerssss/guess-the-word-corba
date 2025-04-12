@@ -49,8 +49,8 @@ public class GameLobbyPageController {
         System.out.println("[INFO] Logging out...");
 
         try {
-            // Log out directly via database call
-            Server_Java.database.PlayerQueries.logout(player.playerID);
+            // CORBA logout call
+            Client_Java.getAuthService().logout(player.playerID);
             Client_Java.setLoggedInPlayer(null);
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client_Java/res/fxml/WWLoginPage.fxml"));

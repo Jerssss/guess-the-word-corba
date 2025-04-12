@@ -23,22 +23,39 @@ module GameApp {
     exception GameNotFoundException {};
     exception MaxAttemptsReachedException {};
 
+
+    // interface for authentication the login and logout
     interface AuthService {
-        Player login(in string username, in string password)
-            raises(AuthenticationException, AlreadyLoggedInException);
+        //using the player object
+        Player login(in string username, in string password) raises(AuthenticationException, AlreadyLoggedInException);
         void logout(in long pid);
     };
 
     interface GameService {
-        long startGame(in long playerID)
-            raises(NoPlayersAvailableException, GameTimeoutException);
+        // starts the game session
+        long startGame(in long playerID) raises(NoPlayersAvailableException, GameTimeoutException);
+
+        // start the round
         Round startRound(in long gid) raises(GameNotFoundException);
 
+        // Randomly selects word from the words.txt file
         string getRandomWord();
+
+        //Calls the getWordLength method
+        //Can be accessed by the client
+        //Return the number of letters in the mystery word
+        //Number of letters same number of underline (yung eto _ _ _ )
         long getWordLength(in string word);
-        long guessLetter(in long playerID, in char letter)
-            raises(MaxAttemptsReachedException, GameNotFoundException);
+
+        // contains the guessed letters of the player??
+        // Processes the player’s guessed letter and updates game state.
+        long guessLetter(in long playerID, in char letter) raises(MaxAttemptsReachedException, GameNotFoundException);
+
+        // return the underline state or the current state of the underlined letters
+        // return the underlined word with correctly guesses letters revealed
         string getCurrentLetterState(in long playerID);
+
+        // returns the remaining attempts
         long getRemainingAttempts(in long playerID);
 
         long getRemainingWaitingTime() raises(GameTimeoutException);
@@ -50,6 +67,6 @@ module GameApp {
         string getGameWinner(in long gid);
         void leaveGame(in long pid, in long gid);
 
-        StringList getLeaderboards();
+        //StringList getLeaderboards();
     };
 };

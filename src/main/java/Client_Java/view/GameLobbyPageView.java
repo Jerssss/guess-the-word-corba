@@ -65,7 +65,7 @@ public class GameLobbyPageView {
         if (quitButton == null) {
             System.err.println("[VIEW ERROR] quitButton is NULL!");
         } else {
-            System.out.println("[VIEW DEBUG] Quit button bound.");
+            System.out.println("[DEBUG] Quit button bound with event handler.");
             quitButton.setOnAction(event);
         }
     }

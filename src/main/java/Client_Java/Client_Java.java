@@ -4,6 +4,7 @@ import Client_Java.controller.LogInPageController;
 import Client_Java.model.Client_Model;
 import Client_Java.model.LogInPageModel;
 import Client_Java.view.LoginPageView;
+import GameApp.AuthService; // Import AuthService
 import GameApp.Player;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -84,5 +85,10 @@ public class Client_Java extends Application {
     // Method to get the application stage
     public static Stage getStage() {
         return APPLICATION_STAGE;
+    }
+
+    // Method to get the AuthService
+    public static AuthService getAuthService() {
+        return Client_Model.authService; // Return the AuthService instance
     }
 }
