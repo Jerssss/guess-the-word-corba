@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -14,129 +13,162 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1300.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.view.GameLobbyPageView">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="760.0" prefWidth="1300.0" stylesheets="@../css/styles.css"
+      xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Client_Java.view.GameLobbyPageView">
    <children>
       <VBox prefHeight="760.0" prefWidth="658.0">
          <children>
             <VBox alignment="CENTER_LEFT" prefHeight="351.0" prefWidth="658.0">
                <children>
-                  <Label alignment="CENTER" prefHeight="94.0" prefWidth="732.0" text="What's the" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+                  <Label alignment="CENTER" prefHeight="94.0" prefWidth="732.0" text="What's the"
+                         textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                      <font>
-                        <Font name="Marykate" size="140.0" />
+                        <Font name="Marykate" size="140.0"/>
                      </font>
                   </Label>
-                  <Label alignment="CENTER" prefHeight="126.0" prefWidth="458.0" text=" Word?" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+                  <Label alignment="CENTER" prefHeight="126.0" prefWidth="458.0" text=" Word?"
+                         textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                      <font>
-                        <Font name="Marykate" size="140.0" />
+                        <Font name="Marykate" size="140.0"/>
                      </font>
                   </Label>
                </children>
             </VBox>
             <VBox alignment="CENTER_LEFT" prefHeight="307.0" prefWidth="658.0">
                <children>
-                  <Button fx:id="enterGameButton" mnemonicParsing="false" styleClass="lobby-enterGame-button" stylesheets="@../css/styles.css" text="Enter Game">
+                  <Button fx:id="enterGameButton" mnemonicParsing="false" styleClass="lobby-enterGame-button"
+                          stylesheets="@../css/styles.css" text="Enter Game">
                      <font>
-                        <Font name="Amatic SC Bold" size="60.0" />
+                        <Font name="Amatic SC Bold" size="60.0"/>
                      </font>
                      <padding>
-                        <Insets bottom="-5.0" left="-5.0" right="-5.0" top="-5.0" />
-                     </padding></Button>
-                  <Button fx:id="aboutButton" mnemonicParsing="false" styleClass="lobby-about-button" stylesheets="@../css/styles.css" text="About">
+                        <Insets bottom="-5.0" left="-5.0" right="-5.0" top="-5.0"/>
+                     </padding>
+                  </Button>
+                  <Button fx:id="aboutButton" mnemonicParsing="false" styleClass="lobby-about-button"
+                          stylesheets="@../css/styles.css" text="About">
                      <font>
-                        <Font name="Amatic SC Bold" size="60.0" />
+                        <Font name="Amatic SC Bold" size="60.0"/>
                      </font>
                      <padding>
-                        <Insets bottom="-5.0" left="-5.0" right="-5.0" top="-5.0" />
-                     </padding></Button>
-                  <Button fx:id="quitButton" mnemonicParsing="false" styleClass="lobby-quit-button" stylesheets="@../css/styles.css" text="Quit">
+                        <Insets bottom="-5.0" left="-5.0" right="-5.0" top="-5.0"/>
+                     </padding>
+                  </Button>
+                  <Button fx:id="quitButton" mnemonicParsing="false" styleClass="lobby-quit-button"
+                          stylesheets="@../css/styles.css" text="Quit">
                      <font>
-                        <Font name="Amatic SC Bold" size="60.0" />
+                        <Font name="Amatic SC Bold" size="60.0"/>
                      </font>
                      <padding>
-                        <Insets bottom="-5.0" left="-5.0" right="-5.0" top="-5.0" />
-                     </padding></Button>
+                        <Insets bottom="-5.0" left="-5.0" right="-5.0" top="-5.0"/>
+                     </padding>
+                  </Button>
                </children>
                <padding>
-                  <Insets left="200.0" />
+                  <Insets left="200.0"/>
                </padding>
             </VBox>
          </children>
       </VBox>
-      <Pane layoutX="670.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="630.0">
+      <Pane layoutX="670.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="760.0" prefWidth="630.0">
          <children>
-            <VBox alignment="TOP_CENTER" layoutX="10.0" layoutY="63.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="560.0" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-width: 2;">
+            <VBox alignment="TOP_CENTER" layoutX="10.0" layoutY="63.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                  minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="560.0"
+                  style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-width: 2;">
                <children>
                   <StackPane prefHeight="150.0" prefWidth="485.0">
                      <children>
                         <ImageView fitHeight="641.0" fitWidth="563.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/leaderboard.png" />
+                              <Image url="@../images/leaderboard.png"/>
                            </image>
                         </ImageView>
                         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                            <children>
-                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="76.0" prefWidth="517.0" style="-fx-background-radius: 10; -fx-border-radius: 10;" translateY="-15.0">
+                              <Pane prefHeight="76.0" prefWidth="517.0"
+                                    style="-fx-background-radius: 10; -fx-border-radius: 10;"
+                                    translateY="-15.0">
                                  <children>
-                                    <Pane layoutX="400.0" layoutY="-13.0" prefHeight="55.0" prefWidth="57.0" style="-fx-background-radius: 5;" translateY="24.0">
+                                    <Pane layoutX="400.0" layoutY="-13.0" prefHeight="55.0" prefWidth="57.0"
+                                          style="-fx-background-radius: 5;" translateY="24.0">
                                        <children>
-                                          <ImageView fitHeight="38.0" fitWidth="38.0" layoutX="10.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+                                          <ImageView fitHeight="38.0" fitWidth="38.0" layoutX="10.0"
+                                                     layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
-                                                <Image url="@../images/refresh.png" />
+                                                <Image url="@../images/refresh.png"/>
                                              </image>
                                           </ImageView>
-                                          <Button fx:id="refreshLeaderboardButton" layoutY="-2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="58.0" prefWidth="59.0" style="-fx-background-color: transparent;" />
+                                          <Button fx:id="refreshLeaderboardButton" layoutY="-2.0"
+                                                  mnemonicParsing="false" prefHeight="58.0"
+                                                  prefWidth="59.0"
+                                                  style="-fx-background-color: transparent;"/>
                                        </children>
                                     </Pane>
                                  </children>
                               </Pane>
-                              <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="36.0" prefWidth="561.0" translateY="-9.0">
+                              <HBox alignment="CENTER" prefHeight="36.0" prefWidth="561.0" translateY="-9.0">
                                  <children>
-                                    <Text fx:id="rankLabelLB" strokeType="OUTSIDE" strokeWidth="0.0" text="Rank" textAlignment="CENTER" wrappingWidth="84.0">
+                                    <Text fx:id="rankLabelLB" strokeType="OUTSIDE" strokeWidth="0.0"
+                                          text="Rank" textAlignment="CENTER" wrappingWidth="84.0">
                                        <font>
-                                          <Font name="Amatic SC Bold" size="24.0" />
+                                          <Font name="Amatic SC Bold" size="24.0"/>
                                        </font>
                                        <HBox.margin>
-                                          <Insets top="5.0" />
+                                          <Insets top="5.0"/>
                                        </HBox.margin>
                                     </Text>
-                                    <Text fx:id="playerNameLabelLB" strokeType="OUTSIDE" strokeWidth="0.0" text="Player Name" textAlignment="CENTER" wrappingWidth="165.0">
+                                    <Text fx:id="playerNameLabelLB" strokeType="OUTSIDE" strokeWidth="0.0"
+                                          text="Player Name" textAlignment="CENTER" wrappingWidth="165.0">
                                        <HBox.margin>
-                                          <Insets top="5.0" />
+                                          <Insets top="5.0"/>
                                        </HBox.margin>
                                        <font>
-                                          <Font name="Amatic SC Bold" size="24.0" />
+                                          <Font name="Amatic SC Bold" size="24.0"/>
                                        </font>
                                     </Text>
-                                    <Text fx:id="gamePointsLabelLB" strokeType="OUTSIDE" strokeWidth="0.0" text="Game Points" textAlignment="CENTER" wrappingWidth="190.0">
+                                    <Text fx:id="gamePointsLabelLB" strokeType="OUTSIDE" strokeWidth="0.0"
+                                          text="Game Points" textAlignment="CENTER" wrappingWidth="190.0">
                                        <font>
-                                          <Font name="Amatic SC Bold" size="24.0" />
+                                          <Font name="Amatic SC Bold" size="24.0"/>
                                        </font>
                                        <HBox.margin>
-                                          <Insets top="5.0" />
+                                          <Insets top="5.0"/>
                                        </HBox.margin>
                                     </Text>
                                  </children>
                               </HBox>
-                              <ScrollPane fx:id="leaderboardScrollPane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="355.0" prefWidth="430.0" styleClass="lobby-leaderboard-scrollpane" stylesheets="@../css/styles.css" translateY="-10.0">
+                              <ScrollPane fx:id="leaderboardScrollPane" prefHeight="355.0" prefWidth="430.0"
+                                          styleClass="lobby-leaderboard-scrollpane"
+                                          stylesheets="@../css/styles.css" translateY="-10.0">
                                  <content>
-                                    <FlowPane fx:id="leaderboardsFlowPane" prefHeight="377.0" prefWidth="415.0" />
+                                    <FlowPane fx:id="leaderboardsFlowPane" prefHeight="377.0"
+                                              prefWidth="415.0"/>
                                  </content>
                               </ScrollPane>
-                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="90.0" prefWidth="406.0" translateY="20.0">
+                              <Pane prefHeight="90.0" prefWidth="406.0" translateY="20.0">
                                  <children>
-                                    <Text fx:id="currentUserRankLB" layoutX="7.0" layoutY="55.0" strokeType="OUTSIDE" strokeWidth="0.0" text="# 1" textAlignment="CENTER" wrappingWidth="66.0">
+                                    <Text fx:id="currentUserRankLB" layoutX="7.0" layoutY="55.0"
+                                          strokeType="OUTSIDE" strokeWidth="0.0" text="# 1"
+                                          textAlignment="CENTER" wrappingWidth="66.0">
                                        <font>
-                                          <Font name="Amatic SC Bold" size="40.0" />
+                                          <Font name="Amatic SC Bold" size="40.0"/>
                                        </font>
                                     </Text>
-                                    <Text fx:id="currentUserLB" layoutX="104.0" layoutY="55.0" strokeType="OUTSIDE" strokeWidth="0.0" text="chae1" textAlignment="CENTER" wrappingWidth="118.0">
+                                    <Text fx:id="currentUserLB" layoutX="104.0" layoutY="55.0"
+                                          strokeType="OUTSIDE" strokeWidth="0.0" text="chae1"
+                                          textAlignment="CENTER" wrappingWidth="118.0">
                                        <font>
-                                          <Font name="Amatic SC Bold" size="40.0" />
+                                          <Font name="Amatic SC Bold" size="40.0"/>
                                        </font>
                                     </Text>
-                                    <Text fx:id="currentUserPointsLB" layoutX="274.0" layoutY="55.0" strokeType="OUTSIDE" strokeWidth="0.0" text="1500" textAlignment="CENTER" wrappingWidth="118.0">
+                                    <Text fx:id="currentUserPointsLB" layoutX="274.0" layoutY="55.0"
+                                          strokeType="OUTSIDE" strokeWidth="0.0" text="1500"
+                                          textAlignment="CENTER" wrappingWidth="118.0">
                                        <font>
-                                          <Font name="Amatic SC Bold" size="40.0" />
+                                          <Font name="Amatic SC Bold" size="40.0"/>
                                        </font>
                                     </Text>
                                  </children>
@@ -149,5 +181,12 @@
             </VBox>
          </children>
       </Pane>
+
+      <ImageView layoutX="10.0" layoutY="600.0" fitHeight="150.0" fitWidth="250.0" preserveRatio="true" pickOnBounds="true">
+         <image>
+            <Image url="@../images/CatWalking.gif"/>
+         </image>
+      </ImageView>
+
    </children>
 </Pane>
