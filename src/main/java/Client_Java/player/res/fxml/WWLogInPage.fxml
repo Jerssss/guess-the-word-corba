@@ -10,17 +10,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1300.0"
-            xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.LoginPageView">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.LoginPageView">
    <top>
-      <VBox alignment="CENTER" prefHeight="326.0" prefWidth="1300.0" BorderPane.alignment="CENTER">
+      <VBox alignment="CENTER" prefHeight="357.0" prefWidth="1300.0" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" prefHeight="94.0" prefWidth="732.0" text="What's the" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+            <Label fx:id="title1Label" alignment="CENTER" prefHeight="94.0" prefWidth="732.0" text="What's the" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                <font>
                   <Font name="Marykate" size="140.0" />
                </font>
             </Label>
-            <Label alignment="CENTER" layoutX="294.0" layoutY="119.0" prefHeight="96.0" prefWidth="732.0" text=" Word?" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+            <Label fx:id="title2Label" alignment="CENTER" layoutX="294.0" layoutY="119.0" prefHeight="96.0" prefWidth="732.0" text=" Word?" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                <font>
                   <Font name="Marykate" size="140.0" />
                </font>
@@ -32,9 +31,9 @@
       </VBox>
    </top>
    <center>
-      <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
+      <VBox alignment="TOP_CENTER" prefHeight="364.0" prefWidth="1300.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" text="Log In">
+            <Label fx:id="loginLabel" alignment="CENTER" text="Log In">
                <font>
                   <Font name="Amatic SC Bold" size="43.0" />
                </font>
@@ -42,21 +41,34 @@
             <TextField fx:id="usernameField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="414.0" promptText="Username" style="-fx-background-radius: 7;" styleClass="login-field" stylesheets="@../css/styles.css">
                <font>
                   <Font name="Amatic SC Bold" size="20.0" />
-               </font></TextField>
+               </font>
+            </TextField>
             <PasswordField fx:id="passwordField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="414.0" promptText="Password" styleClass="login-field" stylesheets="@../css/styles.css">
                <font>
                   <Font name="Amatic SC Bold" size="20.0" />
-               </font></PasswordField>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               </font>
+            </PasswordField>
+            <HBox alignment="CENTER" prefHeight="14.0" prefWidth="1300.0">
+               <children>
+                  <Label fx:id="promptLabel" alignment="CENTER" textFill="#e44545" wrapText="true">
+                     <font>
+                        <Font name="Marykate" size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="0.0" prefWidth="1300.0">
                <children>
                   <Button fx:id="quitButton" mnemonicParsing="false" styleClass="login-quit-button" stylesheets="@../css/styles.css" text="Quit" translateX="123.0">
                      <font>
                         <Font name="Amatic SC Bold" size="24.0" />
-                     </font></Button>
+                     </font>
+                  </Button>
                   <Button fx:id="continueButton" alignment="CENTER" cancelButton="true" maxHeight="40.0" maxWidth="-Infinity" minHeight="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" styleClass="login-continue-button" stylesheets="@../css/styles.css" text="Continue" textAlignment="CENTER" textFill="WHITE" translateX="123.0" wrapText="true">
                      <font>
                         <Font name="Amatic SC Bold" size="20.0" />
-                     </font></Button>
+                     </font>
+                  </Button>
                </children>
             </HBox>
          </children>
