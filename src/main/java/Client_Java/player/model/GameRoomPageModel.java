@@ -1,10 +1,10 @@
 package Client_Java.player.model;
 
-import GameApp.MaxAttemptsReachedException;
+import PlayerGame.MaxAttemptsReachedException;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import GameApp.GameService;
-import GameApp.GameNotFoundException;
+import PlayerGame.GameService;
+import PlayerGame.GameNotFoundException;
 
 public class GameRoomPageModel {
     private IntegerProperty remainingAttempts = new SimpleIntegerProperty(5);

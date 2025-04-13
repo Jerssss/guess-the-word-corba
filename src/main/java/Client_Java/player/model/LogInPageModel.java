@@ -1,9 +1,9 @@
 package Client_Java.player.model;
 
-import GameApp.AlreadyLoggedInException;
-import GameApp.AuthService;
-import GameApp.AuthenticationException;
-import GameApp.Player;
+import PlayerGame.AlreadyLoggedInException;
+import PlayerGame.AuthService;
+import PlayerGame.AuthenticationException;
+import PlayerGame.Player;
 
 public class LogInPageModel {
     private final AuthService authService;

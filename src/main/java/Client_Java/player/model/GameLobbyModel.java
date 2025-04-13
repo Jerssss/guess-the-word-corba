@@ -1,6 +1,6 @@
 package Client_Java.player.model;
 
-import GameApp.GameService;
+import PlayerGame.GameService;
 
 public class GameLobbyModel {
     private final GameService gameService;

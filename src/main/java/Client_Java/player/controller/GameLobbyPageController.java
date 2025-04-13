@@ -5,7 +5,7 @@ import Client_Java.PlayerClient_Java;
 import Client_Java.player.model.GameLobbyModel;
 import Client_Java.player.view.GameLobbyPageView;
 import Client_Java.player.view.cards.LobbyLeaderboardCardView;
-import GameApp.Player;
+import PlayerGame.Player;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;

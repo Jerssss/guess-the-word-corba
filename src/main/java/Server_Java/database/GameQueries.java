@@ -1,6 +1,6 @@
 package Server_Java.database;
 
-import GameApp.Player;
+import PlayerGame.Player;
 
 import java.sql.*;
 import java.util.List;

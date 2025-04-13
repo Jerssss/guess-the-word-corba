@@ -1,8 +1,8 @@
 package Server_Java.database;
 
-import GameApp.AlreadyLoggedInException;
-import GameApp.AuthenticationException;
-import GameApp.Player;
+import PlayerGame.AlreadyLoggedInException;
+import PlayerGame.AuthenticationException;
+import PlayerGame.Player;
 import Shared_Files.PlayerAccount;
 
 import java.sql.*;

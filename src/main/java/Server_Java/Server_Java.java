@@ -1,11 +1,11 @@
 package Server_Java;
 
-import GameApp.AuthService;
-import GameApp.AuthServiceHelper;
-import GameApp.GameService;
-import GameApp.GameServiceHelper;
-import Client_Java.admin.model.implementation.AuthenticationImpl;
-import Client_Java.admin.model.implementation.GameImpl;
+import PlayerGame.AuthService;
+import PlayerGame.AuthServiceHelper;
+import PlayerGame.GameService;
+import PlayerGame.GameServiceHelper;
+import Server_Java.implementation.AuthenticationImpl;
+import Server_Java.implementation.GameImpl;
 import org.omg.CORBA.ORB;
 import org.omg.CosNaming.NameComponent;
 import org.omg.CosNaming.NamingContextExt;

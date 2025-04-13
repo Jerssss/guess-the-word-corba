@@ -1,6 +1,6 @@
-package Client_Java.admin.model.implementation;
+package Server_Java.implementation;
 
-import GameApp.*;
+import PlayerGame.*;
 
 public class GameImpl extends GameServicePOA {
     private Game game;

@@ -5,7 +5,7 @@ import Client_Java.player.controller.LogInPageController;
 import Client_Java.player.model.LogInPageModel;
 import Client_Java.player.model.PlayerClient_Model;
 import Client_Java.player.view.LoginPageView;
-import GameApp.Player;
+import PlayerGame.Player;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

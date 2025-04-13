@@ -1,9 +1,9 @@
 package Client_Java.player.model;
 
-import GameApp.AuthService;
-import GameApp.AuthServiceHelper;
-import GameApp.GameService;
-import GameApp.GameServiceHelper;
+import PlayerGame.AuthService;
+import PlayerGame.AuthServiceHelper;
+import PlayerGame.GameService;
+import PlayerGame.GameServiceHelper;
 import org.omg.CORBA.ORB;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;

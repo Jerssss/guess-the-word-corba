@@ -1,4 +1,4 @@
-module GameApp {
+module PlayerGame {
     typedef sequence<string> StringList;
     typedef sequence<long> IndexList;
 
@@ -11,7 +11,7 @@ module GameApp {
 
     struct Round {
         long gameID;
-        StringList playersData; // "PattyCat-1" muna as of now
+        StringList playersData;
         long wordLength;
         long roundNumber;
     };

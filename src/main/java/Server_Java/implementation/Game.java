@@ -1,4 +1,4 @@
-package Client_Java.admin.model.implementation;
+package Server_Java.implementation;
 
 import java.util.*;
 

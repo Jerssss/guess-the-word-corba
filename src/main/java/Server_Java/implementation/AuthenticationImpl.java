@@ -1,9 +1,9 @@
-package Client_Java.admin.model.implementation;
+package Server_Java.implementation;
 
-import GameApp.AlreadyLoggedInException;
-import GameApp.AuthServicePOA;
-import GameApp.AuthenticationException;
-import GameApp.Player;
+import PlayerGame.AlreadyLoggedInException;
+import PlayerGame.AuthServicePOA;
+import PlayerGame.AuthenticationException;
+import PlayerGame.Player;
 import Server_Java.database.PlayerQueries;
 
 public class AuthenticationImpl extends AuthServicePOA {
