@@ -24,8 +24,8 @@ public class PlayerQueries {
      * throws AuthenticationException
      * throws AlreadyLoggedInException
      */
-    public static Player login(String username, String password) throws AuthenticationException, AlreadyLoggedInException {
-        query = "SELECT * FROM players WHERE username = ? AND password = ? ";
+    public static Player login(String username, String password) throws AuthenticationException {
+        query = "SELECT * FROM players WHERE username = ? AND password = ?";
 
         try {
             preparedStatement = con.prepareStatement(query);
@@ -35,18 +35,12 @@ public class PlayerQueries {
             resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                int loggedInStatus = resultSet.getInt("is_logged_in");
-                if (loggedInStatus == 1) {
-                    throw new AlreadyLoggedInException("Account Already Logged in!");
-                } else {
-                    int playerId = resultSet.getInt("player_id");
-                    String fullName = resultSet.getString("full_name");
-                    int gameWins = resultSet.getInt("game_wins");
+                int playerId = resultSet.getInt("player_id");
+                String fullName = resultSet.getString("full_name");
+                int gameWins = resultSet.getInt("game_wins");
 
-                    updateLoginStatus(playerId);
-
-                    return new Player(playerId, fullName, username, gameWins);
-                }
+                updateLoginStatus(playerId); // Always set login status = 1 for new session
+                return new Player(playerId, fullName, username, gameWins);
             } else {
                 throw new AuthenticationException("Account Does Not Exist in the DATABASE");
             }
@@ -55,6 +49,32 @@ public class PlayerQueries {
         }
         return null;
     }
+
+    public static Player loginAllowDuplicate(String username, String password) throws AuthenticationException {
+        query = "SELECT * FROM players WHERE username = ? AND password = ?";
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, password);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                int playerId = resultSet.getInt("player_id");
+                String fullName = resultSet.getString("full_name");
+                int gameWins = resultSet.getInt("game_wins");
+
+                updateLoginStatus(playerId); // always update login status
+                return new Player(playerId, fullName, username, gameWins);
+            } else {
+                throw new AuthenticationException("Account does not exist in database.");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 
     /**
      * This method will update the player's login status to 1 in the database

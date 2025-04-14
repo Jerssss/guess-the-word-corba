@@ -5,6 +5,7 @@ import Client_Java.player.controller.GameLobbyPageController;
 import Client_Java.player.model.GameLobbyModel;
 import Client_Java.player.model.LogInPageModel;
 import Client_Java.player.view.GameLobbyPageView;
+import Client_Java.player.model.PlayerClient_Model;
 import Client_Java.player.view.LoginPageView;
 import PlayerGame.AlreadyLoggedInException;
 import PlayerGame.AuthenticationException;
@@ -51,9 +52,13 @@ public class LogInPageController {
             PlayerClient_Java.setSessionToken(sessionToken);
 
             System.out.println("[INFO] Login successful. Session Token: " + sessionToken);
-
             // Load player data and redirect
             Player player = PlayerQueries.getPlayer((int)playerID); // Add this method to PlayerQueries
+            redirectToGameLobby(player);
+            // Start background session checker
+            new Thread(new Client_Java.util.SessionChecker(PlayerClient_Model.gameService)).start();
+
+            // Redirect to Game Lobby
             redirectToGameLobby(player);
 
         } catch (AuthenticationException e) {
@@ -62,6 +67,7 @@ public class LogInPageController {
         } catch (AlreadyLoggedInException e) {
             view.setPromptLabel("Account already logged in!");
             view.setPromptLabelVisible(true);
+            System.err.println("[AUTH FAILED] Account was logged in elsewhere, but you are now logged in.");
         } catch (Exception e) {
             view.setPromptLabel("Login error occurred!");
             view.setPromptLabelVisible(true);
