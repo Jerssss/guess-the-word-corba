@@ -4,8 +4,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 
 public class GameLobbyPageView {
@@ -70,9 +72,16 @@ public class GameLobbyPageView {
         }
     }
 
-
     public void setActionRefreshLeaderboardButton(EventHandler<ActionEvent> event) {
         refreshLeaderboardButton.setOnAction(event);
+    }
+
+    private void verifyComponent(String name, Object component) {
+        if (component == null) {
+            System.err.println("CRITICAL: " + name + " is NULL - FXML injection failed!");
+        } else {
+            System.out.println(name + " successfully injected");
+        }
     }
 
     public void setActionAboutButton(EventHandler<ActionEvent> event) {

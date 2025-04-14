@@ -97,26 +97,25 @@ public class PlayerQueries {
     /**
      * This method will retrieve the details or data by the player_id in the database.
      */
-    public static Player getPlayer (int playerId){
+    public static Player getPlayer(int playerId) {
         query = "SELECT * FROM players WHERE player_id = ?";
-
-        try{
+        try {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, playerId);
             resultSet = preparedStatement.executeQuery();
 
-            if(resultSet.next()) {
-                String fullName = resultSet.getString("full_name");
-                String username = resultSet.getString("username");
-                int gameWins = resultSet.getInt("game_wins");
-
-                return new Player(playerId, fullName, username, gameWins);
+            if (resultSet.next()) {
+                return new Player(
+                        playerId,
+                        resultSet.getString("full_name"),
+                        resultSet.getString("username"),
+                        resultSet.getInt("game_wins")
+                );
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-        return  null;
+        return null;
     }
 
     /**
@@ -286,4 +285,5 @@ public class PlayerQueries {
             e1.printStackTrace();
         }
     }
+
 }

@@ -1,24 +1,20 @@
 package Client_Java.player.model;
 
-import Client_Java.PlayerClient_Java;
-import PlayerGame.GameService;
+import PlayerGame.Player;
+import Server_Java.database.PlayerQueries;
 
 public class GameLobbyModel {
-    private final GameService gameService;
+    private final Player player;
 
-    public GameLobbyModel(GameService gameService) {
-        this.gameService = gameService;
+    public GameLobbyModel(Player player) {
+        this.player = player;
     }
 
     public String[] fetchTopPlayers() {
-        try {
-            // Pass the playerID and sessionToken to the getLeaderboards method
-            int playerID = (int) PlayerClient_Java.getLoggedInPlayerID();
-            String sessionToken = PlayerClient_Java.getSessionToken();
-            return gameService.getLeaderboards(playerID, sessionToken);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new String[0];
-        }
+        return PlayerQueries.fetchTopPlayers();
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }

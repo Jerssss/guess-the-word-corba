@@ -1,20 +1,17 @@
 package Client_Java.player.controller;
 
-
 import Client_Java.PlayerClient_Java;
-import Client_Java.player.model.GameLobbyModel;
 import Client_Java.player.view.GameLobbyPageView;
-import Client_Java.player.view.cards.LobbyLeaderboardCardView;
+import Client_Java.player.model.*;
 import PlayerGame.Player;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.text.Text;
 
-import java.io.IOException;
 
 public class GameLobbyPageController {
     private final GameLobbyModel model;
@@ -25,78 +22,121 @@ public class GameLobbyPageController {
         this.model = model;
         this.view = view;
         this.player = player;
+        initialize();
+    }
 
+    private void initialize() {
         view.setActionEnterGameButton(event -> handleEnterGame());
         view.setActionQuitButton(event -> handleQuit());
         view.setActionRefreshLeaderboardButton(event -> refreshLeaderboard());
+        view.setActionAboutButton(event -> handleAbout());
 
+        // Load player info and leaderboard
         loadPlayerInfo();
         refreshLeaderboard();
     }
 
     private void loadPlayerInfo() {
-        view.getCurrentUserLB().setText(player.fullName);
-        view.getCurrentUserPointsLB().setText(String.valueOf(player.gameWins));
-        view.getPlayerNameLabelLB().setText(player.username);
+        Platform.runLater(() -> {
+            view.getCurrentUserLB().setText(player.username);
+            view.getCurrentUserLB().setText(player.fullName);
+            view.getCurrentUserPointsLB().setText(String.valueOf(player.gameWins));
+        });
     }
 
     private void handleEnterGame() {
         System.out.println("[GAME] Entering game...");
-        // Implement scene switch to game screen if needed
-        //TODO: implement the entergame functionality
+        // TODO: Implement game entry logic
     }
 
     private void handleQuit() {
         System.out.println("[INFO] Logging out...");
-
         try {
-            // Log out directly via database call
-            Server_Java.database.PlayerQueries.logout(player.playerID);
+//            model.logout(player.playerID);
             PlayerClient_Java.setLoggedInPlayer(null);
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client_Java/res/fxml/WWLoginPage.fxml"));
+            // Return to login screen
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/Client_Java/player/res/fxml/WWLoginPage.fxml"));
             Parent root = loader.load();
-
             Scene scene = new Scene(root);
             PlayerClient_Java.getStage().setScene(scene);
             PlayerClient_Java.getStage().setTitle("What's the Word - Login");
-            PlayerClient_Java.getStage().show();
-
-            System.out.println("[INFO] Successfully logged out and returned to login screen.");
         } catch (Exception e) {
-            System.err.println("[ERROR] Failed to logout or redirect to login.");
+            System.err.println("[ERROR] Failed to logout");
             e.printStackTrace();
         }
     }
 
+    private void handleAbout() {
+        // TODO: Implement about dialog
+        System.out.println("Showing about dialog");
+    }
 
     private void refreshLeaderboard() {
-        FlowPane leaderboardPane = view.getLeaderboardsFlowPane();
-        leaderboardPane.getChildren().clear();
+        Platform.runLater(() -> {
+            try {
+                FlowPane leaderboardPane = view.getLeaderboardsFlowPane();
+                leaderboardPane.getChildren().clear();
 
+                String[] topPlayers = model.fetchTopPlayers();
+                int rank = 1;
+                int previousScore = -1;
+                int actualPosition = 0;
+
+                for (String playerEntry : topPlayers) {
+                    actualPosition++;
+                    String[] parts = playerEntry.split("-");
+                    if (parts.length != 2) continue;
+
+                    int currentScore = Integer.parseInt(parts[1]);
+                    if (currentScore != previousScore) {
+                        rank = actualPosition;
+                    }
+                    previousScore = currentScore;
+
+                    Node card = LobbyLeaderboardCardController.createCard(rank, playerEntry);
+                    if (card != null) {
+                        leaderboardPane.getChildren().add(card);
+                    }
+                }
+
+                // Update current player's rank display
+                updateCurrentPlayerRank();
+
+            } catch (Exception e) {
+                System.err.println("Error refreshing leaderboard:");
+                e.printStackTrace();
+
+                // Fallback UI
+                Label errorLabel = new Label("Error loading leaderboard");
+                errorLabel.setStyle("-fx-text-fill: red;");
+                view.getLeaderboardsFlowPane().getChildren().add(errorLabel);
+            }
+        });
+    }
+
+    private void updateCurrentPlayerRank() {
         String[] topPlayers = model.fetchTopPlayers();
         int rank = 1;
+        int previousScore = -1;
+        int actualPosition = 0;
 
-        for (String entry : topPlayers) {
-            String[] split = entry.split("-");
-            if (split.length < 2) continue;
+        for (String playerEntry : topPlayers) {
+            actualPosition++;
+            String[] parts = playerEntry.split("-");
+            if (parts.length != 2) continue;
 
-            String username = split[0];
-            String points = split[1];
+            int score = Integer.parseInt(parts[1]);
+            if (score != previousScore) {
+                rank = actualPosition;
+            }
+            previousScore = score;
 
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("src/main/java/Client_Java/player/res/fxml/WWLobbyLeaderboardCard.fxml"));
-                Node card = loader.load();
-
-                LobbyLeaderboardCardView cardView = loader.getController();
-                ((Text) card.lookup("#usernameLabel")).setText(username);
-                ((Text) card.lookup("#pointsLabel")).setText(points);
-                ((Text) card.lookup("#rankLabel")).setText(String.valueOf(rank++));
-
-                leaderboardPane.getChildren().add(card);
-
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (parts[0].equals(player.username)) {
+                view.getCurrentUserRankLB().setText("#" + rank);
+                view.getCurrentUserPointsLB().setText(String.valueOf(score));
+                break;
             }
         }
     }

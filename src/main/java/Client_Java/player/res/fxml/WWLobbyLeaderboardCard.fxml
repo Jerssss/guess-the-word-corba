@@ -1,25 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="90.0" prefWidth="406.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.cards.LobbyLeaderboardCardView">
-   <children>
-      <Label layoutX="29.0" layoutY="16.0" text="#1">
-         <font>
-            <Font name="Amatic SC Bold" size="40.0" />
-         </font>
-      </Label>
-      <Label layoutX="134.0" layoutY="14.0" text="chae1">
-         <font>
-            <Font name="Amatic SC Bold" size="40.0" />
-         </font>
-      </Label>
-      <Label layoutX="309.0" layoutY="16.0" text="1500">
-         <font>
-            <Font name="Amatic SC Bold" size="40.0" />
-         </font>
-      </Label>
-   </children>
-</Pane>
+<HBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Client_Java.player.view.cards.LobbyLeaderboardCardView"
+      alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: white;">
+   <padding>
+      <Insets bottom="10" left="10" right="10" top="10"/>
+   </padding>
+
+   <Label fx:id="rankLabel" minWidth="50" textAlignment="CENTER">
+      <font>
+         <Font name="Amatic SC Bold" size="24"/>
+      </font>
+   </Label>
+
+   <Label fx:id="usernameLabel" minWidth="200" textAlignment="LEFT">
+      <font>
+         <Font name="Amatic SC Bold" size="24"/>
+      </font>
+   </Label>
+
+   <Label fx:id="pointsLabel" minWidth="100" textAlignment="CENTER">
+      <font>
+         <Font name="Amatic SC Bold" size="24"/>
+      </font>
+   </Label>
+</HBox>
