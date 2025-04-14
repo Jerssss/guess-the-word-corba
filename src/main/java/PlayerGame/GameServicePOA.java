@@ -112,7 +112,7 @@ public abstract class GameServicePOA extends org.omg.PortableServer.Servant
        }
 
 
-  // Processes the player�"s guessed letter and returns indexes of correctly guessed positions
+  // Processes the playerâ¬"s guessed letter and returns indexes of correctly guessed positions
        case 3:  // PlayerGame/GameService/guessLetter
        {
          try {

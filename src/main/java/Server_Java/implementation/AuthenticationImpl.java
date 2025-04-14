@@ -13,33 +13,37 @@ public class AuthenticationImpl extends AuthServicePOA {
     private final Map<Long, String> sessionTokens = new HashMap<>();
 
     @Override
-    public String login(String username, String password, org.omg.CORBA.IntHolder playerID)
-            throws AuthenticationException, AlreadyLoggedInException {
-        Player player = PlayerQueries.login(username, password); // throws if not found or already logged in
-        if (sessionTokens.containsKey(player.playerID)) {
-            throw new AlreadyLoggedInException();
+    public synchronized String login(String username, String password, org.omg.CORBA.IntHolder playerID)
+            throws AuthenticationException {
+        Player player = PlayerQueries.loginAllowDuplicate(username, password); // new method allows duplicate login
+
+        long id = player.playerID;
+        playerID.value = (int) id;
+
+        // Invalidate old session if exists
+        if (sessionTokens.containsKey(id)) {
+            System.out.println("[FORCE LOGOUT] Previous session invalidated for playerID=" + id);
+            sessionTokens.remove(id);
+            PlayerQueries.logout((int) id); // forcibly log out old session
         }
 
+        // Generate new session token
         String token = UUID.randomUUID().toString();
-        sessionTokens.put(Long.valueOf(player.playerID), token);
-        playerID.value = player.playerID;
+        sessionTokens.put(id, token);
 
-        // Print session token to server console
-        System.out.println("Player logged in: ID=" + player.playerID + ", Token=" + token);
-
+        System.out.println("Player logged in: ID=" + id + ", Token=" + token);
         return token;
     }
 
     @Override
-    public void logout(int playerID, String sessionToken) throws NotLoggedInException {
-        String storedToken = sessionTokens.get((long) playerID); // key is long
+    public synchronized void logout(int playerID, String sessionToken) throws NotLoggedInException {
+        String storedToken = sessionTokens.get((long) playerID);
         if (storedToken == null || !storedToken.equals(sessionToken)) {
             throw new NotLoggedInException();
         }
+
         sessionTokens.remove((long) playerID);
         PlayerQueries.logout(playerID);
-
-        // Optional: Print logout info
         System.out.println("Player logged out: ID=" + playerID);
     }
 }

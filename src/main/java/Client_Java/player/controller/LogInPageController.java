@@ -2,6 +2,7 @@ package Client_Java.player.controller;
 
 import Client_Java.PlayerClient_Java;
 import Client_Java.player.model.LogInPageModel;
+import Client_Java.player.model.PlayerClient_Model;
 import Client_Java.player.view.LoginPageView;
 import PlayerGame.AlreadyLoggedInException;
 import PlayerGame.AuthenticationException;
@@ -47,13 +48,16 @@ public class LogInPageController {
 
             System.out.println("[INFO] Login successful. Session Token: " + sessionToken);
 
+            // Start background session checker
+            new Thread(new Client_Java.util.SessionChecker(PlayerClient_Model.gameService)).start();
+
             // Redirect to Game Lobby
             redirectToGameLobby();
 
         } catch (AuthenticationException e) {
             System.err.println("[AUTH FAILED] Invalid credentials. Try Again...");
         } catch (AlreadyLoggedInException e) {
-            System.err.println("[AUTH FAILED] Account is already logged in. Try Again...");
+            System.err.println("[AUTH FAILED] Account was logged in elsewhere, but you are now logged in.");
         } catch (Exception e) {
             e.printStackTrace();
         }
