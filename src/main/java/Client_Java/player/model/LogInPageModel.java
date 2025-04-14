@@ -3,7 +3,6 @@ package Client_Java.player.model;
 import PlayerGame.AlreadyLoggedInException;
 import PlayerGame.AuthService;
 import PlayerGame.AuthenticationException;
-import PlayerGame.Player;
 
 public class LogInPageModel {
     private final AuthService authService;
@@ -12,7 +11,9 @@ public class LogInPageModel {
         this.authService = authService;
     }
 
-    public Player login(String username, String password) throws AlreadyLoggedInException, AuthenticationException{
-        return PlayerClient_Model.authService.login(username,password);
+    public String login(String username, String password, org.omg.CORBA.IntHolder playerID)
+            throws AlreadyLoggedInException, AuthenticationException {
+        return authService.login(username, password, playerID);
     }
 }
+
