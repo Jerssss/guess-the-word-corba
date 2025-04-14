@@ -14,6 +14,7 @@ import javafx.scene.Scene;
 import java.io.File;
 import java.io.IOException;
 
+import org.omg.CORBA.IntHolder;
 
 public class LogInPageController {
     private final LogInPageModel model;
@@ -32,26 +33,31 @@ public class LogInPageController {
         String password = view.getPasswordField().getText().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            System.err.println("[ERROR] Username or password is empty.");
+            System.out.println("Please fill all the fields.");
             return;
         }
 
         try {
-            Player player = model.login(username, password);
-            if (player != null) {
-                System.out.println("[INFO] Login successful for: " + player.username);
+            IntHolder playerID = new IntHolder();
+            String sessionToken = model.login(username, password, playerID);
 
-                // Save logged-in player
+            if (sessionToken != null && !sessionToken.isEmpty()) {
+                // Create minimal player object
+                Player player = new Player();
+                player.playerID = playerID.value;
+                player.username = username;
+
+                // Store session
                 PlayerClient_Java.setLoggedInPlayer(player);
+                PlayerClient_Java.setSessionToken(sessionToken);
 
-                // Redirect to Game Lobby
+                // Redirect
                 redirectToGameLobby();
             }
-
         } catch (AuthenticationException e) {
-            System.err.println("[AUTH FAILED] Invalid credentials. Try Again...");
+            e.printStackTrace();
         } catch (AlreadyLoggedInException e) {
-            System.err.println("[AUTH FAILED] Account is already logged in. Try Again...");
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -18,11 +18,26 @@ import java.io.IOException;
 public class PlayerClient_Java extends Application {
     public static Stage APPLICATION_STAGE;
     private static Player loggedInPlayer; // Variable to store the logged-in player
+    private static String sessionToken;
 
     public static void main(String[] args) {
-        PlayerClient_Model clientModel = new PlayerClient_Model();
-        clientModel.init(); // CORBA connection
-        launch(args);
+        try {
+            // Initialize CORBA connection first
+            PlayerClient_Model clientModel = new PlayerClient_Model();
+            clientModel.init();
+
+            // Check if services are available
+            if (PlayerClient_Model.authService == null || PlayerClient_Model.gameService == null) {
+                throw new RuntimeException("Server services not available");
+            }
+
+            // Launch JavaFX
+            launch(args);
+        } catch (Exception e) {
+            System.err.println("[FATAL] Application failed to start: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     @Override
@@ -82,8 +97,24 @@ public class PlayerClient_Java extends Application {
         return loggedInPlayer;
     }
 
+    // Method to set the session token
+    public static void setSessionToken(String token) {
+        sessionToken = token;
+    }
+
+    // Method to get the session token
+    public static String getSessionToken() {
+        return sessionToken;
+    }
+
     // Method to get the application stage
     public static Stage getStage() {
         return APPLICATION_STAGE;
+    }
+
+    // Method to clear session data (for logout)
+    public static void clearSession() {
+        loggedInPlayer = null;
+        sessionToken = null;
     }
 }

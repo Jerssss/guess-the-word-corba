@@ -74,7 +74,7 @@ public class GameLobbyPageController {
         FlowPane leaderboardPane = view.getLeaderboardsFlowPane();
         leaderboardPane.getChildren().clear();
 
-        String[] topPlayers = model.fetchTopPlayers();
+        String[] topPlayers = model.fetchTopPlayers(player.playerID, PlayerClient_Java.getSessionToken());
         int rank = 1;
 
         for (String entry : topPlayers) {

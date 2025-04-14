@@ -39,17 +39,21 @@ public class Server_Java {
             org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
             NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
 
-            // Bind the services to the NameService
-            NameComponent[] authPath = ncRef.to_name("Authentication");
-            NameComponent[] gamePath = ncRef.to_name("Game Manager");
+            // Bind the services to the NameService with consistent names
+            NameComponent[] authPath = ncRef.to_name("AuthService");  // Changed from "Authentication"
+            NameComponent[] gamePath = ncRef.to_name("GameService");  // Changed from "Game Manager"
 
             ncRef.rebind(authPath, aRef);
             ncRef.rebind(gamePath, gRef);
 
             System.out.println("CORBA Game Server ready and waiting...");
+            System.out.println("AuthService registered as: AuthService");
+            System.out.println("GameService registered as: GameService");
+
             orb.run();
         } catch (Exception e) {
-            e.printStackTrace(); // Print any exceptions that occur
+            System.err.println("SERVER ERROR: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
