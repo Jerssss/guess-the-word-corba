@@ -18,8 +18,6 @@ import java.io.IOException;
 public class PlayerClient_Java extends Application {
     public static Stage APPLICATION_STAGE;
     private static Player loggedInPlayer; // Variable to store the logged-in player
-    private static long loggedInPlayerID; // Store playerID separately
-    private static String sessionToken;   // Store sessionToken securely
 
     public static void main(String[] args) {
         PlayerClient_Model clientModel = new PlayerClient_Model();
@@ -74,31 +72,17 @@ public class PlayerClient_Java extends Application {
         }
     }
 
-    // Setters and Getters for session-related values
+    // Method to set the logged-in player
     public static void setLoggedInPlayer(Player player) {
         loggedInPlayer = player;
     }
 
+    // Method to get the logged-in player
     public static Player getLoggedInPlayer() {
         return loggedInPlayer;
     }
 
-    public static void setLoggedInPlayerID(long id) {
-        loggedInPlayerID = id;
-    }
-
-    public static long getLoggedInPlayerID() {
-        return loggedInPlayerID;
-    }
-
-    public static void setSessionToken(String token) {
-        sessionToken = token;
-    }
-
-    public static String getSessionToken() {
-        return sessionToken;
-    }
-
+    // Method to get the application stage
     public static Stage getStage() {
         return APPLICATION_STAGE;
     }

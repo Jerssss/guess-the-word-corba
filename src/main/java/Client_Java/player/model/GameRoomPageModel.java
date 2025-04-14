@@ -1,10 +1,8 @@
 package Client_Java.player.model;
 
-import PlayerGame.MaxAttemptsReachedException;
+import PlayerGame.*;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import PlayerGame.GameService;
-import PlayerGame.GameNotFoundException;
 
 public class GameRoomPageModel {
     private IntegerProperty remainingAttempts = new SimpleIntegerProperty(5);
@@ -28,10 +26,10 @@ public class GameRoomPageModel {
         playerWins++;
     }
 
-    public String guessLetter(int playerID, char letter) {
+    public String guessLetter(int playerId, String sessionToken, char letter) throws MaxAttemptsReachedException, GameNotFoundException, AlreadyGuessedLetterException, NotLoggedInException {
         try {
-            int result = gameService.guessLetter(playerID, letter); // Call the server method
-            return result == 1 ? "Correct!" : "Incorrect!";
+            int[] result = gameService.guessLetter(playerId, sessionToken, letter); // Call the server method
+//            return result == 1 ? "Correct!" : "Incorrect!";
         } catch (GameNotFoundException e) {
             e.printStackTrace();
             return "Game not found.";
@@ -39,5 +37,6 @@ public class GameRoomPageModel {
             e.printStackTrace();
             return "Max attempts have been reached.";
         }
+        return null; //RETURNS NULL FOR NOW FOR THE SAKE OF RUNNIGN THE CODE
     }
 }

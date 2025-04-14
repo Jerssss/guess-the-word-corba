@@ -1,29 +1,30 @@
 package Client_Java.player.view.cards;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 
 public class LobbyLeaderboardCardView {
 
     @FXML
-    private Text pointsLabel;
+    private Label pointsLabel;
 
     @FXML
-    private Text rankLabel;
+    private Label rankLabel;
 
     @FXML
-    private Text usernameLabel;
+    private Label usernameLabel;
 
-    public void setRankLabel(Text rankLabel) {
-        this.rankLabel = rankLabel;
+    public void setRankLabel(int rank) {
+        rankLabel.setText(String.valueOf(rank));
     }
 
-    public void setUsernameLabel(Text usernameLabel) {
-        this.usernameLabel = usernameLabel;
+    public void setUsernameLabel(String username) {
+        rankLabel.setText(String.valueOf(username));
     }
 
-    public void setPointsLabel(Text pointsLabel) {
-        this.pointsLabel = pointsLabel;
+    public void setPointsLabel(String points) {
+        rankLabel.setText(String.valueOf(points));
     }
 
 }

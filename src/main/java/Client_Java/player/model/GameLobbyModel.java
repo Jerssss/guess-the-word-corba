@@ -9,9 +9,9 @@ public class GameLobbyModel {
         this.gameService = gameService;
     }
 
-    public String[] fetchTopPlayers() {
+    public String[] fetchTopPlayers(int playerID, String sessionToken) {
         try {
-            return gameService.getLeaderboards();
+            return gameService.getLeaderboards(playerID, sessionToken);
         } catch (Exception e) {
             e.printStackTrace();
             return new String[0];

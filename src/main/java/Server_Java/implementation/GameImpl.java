@@ -10,84 +10,77 @@ public class GameImpl extends GameServicePOA {
     }
 
     @Override
-    public int startGame(int playerID) throws NoPlayersAvailableException, GameTimeoutException {
+    public int startGame(int playerID, String sessionToken) throws NoPlayersAvailableException, GameTimeoutException {
         game.startRound();
         return 0; //TODO: Return game ID or other relevant data
     }
 
     @Override
-    public Round startRound(int gid) throws GameNotFoundException {
+    public Round startRound(int gameID, int playerID, String sessionToken) throws GameNotFoundException {
         game.startRound();
         return null; //TODO: Return round details if needed
     }
 
     @Override
-    public String getRandomWord() {
+    public String getRandomWord(int gameID, int roundNumber, int playerID, String sessionToken) {
         return game.getRandomWord();
     }
 
-    @Override
-    public int getWordLength(String word) {
-        return word.length();
-    }
+    //this was removed from the IDL and POA bruv might check this again
+//    @Override
+//    public int getWordLength(String word) {
+//        return word.length();
+//    }
 
     @Override
-    public int guessLetter(int playerID, char letter) throws GameNotFoundException {
+    public int[] guessLetter(int playerID, String sessionToken, char letter) throws MaxAttemptsReachedException, GameNotFoundException, AlreadyGuessedLetterException, NotLoggedInException {
         String result = game.guessLetter(playerID, letter);
-        return result.startsWith("Correct") ? 1 : -1; // Return success/failure code
+        return new int[0];
+//        return result.startsWith("Correct") ? 1 : -1; // Return success/failure code
     }
 
     @Override
-    public String getCurrentLetterState(int playerID) {
-        return game.getCurrentLetterState();
+    public int getRemainingAttempts(int playerID, String sessionToken) throws NotLoggedInException {
+        return 0; //TODO
     }
 
     @Override
-    public int getRemainingAttempts(int playerID) {
-        return game.getRemainingAttempts();
+    public int getRemainingWaitingTime(int playerID, String sessionToken) throws GameTimeoutException, NotLoggedInException {
+        return 0; //TODO
     }
 
     @Override
-    public int getRemainingWaitingTime() throws GameTimeoutException {
-        return 0; //TODO: Implement waiting time logic if needed
+    public int getRemainingRoundTime(int gameID, int playerID, String sessionToken) throws GameTimeoutException, NotLoggedInException {
+        return 0; //TODO
     }
 
     @Override
-    public int getRemainingRoundTime(int gid) throws GameTimeoutException {
-        return 0; //TODO:  Implement round time logic if needed
+    public boolean isGameOver(int playerID, String sessionToken) throws NotLoggedInException {
+        return false; //TODO
     }
 
     @Override
-    public boolean isGameOver(int playerID) {
-        return false; //TODO: Implement game over logic
+    public String getRoundWinner(int gameID, int playerID, String sessionToken) throws NotLoggedInException {
+        return null; //TODO
     }
 
     @Override
-    public boolean hasWon(int playerID) {
-        return false; //TODO: Implement win checking logic
+    public String getGameWinner(int gameID, int playerID, String sessionToken) throws NotLoggedInException {
+        return null; //TODO
     }
 
     @Override
-    public String getRoundWinner(int gid) {
-        return ""; //TODO: Implement round winner logic
+    public void leaveGame(int playerID, String sessionToken, int gameID) throws NotLoggedInException {
+        //TODO
     }
 
     @Override
-    public String getGameWinner(int gid) {
-        return ""; //TODO: Implement game winner logic
-    }
-
-    @Override
-    public void leaveGame(int pid, int gid) {
-        //TODO: Implement leave game logic
-    }
-
-    @Override
-    public String[] getLeaderboards() {
-        return new String[0]; //TODO: Implement leaderboard logic kaso ang alam ko sa game lobby lang 'to?
+    public String[] getLeaderboards(int playerID, String sessionToken) throws NotLoggedInException {
+        return new String[0]; //TODO
     }
 
     public void endRound(int playerID, boolean playerWon) {
         game.endRound(playerWon);
     }
+
 }

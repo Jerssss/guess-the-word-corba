@@ -37,18 +37,16 @@ public class LogInPageController {
         }
 
         try {
-            org.omg.CORBA.IntHolder playerIDHolder = new org.omg.CORBA.IntHolder();
-            String sessionToken = model.login(username, password, playerIDHolder);
-            long playerID = playerIDHolder.value;
+            Player player = model.login(username, password);
+            if (player != null) {
+                System.out.println("[INFO] Login successful for: " + player.username);
 
-            // Save logged-in session data
-            PlayerClient_Java.setLoggedInPlayerID(playerID);
-            PlayerClient_Java.setSessionToken(sessionToken);
+                // Save logged-in player
+                PlayerClient_Java.setLoggedInPlayer(player);
 
-            System.out.println("[INFO] Login successful. Session Token: " + sessionToken);
-
-            // Redirect to Game Lobby
-            redirectToGameLobby();
+                // Redirect to Game Lobby
+                redirectToGameLobby();
+            }
 
         } catch (AuthenticationException e) {
             System.err.println("[AUTH FAILED] Invalid credentials. Try Again...");
@@ -58,7 +56,6 @@ public class LogInPageController {
             e.printStackTrace();
         }
     }
-
 
 
     private void handleQuitButton() {
