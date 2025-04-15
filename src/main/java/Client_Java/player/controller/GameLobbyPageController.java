@@ -3,6 +3,7 @@ package Client_Java.player.controller;
 import Client_Java.PlayerClient_Java;
 import Client_Java.player.view.GameLobbyPageView;
 import Client_Java.player.model.*;
+import Client_Java.player.view.GameRoomPageView;
 import PlayerGame.Player;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 
+import java.io.IOException;
 
 public class GameLobbyPageController {
     private final GameLobbyModel model;
@@ -46,13 +48,26 @@ public class GameLobbyPageController {
 
     private void handleEnterGame() {
         System.out.println("[GAME] Entering game...");
-        // TODO: Implement game entry logic
+        try {
+            // Load the GameRoomPageView FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client_Java/player/res/fxml/WWGameRoomPage.fxml"));
+            Parent root = loader.load();
+
+            // Set the scene
+            Scene scene = new Scene(root);
+            PlayerClient_Java.getStage().setScene(scene);
+            PlayerClient_Java.getStage().setTitle("What's the Word - Game Room");
+            PlayerClient_Java.getStage().show();
+
+        } catch (IOException e) {
+            System.err.println("[ERROR] Failed to load GameRoomPageView: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void handleQuit() {
         System.out.println("[INFO] Logging out...");
         try {
-//            model.logout(player.playerID);
             PlayerClient_Java.setLoggedInPlayer(null);
 
             // Return to login screen
