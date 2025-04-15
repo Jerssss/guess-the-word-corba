@@ -12,13 +12,13 @@ public class GameImpl extends GameServicePOA {
     @Override
     public int startGame(int playerID, String sessionToken) throws NoPlayersAvailableException, GameTimeoutException, NotLoggedInException {
         game.startRound();
-        return 0; //TODO: Return game ID or other relevant data
+        return 0; // Return game ID or other relevant data
     }
 
     @Override
     public Round startRound(int gameID, int playerID, String sessionToken) throws GameNotFoundException, NotLoggedInException {
         game.startRound();
-        return null; //TODO: Return round details if needed
+        return null; // Return round details if needed
     }
 
     @Override
@@ -39,37 +39,37 @@ public class GameImpl extends GameServicePOA {
 
     @Override
     public int getRemainingWaitingTime(int playerID, String sessionToken) throws GameTimeoutException, NotLoggedInException {
-        return 0; //TODO: Implement waiting time logic if needed
+        return 0; // Implement waiting time logic if needed
     }
 
     @Override
     public int getRemainingRoundTime(int gameID, int playerID, String sessionToken) throws GameTimeoutException, NotLoggedInException {
-        return 0; //TODO: Implement round time logic if needed
+        return game.getRemainingRoundTime();
     }
 
     @Override
     public boolean isGameOver(int playerID, String sessionToken) throws NotLoggedInException {
-        return false; //TODO: Implement game over logic
+        return game.getRemainingAttempts() <= 0 || game.getRemainingRoundTime() <= 0;
     }
 
     @Override
     public String getRoundWinner(int gameID, int playerID, String sessionToken) throws NotLoggedInException {
-        return ""; //TODO: Implement round winner logic
+        return ""; // Implement round winner logic
     }
 
     @Override
     public String getGameWinner(int gameID, int playerID, String sessionToken) throws NotLoggedInException {
-        return ""; //TODO: Implement game winner logic
+        return ""; // Implement game winner logic
     }
 
     @Override
     public void leaveGame(int playerID, String sessionToken, int gameID) throws NotLoggedInException {
-        //TODO: Implement leave game logic
+        // Implement leave game logic
     }
 
     @Override
     public String[] getLeaderboards(int playerID, String sessionToken) throws NotLoggedInException {
-        return new String[0]; //TODO: Implement leaderboard logic
+        return new String[0]; // Implement leaderboard logic
     }
 
     public void endRound(int playerID, boolean playerWon) {

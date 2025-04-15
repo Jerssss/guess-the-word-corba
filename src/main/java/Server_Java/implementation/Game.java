@@ -1,5 +1,7 @@
 package Server_Java.implementation;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Game {
@@ -10,9 +12,12 @@ public class Game {
     private int remainingAttempts = 5;
     private boolean roundActive = false;
     private Map<Character, List<Integer>> letterPositions = new HashMap<>();
+    private List<String> usedWords = new ArrayList<>();
+    private long roundStartTime;
+    private List<String> words;
 
     public Game() {
-        // Initialize game state
+        words = loadWords();
     }
 
     public void startRound() {
@@ -20,12 +25,18 @@ public class Game {
         roundCount++;
         remainingAttempts = 5;
         roundActive = true;
+        letterPositions.clear();
+        roundStartTime = System.currentTimeMillis();
     }
 
     public String getRandomWord() {
-        List<String> words = loadWords();
         Random random = new Random();
-        return words.get(random.nextInt(words.size()));
+        String word;
+        do {
+            word = words.get(random.nextInt(words.size()));
+        } while (usedWords.contains(word));
+        usedWords.add(word);
+        return word;
     }
 
     public String guessLetter(int playerID, char letter) {
@@ -78,11 +89,31 @@ public class Game {
 
     private void endGame() {
         // Logic to end the game and notify players
+        System.out.println("Game over! Player wins: " + playerWins + ", Opponent wins: " + opponentWins);
     }
 
     private List<String> loadWords() {
-        //TODO: Logic to load words from "words.txt
-        return Arrays.asList("sample", "placeholder", "wohohohoho");
+        List<String> wordList = new ArrayList<>();
+        File file = new File("/Client_Java/admin/res/words.txt");
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String word = scanner.nextLine().trim();
+                if (!word.isEmpty()) {
+                    wordList.add(word);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("Error: words.txt file not found at " + file.getAbsolutePath());
+            e.printStackTrace();
+        }
+
+        if (wordList.isEmpty()) {
+            System.err.println("Warning: No words loaded from words.txt. Using default words.");
+            wordList = Arrays.asList("sample", "placeholder", "wohohohoho");
+        }
+
+        return wordList;
     }
 
     public int getRemainingAttempts() {
@@ -101,4 +132,14 @@ public class Game {
         }
         return state.toString();
     }
+
+    public long getRoundStartTime() {
+        return roundStartTime;
+    }
+
+    public int getRemainingRoundTime() {
+        long elapsedTime = System.currentTimeMillis() - roundStartTime;
+        return Math.max(0, 30000 - (int) elapsedTime); // 30 seconds per round
+    }
+
 }

@@ -1,48 +1,59 @@
 package Client_Java.player.model;
 
-import PlayerGame.MaxAttemptsReachedException;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import PlayerGame.GameService;
-import PlayerGame.GameNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GameRoomPageModel {
-    private IntegerProperty remainingAttempts = new SimpleIntegerProperty(5);
-    private int playerWins = 0;
-    private int opponentWins = 0;
-    private GameService gameService;
+    private int remainingAttempts;
+    private String currentWord;
+    private Map<Character, List<Integer>> letterPositions;
 
-    public GameRoomPageModel(GameService gameService) {
-        this.gameService = gameService; // Initialize the game service
+    public GameRoomPageModel(String currentWord) {
+        this.currentWord = currentWord;
+        this.remainingAttempts = 5; // Set initial attempts
+        this.letterPositions = new HashMap<>();
+        // Initialize letter positions based on the current word
+        initializeLetterPositions();
     }
 
-    public IntegerProperty remainingAttemptsProperty() {
-        return remainingAttempts;
-    }
-
-    public void decrementAttempts() {
-        remainingAttempts.set(remainingAttempts.get() - 1);
-    }
-
-    public void incrementPlayerWins() {
-        playerWins++;
+    private void initializeLetterPositions() {
+        for (int i = 0; i < currentWord.length(); i++) {
+            char letter = currentWord.charAt(i);
+            letterPositions.computeIfAbsent(letter, k -> new ArrayList<>()).add(i);
+        }
     }
 
     public String guessLetter(int playerID, String sessionToken, char letter) {
-        try {
-            // CORBA returns IndexList, which is a sequence<long>
-            int[] result = gameService.guessLetter(playerID, sessionToken, letter);
-
-            return result.length > 0 ? "Correct!" : "Incorrect!";
-        } catch (GameNotFoundException e) {
-            e.printStackTrace();
-            return "Game not found.";
-        } catch (MaxAttemptsReachedException e) {
-            e.printStackTrace();
-            return "Max attempts have been reached.";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "An unexpected error occurred.";
+        if (letterPositions.containsKey(letter)) {
+            return "Correct!"; // Letter is in the word
+        } else {
+            decrementAttempts();
+            return "Incorrect!"; // Letter is not in the word
         }
+    }
+
+    public void decrementAttempts() {
+        remainingAttempts--;
+    }
+
+    public int getRemainingAttempts() {
+        return remainingAttempts;
+    }
+
+    public String getCurrentWord() {
+        return currentWord;
+    }
+
+    public List<Integer> getLetterPositions(char letter) {
+        return letterPositions.getOrDefault(letter, new ArrayList<>());
+    }
+
+    public void submitWord(int playerID, String sessionToken, String currentWord) {
+    }
+
+    public Map<Character, List<Integer>> getAllLetterPositions() {
+        return getAllLetterPositions();
     }
 }

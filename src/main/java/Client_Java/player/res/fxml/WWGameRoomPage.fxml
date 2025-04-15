@@ -393,9 +393,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank1" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank1" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -407,9 +407,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank2" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank2" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -421,9 +421,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank3" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank3" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -435,9 +435,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank4" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank4" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -449,9 +449,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank5" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank5" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -463,9 +463,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank6" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank6" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -477,9 +477,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank7" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank7" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -491,9 +491,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank8" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank8" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -505,9 +505,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank9" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank9" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -519,9 +519,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank10" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank10" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -533,9 +533,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank11" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank11" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -547,9 +547,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank12" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank12" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -561,9 +561,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank13" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank13" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -575,9 +575,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank14" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank14" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -589,9 +589,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank15" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank15" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -603,9 +603,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank16" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank16" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
@@ -617,9 +617,9 @@
                               </ImageView>
                            </children>
                         </Pane>
-                        <Pane fx:id="blank17" centerShape="false" prefHeight="75.0" prefWidth="74.0">
+                        <Pane prefHeight="75.0" prefWidth="74.0">
                            <children>
-                              <Label layoutX="26.0" layoutY="12.0">
+                              <Label fx:id="blank17" layoutX="26.0" layoutY="12.0" prefHeight="75.0" prefWidth="74.0">
                                  <font>
                                     <Font size="35.0" />
                                  </font>
