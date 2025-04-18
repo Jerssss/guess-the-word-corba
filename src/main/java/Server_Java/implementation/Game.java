@@ -94,7 +94,7 @@ public class Game {
 
     private List<String> loadWords() {
         List<String> wordList = new ArrayList<>();
-        File file = new File("/Client_Java/admin/res/words.txt");
+        File file = new File("src/main/java/Client_Java/admin/res/words.txt");
 
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
@@ -109,8 +109,7 @@ public class Game {
         }
 
         if (wordList.isEmpty()) {
-            System.err.println("Warning: No words loaded from words.txt. Using default words.");
-            wordList = Arrays.asList("sample", "placeholder", "wohohohoho");
+            System.err.println("Warning: No words loaded from words.txt.");
         }
 
         return wordList;
