@@ -81,6 +81,9 @@ module PlayerGame {
         // Gets the leaderboard
         StringList getLeaderboards(in long playerID, in string sessionToken)
             raises(NotLoggedInException);
+
+        long getNumberOfPlayersJoined(in long playerID, in string sessionToken)
+                raises(NotLoggedInException);
     };
 
 };
