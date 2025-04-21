@@ -26,6 +26,10 @@ public class GameRoomPageModel {
     }
 
     public String guessLetter(int playerID, String sessionToken, char letter) {
+        if (remainingAttempts <= 0) {
+            return "No remaining attempts!";
+        }
+
         if (letterPositions.containsKey(letter)) {
             return "Correct!"; // Letter is in the word
         } else {
@@ -50,10 +54,17 @@ public class GameRoomPageModel {
         return letterPositions.getOrDefault(letter, new ArrayList<>());
     }
 
-    public void submitWord(int playerID, String sessionToken, String currentWord) {
+    public void submitWord(int playerID, String sessionToken, String submittedWord) {
+        if (submittedWord.equals(currentWord)) {
+            // Logic for correct word submission
+            System.out.println("Word submitted correctly!");
+        } else {
+            // Logic for incorrect word submission
+            System.out.println("Incorrect word submitted.");
+        }
     }
 
     public Map<Character, List<Integer>> getAllLetterPositions() {
-        return getAllLetterPositions();
+        return letterPositions; // Fixed the recursive call
     }
 }

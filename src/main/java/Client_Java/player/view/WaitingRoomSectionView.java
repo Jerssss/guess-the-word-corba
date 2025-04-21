@@ -25,12 +25,12 @@ public class WaitingRoomSectionView {
         cancelButton.setOnAction(event);
     }
 
-    public void setCountdownLabel(Label countdownLabel) {
-        this.countdownLabel = countdownLabel;
+    public void setRemainingTime(int remainingTime) {
+        countdownLabel.setText(String.valueOf(remainingTime));
     }
 
-    public void setPlayerCountLabel(Label playerCountLabel) {
-        this.playerCountLabel = playerCountLabel;
+    public void setWaitingPlayersCount(int playerCount) {
+        playerCountLabel.setText(String.valueOf(playerCount));
     }
 
     public void setSecondsLabel(Label secondsLabel) {
