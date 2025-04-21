@@ -83,11 +83,12 @@ public class LogInPageController {
             // Get the view and controller
             GameLobbyPageView lobbyView = loader.getController();
             GameLobbyModel lobbyModel = new GameLobbyModel(player);
-            new GameLobbyPageController(lobbyModel, lobbyView, player);
+            // You need to define gid or pass it appropriately
+            int gid = 0; // Replace with actual gid if available
+            new GameLobbyPageController(lobbyModel, lobbyView, player, gid, PlayerClient_Java.getSessionToken());
 
             // Create scene with stylesheet
             Scene lobbyScene = new Scene(root);
-
             // Load stylesheet safely
             try {
                 URL stylesheet = getClass().getResource("/Client_Java/player/res/css/styles.css");

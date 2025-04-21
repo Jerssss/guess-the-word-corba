@@ -72,6 +72,11 @@ public class GameImpl extends GameServicePOA {
         return new String[0]; // Implement leaderboard logic
     }
 
+    @Override
+    public int getNumberOfPlayersJoined(int playerID, String sessionToken) throws NotLoggedInException {
+        return 0;
+    }
+
     public void endRound(int playerID, boolean playerWon) {
         game.endRound(playerWon);
     }
