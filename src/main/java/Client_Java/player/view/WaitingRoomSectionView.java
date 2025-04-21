@@ -1,5 +1,7 @@
 package Client_Java.player.view;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,8 +21,8 @@ public class WaitingRoomSectionView {
     private Label playerCountLabel;
 
     @FXML
-    public void handleCancelButtonAction() {
-        // Handle the cancel button action
+    public void setActionCancelButton(EventHandler<ActionEvent> event) {
+        cancelButton.setOnAction(event);
     }
 
     public void setCountdownLabel(Label countdownLabel) {
