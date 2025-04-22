@@ -1,0 +1,54 @@
+module Admin {
+
+    // Exceptions
+    exception AuthenticationException {};
+    exception AlreadyLoggedInException {};
+    exception NotLoggedInException {};
+    exception AccountExistsException {};
+    exception AccountNotFoundException {};
+    exception ExistingPasswordException {};
+    exception AccountCurrentlyActiveException {};
+    exception PlayerNotFoundException {};
+
+    struct Admin {
+        long adminID;
+        string fullName;
+        string username;
+    };
+
+    struct Player {
+        long playerID;
+        string fullName;
+        string username;
+        long gameWins;
+    };
+
+    interface adminAuthService {
+        string adminLogin(in string username, in string password, out long adminID)
+            raises(AuthenticationException, AlreadyLoggedInException);
+
+        void adminLogout(in long adminID, in string sessionToken)
+            raises(NotLoggedInException);
+    };
+
+    interface adminService {
+        void createPlayer(in Player newPlayer, in string sessionToken, in long adminID)
+            raises(AccountExistsException, NotLoggedInException);
+
+        void modifyPlayer(in long playerID, in string newPassword, in string sessionToken, in long adminID)
+            raises(AccountNotFoundException, ExistingPasswordException, NotLoggedInException);
+
+        void deletePlayer(in long playerID, in string sessionToken, in long adminID)
+            raises(AccountNotFoundException, AccountCurrentlyActiveException, NotLoggedInException);
+
+        Player searchPlayer(in long playerID, in string username, in string sessionToken)
+            raises(NotLoggedInException, PlayerNotFoundException);
+
+        void modifyWaitingTime(in long waitTime, in string sessionToken, in long adminID)
+            raises(NotLoggedInException);
+
+        void modifyRoundDuration(in long roundTime, in string sessionToken, in long adminID)
+            raises(NotLoggedInException);
+    };
+
+};
