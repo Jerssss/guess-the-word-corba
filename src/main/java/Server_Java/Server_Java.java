@@ -54,7 +54,7 @@ public class Server_Java {
 
             ncRef.rebind(ncRef.to_name("AuthenticationService"), paRef);
             ncRef.rebind(ncRef.to_name("PlayerCallBackService"), cbRef);
-            ncRef.rebind(ncRef.to_name("PlayerGameService"), pgRef);
+            ncRef.rebind(ncRef.to_name("GameService"), pgRef);
             ncRef.rebind(ncRef.to_name("adminService"), asRef);
 
             System.out.println("CORBA Game Server ready and waiting...");

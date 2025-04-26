@@ -30,9 +30,9 @@ public class PlayerClient_Model {
             NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
 
             // Narrow references to services
-            authService = AuthenticationServiceHelper.narrow(ncRef.resolve_str("PlayerAuthenticationService"));
+            authService = AuthenticationServiceHelper.narrow(ncRef.resolve_str("AuthenticationService"));
             callbackService = PlayerCallBackServiceHelper.narrow(ncRef.resolve_str("PlayerCallBackService"));
-            gameService = GameServiceHelper.narrow(ncRef.resolve_str("PlayerGameService"));
+            gameService = GameServiceHelper.narrow(ncRef.resolve_str("GameService"));
 
             System.out.println("[Client] CORBA Services Initialized Successfully!");
         } catch (Exception e) {
