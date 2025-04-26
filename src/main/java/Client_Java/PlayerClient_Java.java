@@ -16,13 +16,13 @@ import java.io.IOException;
 
 public class PlayerClient_Java extends Application {
     public static Stage APPLICATION_STAGE;
-    private static PlayerAccount loggedInPlayer; // Variable to store the logged-in player
-    private static long loggedInPlayerID; // Store playerID separately
-    private static String sessionToken;   // Store sessionToken securely
+    private static PlayerAccount loggedInPlayer; // Updated to PlayerAccount
+    private static long loggedInPlayerID;
+    private static String sessionToken;
 
     public static void main(String[] args) {
         PlayerClient_Model clientModel = new PlayerClient_Model();
-        clientModel.init(); // CORBA connection
+        clientModel.init(); // Initialize CORBA connections
         launch(args);
     }
 
@@ -38,7 +38,6 @@ public class PlayerClient_Java extends Application {
             FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
             Parent root = loader.load();
 
-            // Get the controller (view in this case)
             LoginPageView loginPageView = loader.getController();
             if (loginPageView == null) {
                 System.err.println("[ERROR] LoginPageView is NULL after FXML load!");
@@ -48,15 +47,14 @@ public class PlayerClient_Java extends Application {
                 new LogInPageController(model, loginPageView);
             }
 
-            // Set the scene
             Scene scene = new Scene(root);
             APPLICATION_STAGE.setScene(scene);
             APPLICATION_STAGE.centerOnScreen();
             APPLICATION_STAGE.setResizable(false);
 
             APPLICATION_STAGE.setOnCloseRequest(event -> {
-                System.out.println("[INFO] Close request received. Terminating the application...");
-                System.exit(0); // or custom cleanup logic
+                System.out.println("[INFO] Application is closing...");
+                System.exit(0);
             });
 
             APPLICATION_STAGE.setTitle("What's The Word!!");
@@ -65,15 +63,15 @@ public class PlayerClient_Java extends Application {
             System.out.println("[Client] LOGIN GUI LOADED SUCCESSFULLY");
 
         } catch (IOException e) {
+            System.err.println("[ERROR] IOException while loading GUI: " + e.getMessage());
             e.printStackTrace();
-            System.err.println("[ERROR] Could not load WWLogInPage.fxml: " + e.getMessage());
         } catch (Exception e) {
+            System.err.println("[ERROR] Unexpected exception: " + e.getMessage());
             e.printStackTrace();
-            System.err.println("[ERROR] Unexpected error in loadLoginGUI(): " + e.getMessage());
         }
     }
 
-    // Setters and Getters for session-related values
+    // Session management methods
     public static void setLoggedInPlayer(PlayerAccount player) {
         loggedInPlayer = player;
     }
