@@ -24,8 +24,8 @@ public class LogInPageModel {
                 PlayerClient_Java.setSessionToken(sessionToken);
                 PlayerClient_Java.setLoggedInPlayerID(playerIdHolder.value);
 
-                PlayerAccount dummy = new PlayerAccount(playerIdHolder.value, username, password, 0);
-                PlayerClient_Java.setLoggedInPlayer(dummy);
+                PlayerAccount temp = new PlayerAccount(playerIdHolder.value, username, password, 0);
+                PlayerClient_Java.setLoggedInPlayer(temp);
 
                 return true;
             } else {
