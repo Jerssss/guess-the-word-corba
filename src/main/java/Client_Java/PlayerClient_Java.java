@@ -1,11 +1,10 @@
 package Client_Java;
 
-
 import Client_Java.player.controller.LogInPageController;
 import Client_Java.player.model.LogInPageModel;
 import Client_Java.player.model.PlayerClient_Model;
 import Client_Java.player.view.LoginPageView;
-import PlayerGame.Player;
+import Shared_Files.PlayerAccount;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,7 +16,7 @@ import java.io.IOException;
 
 public class PlayerClient_Java extends Application {
     public static Stage APPLICATION_STAGE;
-    private static Player loggedInPlayer; // Variable to store the logged-in player
+    private static PlayerAccount loggedInPlayer; // Variable to store the logged-in player
     private static long loggedInPlayerID; // Store playerID separately
     private static String sessionToken;   // Store sessionToken securely
 
@@ -75,11 +74,11 @@ public class PlayerClient_Java extends Application {
     }
 
     // Setters and Getters for session-related values
-    public static void setLoggedInPlayer(Player player) {
+    public static void setLoggedInPlayer(PlayerAccount player) {
         loggedInPlayer = player;
     }
 
-    public static Player getLoggedInPlayer() {
+    public static PlayerAccount getLoggedInPlayer() {
         return loggedInPlayer;
     }
 
