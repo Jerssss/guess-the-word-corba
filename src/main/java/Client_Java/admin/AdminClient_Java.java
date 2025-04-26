@@ -1,10 +1,10 @@
 package Client_Java.admin;
 
+import Client_Java.admin.controller.AdminLogInPageController;
 import Client_Java.admin.model.AdminClientModel;
-import Client_Java.player.controller.LogInPageController;
-import Client_Java.player.model.LogInPageModel;
+import Client_Java.admin.model.AdminLogInPageModel;
+import Client_Java.admin.view.AdminLogInPageView;
 import Client_Java.player.model.PlayerClient_Model;
-import Client_Java.player.view.LoginPageView;
 import Shared_Files.AdminAccount;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -39,13 +39,13 @@ public class AdminClient_Java extends Application {
             FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
             Parent root = loader.load();
 
-            LoginPageView loginPageView = loader.getController();
+            AdminLogInPageView loginPageView = loader.getController();
             if (loginPageView == null) {
-                System.err.println("[ERROR] LoginPageView is NULL after FXML load!");
+                System.err.println("[ERROR] AdminLoginPageView is NULL after FXML load!");
             } else {
-                System.out.println("[DEBUG] LoginPageView controller loaded successfully.");
-                LogInPageModel model = new LogInPageModel(PlayerClient_Model.authService);
-                new LogInPageController(model, loginPageView);
+                System.out.println("[DEBUG] AdminLoginPageView controller loaded successfully.");
+                AdminLogInPageModel model = new AdminLogInPageModel(PlayerClient_Model.authService);
+                new AdminLogInPageController(model, loginPageView);
             }
 
             Scene scene = new Scene(root);

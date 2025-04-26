@@ -62,7 +62,7 @@ public class Server_Java {
             ncRef.rebind(ncRef.to_name("AuthenticationService"), paRef);
             ncRef.rebind(ncRef.to_name("PlayerCallBackService"), cbRef);
             ncRef.rebind(ncRef.to_name("GameService"), pgRef);
-            ncRef.rebind(ncRef.to_name("adminService"), asRef);
+            ncRef.rebind(ncRef.to_name("AdminService"), asRef);
 
             // --- Styled Welcome Message Yehey ---
             System.out.println();
