@@ -1,5 +1,5 @@
 // Game.idl
-module Game {
+module GameIDL {
 
     typedef sequence<string> StringList;
     typedef sequence<long> IndexList;
@@ -12,7 +12,7 @@ module Game {
     exception MaxAttemptsReachedException {};
     exception AlreadyGuessedLetterException {};
 
-    interface PlayerGameService {
+    interface GameService {
 
         // Get display name of a player
         string getDisplayName(in string username, in string sessionToken)

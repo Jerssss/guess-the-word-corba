@@ -1,5 +1,4 @@
-// Authentication.idl
-module Authentication {
+module AuthenticationIDL {
 
     exception AuthenticationException {};
     exception AlreadyLoggedInException {};
@@ -13,7 +12,6 @@ module Authentication {
         // Player logout using session token
         void logout(in long playerID, in string sessionToken)
             raises(NotLoggedInException);
-    };
 
         // Admin login, returns session token and admin ID
         string adminLogin(in string username, in string password, out long adminID)
@@ -22,5 +20,5 @@ module Authentication {
         // Admin logout using session token
         void adminLogout(in long adminID, in string sessionToken)
             raises(NotLoggedInException);
-
+    };
 };
