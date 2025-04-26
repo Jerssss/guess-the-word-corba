@@ -1,0 +1,17 @@
+// PlayerCallBack.idl
+module PlayerCallBack {
+
+    exception NotLoggedInException {};
+
+    interface PlayerCallBackService {
+        // Notify player about end of round
+        void notifyRoundEnd(in string gameToken, in string sessionToken, in string result);
+
+        // Notify player about end of game
+        void notifyGameEnd(in string gameToken, in string sessionToken, in string result);
+
+        // Forcefully logout player (used by admin)
+        void notifyForcedLogout(in long playerID, in string sessionToken)
+            raises(NotLoggedInException);
+    };
+};
