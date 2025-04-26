@@ -11,8 +11,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AuthenticationServiceImpl extends AuthenticationServicePOA {
+
+    private static final Set<String> activeClients = Collections.synchronizedSet(new HashSet<>());
 
     @Override
     public String login(String username, String password, IntHolder playerID)
@@ -39,13 +44,19 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
             if (isLoggedIn) {
                 // Force logout old session
                 forceLogout(dbPlayerID);
+                System.out.println("[SERVER] Force-Logged out previous session for user: " + username);
             }
 
-            // Now set logged_in to true
+            // Update login status
             updateLoginStatus(dbPlayerID);
             playerID.value = dbPlayerID;
 
-            // Return new sessionToken (simple for now, you can enhance)
+            // Add to active clients list
+            activeClients.add(username);
+
+            System.out.println("[SERVER] LOGIN SUCCESS: " + username + " has logged in.");
+
+            // Return session token
             return generateSessionToken(username);
 
         } catch (SQLException e) {
@@ -61,6 +72,11 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
                      "UPDATE players SET is_logged_in = 0 WHERE player_id = ?")) {
             stmt.setInt(1, playerID);
             stmt.executeUpdate();
+
+            // Find username from ID (optional if you want to remove from active list)
+            // activeClients.remove(username);
+
+            System.out.println("[SERVER] LOGOUT SUCCESS for playerID: " + playerID);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new NotLoggedInException("Database error: " + e.getMessage());
@@ -70,7 +86,6 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
     @Override
     public String adminLogin(String username, String password, IntHolder adminID)
             throws AuthenticationException, AlreadyLoggedInException {
-        // Similar logic for admins
         return "";
     }
 

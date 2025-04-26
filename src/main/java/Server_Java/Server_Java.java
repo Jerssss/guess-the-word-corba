@@ -19,7 +19,14 @@ import org.omg.CosNaming.NamingContextExtHelper;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Server_Java {
+
+    private static final Set<String> activeClients = Collections.synchronizedSet(new HashSet<>());
+
     public static void main(String[] args) {
         try {
             // Initialize ORB
@@ -57,12 +64,41 @@ public class Server_Java {
             ncRef.rebind(ncRef.to_name("GameService"), pgRef);
             ncRef.rebind(ncRef.to_name("adminService"), asRef);
 
-            System.out.println("CORBA Game Server ready and waiting...");
+            // --- Styled Welcome Message Yehey ---
+            System.out.println();
+            System.out.println("=============================================");
+            System.out.println("Welcome to What's The Word? Game Server");
+            System.out.println("---------------------------------------------");
+            System.out.println("Server Status: Running and Listening...");
+            System.out.println("CORBA ORB initialized on localhost:2000");
+            System.out.println("Services: Authentication, Game, Callback, Admin");
+            System.out.println("=============================================");
+            System.out.println();
 
             orb.run();
         } catch (Exception e) {
             System.err.println("SERVER ERROR: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public static void addActiveClient(String username) {
+        activeClients.add(username);
+        printActiveClients();
+    }
+
+    public static void removeActiveClient(String username) {
+        activeClients.remove(username);
+        printActiveClients();
+    }
+
+    public static void printActiveClients() {
+        System.out.println("[SERVER] Current Active Clients:");
+        if (activeClients.isEmpty()) {
+            System.out.println(" - No active clients.");
+        } else {
+            activeClients.forEach(user -> System.out.println(" - " + user));
+        }
+        System.out.println("----------------------------------");
     }
 }
