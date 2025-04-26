@@ -1,14 +1,20 @@
 package Client_Java.player.controller;
 
-import Client_Java.PlayerClient_Java;
+import Client_Java.player.PlayerClient_Java;
 import Client_Java.player.model.GameLobbyModel;
 import Client_Java.player.view.GameLobbyPageView;
 import Shared_Files.PlayerAccount;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URL;
 
 public class GameLobbyPageController {
     private final GameLobbyModel model;
@@ -29,9 +35,10 @@ public class GameLobbyPageController {
 
     private void initialize() {
         // Bind button actions
-        view.setActionEnterGameButton(this::onEnterGame);
-        view.setActionQuitButton(this::onQuit);
-        view.setActionRefreshLeaderboardButton(this::onRefreshLeaderboard);
+        view.setActionEnterGameButton(this::handleEnterGame);
+        view.setActionQuitButton(this::handleQuit);
+        view.setActionAboutButton(this:: handleAbout);
+        view.setActionRefreshLeaderboardButton(this::refreshLeaderboard);
 
         // Display player info
         view.getCurrentUserLB().setText(player.getUsername());
@@ -42,17 +49,56 @@ public class GameLobbyPageController {
         loadLeaderboard();
     }
 
-    private void onEnterGame(ActionEvent event) {
-        System.out.println("[Client] Enter Game button pressed (not yet implemented).");
-        // Later: connect to server, join lobby, etc.
+
+    private void handleEnterGame(ActionEvent event) {
+        System.out.println("[Client] Enter Game button pressed.");
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client_Java/player/res/fxml/WaitingRoomPage.fxml"));
+            Parent root = loader.load();
+
+            // TODO: Setup WaitingRoom controller
+
+            Scene waitingScene = new Scene(root);
+
+            try {
+                URL stylesheet = getClass().getClassLoader().getResource("Client_Java/player/res/css/styles.css");
+                if (stylesheet != null) {
+                    waitingScene.getStylesheets().add(stylesheet.toExternalForm());
+                    System.out.println("[Client] Waiting Room Stylesheet loaded.");
+                } else {
+                    System.out.println("[Client] No Waiting Room stylesheet found.");
+                }
+            } catch (Exception e) {
+                System.err.println("[Client ERROR] Error loading Waiting Room stylesheet: " + e.getMessage());
+            }
+
+            // Update the Stage
+            Platform.runLater(() -> {
+                Stage stage = PlayerClient_Java.getStage();
+                stage.setScene(waitingScene);
+                stage.setTitle("What's The Word - Waiting Room");
+                stage.show();
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("[Client ERROR] Failed to load WaitingRoomPage.fxml");
+        }
     }
 
-    private void onQuit(ActionEvent event) {
+
+    private void handleQuit(ActionEvent event) {
         System.out.println("[Client] Quit button pressed.");
         Platform.exit();
     }
 
-    private void onRefreshLeaderboard(ActionEvent event) {
+    private void handleAbout(ActionEvent event) {
+        // TODO: Implement about dialog
+        System.out.println("Showing about dialog");
+    }
+
+    private void refreshLeaderboard(ActionEvent event) {
         System.out.println("[Client] Refresh Leaderboard pressed.");
         loadLeaderboard();
     }
@@ -67,4 +113,6 @@ public class GameLobbyPageController {
             pane.getChildren().add(label);
         });
     }
+
+
 }
