@@ -1,11 +1,5 @@
 package Client_Java.util;
 
-import Client_Java.PlayerClient_Java;
-
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-
 public class SessionChecker {
 //    private final GameService gameService;
 //    private volatile boolean running = true;

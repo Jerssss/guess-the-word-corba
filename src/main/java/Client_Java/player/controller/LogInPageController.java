@@ -1,6 +1,6 @@
 package Client_Java.player.controller;
 
-import Client_Java.PlayerClient_Java;
+import Client_Java.player.PlayerClient_Java;
 import Client_Java.player.model.GameLobbyModel;
 import Client_Java.player.model.LogInPageModel;
 import Client_Java.player.view.GameLobbyPageView;
@@ -75,7 +75,7 @@ public class LogInPageController {
             Scene lobbyScene = new Scene(root);
 
             try {
-                URL stylesheet = getClass().getResource("src/main/java/Client_Java/player/res/css/styles.css");
+                URL stylesheet = getClass().getClassLoader().getResource("Client_Java/player/res/css/styles.css");
                 if (stylesheet != null) {
                     lobbyScene.getStylesheets().add(stylesheet.toExternalForm());
                 } else {

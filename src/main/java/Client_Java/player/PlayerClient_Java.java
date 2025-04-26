@@ -1,4 +1,4 @@
-package Client_Java;
+package Client_Java.player;
 
 import Client_Java.player.controller.LogInPageController;
 import Client_Java.player.model.LogInPageModel;

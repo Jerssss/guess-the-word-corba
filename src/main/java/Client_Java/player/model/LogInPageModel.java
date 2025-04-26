@@ -1,6 +1,6 @@
 package Client_Java.player.model;
 
-import Client_Java.PlayerClient_Java;
+import Client_Java.player.PlayerClient_Java;
 
 import IDL_Files.AuthenticationIDL.AuthenticationException;
 import IDL_Files.AuthenticationIDL.AlreadyLoggedInException;
