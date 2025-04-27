@@ -13,7 +13,7 @@
          <children>
             <ImageView fitHeight="385.0" fitWidth="800.0" layoutX="-141.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../images/confetti.png" />
+                  <Image url="@../../images/confetti.png" />
                </image>
             </ImageView>
             <Pane layoutX="27.0" layoutY="84.0" prefHeight="328.0" prefWidth="461.0" style="-fx-background-radius: 20; -fx-border-radius: 20;">

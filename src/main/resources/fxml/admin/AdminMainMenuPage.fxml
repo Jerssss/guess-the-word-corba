@@ -36,7 +36,7 @@
                         </Text>
                         <ImageView fitHeight="301.0" fitWidth="359.0" layoutX="257.0" layoutY="46.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/logo.png" />
+                              <Image url="@../../../java/Client_Java/admin/res/images/logo.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -53,7 +53,7 @@
                <children>
                   <ImageView fitHeight="75.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../images/logo.png" />
+                        <Image url="@../../../java/Client_Java/admin/res/images/logo.png" />
                      </image>
                   </ImageView>
                   <StackPane prefHeight="37.0" prefWidth="153.0">

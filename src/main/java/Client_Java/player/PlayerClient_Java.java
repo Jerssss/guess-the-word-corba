@@ -34,7 +34,7 @@ public class PlayerClient_Java extends Application {
 
     private void loadLoginGUI() {
         try {
-            File fxmlFile = new File("src/main/java/Client_Java/player/res/fxml/WWLogInPage.fxml");
+            File fxmlFile = new File("src/main/resources/fxml/player/WWLogInPage.fxml");
             FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
             Parent root = loader.load();
 
