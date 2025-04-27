@@ -54,7 +54,7 @@ public class GameLobbyPageController {
         System.out.println("[Client] Enter Game button pressed.");
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client_Java/player/res/fxml/WaitingRoomPage.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/WaitingRoomPage.fxml"));
             Parent root = loader.load();
 
             // TODO: Setup WaitingRoom controller
@@ -62,7 +62,7 @@ public class GameLobbyPageController {
             Scene waitingScene = new Scene(root);
 
             try {
-                URL stylesheet = getClass().getClassLoader().getResource("Client_Java/player/res/css/styles.css");
+                URL stylesheet = getClass().getClassLoader().getResource("css/styles.css");
                 if (stylesheet != null) {
                     waitingScene.getStylesheets().add(stylesheet.toExternalForm());
                     System.out.println("[Client] Waiting Room Stylesheet loaded.");

@@ -64,7 +64,7 @@ public class LogInPageController {
 
     private void redirectToGameLobby(PlayerAccount player) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client_Java/player/res/fxml/WWGameLobbyPage.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/WWGameLobbyPage.fxml"));
             Parent root = loader.load();
 
             GameLobbyPageView lobbyView = loader.getController();
@@ -75,7 +75,7 @@ public class LogInPageController {
             Scene lobbyScene = new Scene(root);
 
             try {
-                URL stylesheet = getClass().getClassLoader().getResource("Client_Java/player/res/css/styles.css");
+                URL stylesheet = getClass().getClassLoader().getResource("css/styles.css");
                 if (stylesheet != null) {
                     lobbyScene.getStylesheets().add(stylesheet.toExternalForm());
                 } else {
