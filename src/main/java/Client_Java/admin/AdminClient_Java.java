@@ -1,10 +1,11 @@
-package Client_Java.player;
+package Client_Java.admin;
 
-import Client_Java.player.controller.LogInPageController;
-import Client_Java.player.model.LogInPageModel;
+import Client_Java.admin.controller.AdminLogInPageController;
+import Client_Java.admin.model.AdminClientModel;
+import Client_Java.admin.model.AdminLogInPageModel;
+import Client_Java.admin.view.AdminLogInPageView;
 import Client_Java.player.model.PlayerClient_Model;
-import Client_Java.player.view.LoginPageView;
-import Shared_Files.PlayerAccount;
+import Shared_Files.AdminAccount;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,14 +15,14 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 
-public class PlayerClient_Java extends Application {
+public class AdminClient_Java extends Application {
     public static Stage APPLICATION_STAGE;
-    private static PlayerAccount loggedInPlayer; // Updated to PlayerAccount
-    private static long loggedInPlayerID;
+    private static AdminAccount loggidInAdmin;
+    private static long loggedInAdminID;
     private static String sessionToken;
 
     public static void main(String[] args) {
-        PlayerClient_Model clientModel = new PlayerClient_Model();
+        AdminClientModel clientModel = new AdminClientModel();
         clientModel.init(); // Initialize CORBA connections
         launch(args);
     }
@@ -34,17 +35,17 @@ public class PlayerClient_Java extends Application {
 
     private void loadLoginGUI() {
         try {
-            File fxmlFile = new File("src/main/resources/fxml/player/WWLogInPage.fxml");
+            File fxmlFile = new File("src/main/java/Client_Java/player/res/fxml/WWLogInPage.fxml");
             FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
             Parent root = loader.load();
 
-            LoginPageView loginPageView = loader.getController();
+            AdminLogInPageView loginPageView = loader.getController();
             if (loginPageView == null) {
-                System.err.println("[ERROR] LoginPageView is NULL after FXML load!");
+                System.err.println("[ERROR] AdminLoginPageView is NULL after FXML load!");
             } else {
-                System.out.println("[DEBUG] LoginPageView controller loaded successfully.");
-                LogInPageModel model = new LogInPageModel(PlayerClient_Model.authService);
-                new LogInPageController(model, loginPageView);
+                System.out.println("[DEBUG] AdminLoginPageView controller loaded successfully.");
+                AdminLogInPageModel model = new AdminLogInPageModel(PlayerClient_Model.authService);
+                new AdminLogInPageController(model, loginPageView);
             }
 
             Scene scene = new Scene(root);
@@ -72,20 +73,20 @@ public class PlayerClient_Java extends Application {
     }
 
     // Session management methods
-    public static void setLoggedInPlayer(PlayerAccount player) {
-        loggedInPlayer = player;
+    public static void setLoggidInAdmin(AdminAccount admin) {
+        loggidInAdmin = admin;
     }
 
-    public static PlayerAccount getLoggedInPlayer() {
-        return loggedInPlayer;
+    public static AdminAccount getLoggidInAdmin() {
+        return loggidInAdmin;
     }
 
-    public static void setLoggedInPlayerID(long id) {
-        loggedInPlayerID = id;
+    public static void setLoggedInAdminID(long id) {
+        loggedInAdminID = id;
     }
 
-    public static long getLoggedInPlayerID() {
-        return loggedInPlayerID;
+    public static long getLoggedInAdminID() {
+        return loggedInAdminID;
     }
 
     public static void setSessionToken(String token) {

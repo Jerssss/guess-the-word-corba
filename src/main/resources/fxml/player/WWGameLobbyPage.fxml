@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1300.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.GameLobbyPageView">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1300.0" stylesheets="@../../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.GameLobbyPageView">
    <children>
       <VBox layoutX="-8.0" prefHeight="760.0" prefWidth="658.0">
          <children>
@@ -34,21 +34,21 @@
             </VBox>
             <VBox alignment="CENTER_LEFT" prefHeight="307.0" prefWidth="658.0">
                <children>
-                  <Button fx:id="enterGameButton" mnemonicParsing="false" styleClass="lobby-enterGame-button" stylesheets="@../css/styles.css" text="Enter Game">
+                  <Button fx:id="enterGameButton" mnemonicParsing="false" styleClass="lobby-enterGame-button" stylesheets="@../../css/styles.css" text="Enter Game">
                      <font>
                         <Font name="Amatic SC Bold" size="60.0" />
                      </font>
                      <padding>
                         <Insets bottom="-5.0" left="-5.0" right="-5.0" top="-5.0" />
                      </padding></Button>
-                  <Button fx:id="aboutButton" mnemonicParsing="false" styleClass="lobby-about-button" stylesheets="@../css/styles.css" text="About">
+                  <Button fx:id="aboutButton" mnemonicParsing="false" styleClass="lobby-about-button" stylesheets="@../../css/styles.css" text="About">
                      <font>
                         <Font name="Amatic SC Bold" size="60.0" />
                      </font>
                      <padding>
                         <Insets bottom="-5.0" left="-5.0" right="-5.0" top="-5.0" />
                      </padding></Button>
-                  <Button fx:id="quitButton" mnemonicParsing="false" styleClass="lobby-quit-button" stylesheets="@../css/styles.css" text="Quit">
+                  <Button fx:id="quitButton" mnemonicParsing="false" styleClass="lobby-quit-button" stylesheets="@../../css/styles.css" text="Quit">
                      <font>
                         <Font name="Amatic SC Bold" size="60.0" />
                      </font>
@@ -70,7 +70,7 @@
                      <children>
                         <ImageView fitHeight="641.0" fitWidth="563.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/leaderboard.png" />
+                              <Image url="@../../images/leaderboard.png" />
                            </image>
                         </ImageView>
                         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
@@ -81,7 +81,7 @@
                                        <children>
                                           <ImageView fitHeight="38.0" fitWidth="38.0" layoutX="10.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
-                                                <Image url="@../images/refresh.png" />
+                                                <Image url="@../../images/refresh.png" />
                                              </image>
                                           </ImageView>
                                           <Button fx:id="refreshLeaderboardButton" layoutY="-2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="58.0" prefWidth="59.0" style="-fx-background-color: transparent;" />
@@ -117,7 +117,7 @@
                                     </Text>
                                  </children>
                               </HBox>
-                              <ScrollPane fx:id="leaderboardScrollPane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="355.0" prefWidth="430.0" styleClass="lobby-leaderboard-scrollpane" stylesheets="@../css/styles.css" translateY="-10.0">
+                              <ScrollPane fx:id="leaderboardScrollPane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="355.0" prefWidth="430.0" styleClass="lobby-leaderboard-scrollpane" stylesheets="@../../css/styles.css" translateY="-10.0">
                                  <content>
                                     <FlowPane fx:id="leaderboardsFlowPane" orientation="VERTICAL" prefHeight="377.0" prefWidth="415.0" />
                                  </content>

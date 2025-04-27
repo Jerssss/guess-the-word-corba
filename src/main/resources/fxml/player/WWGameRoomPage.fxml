@@ -63,37 +63,37 @@
                      <children>
                         <ImageView fx:id="catShadow" fitHeight="256.0" fitWidth="377.0" layoutX="63.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/cat/cat-outline.png" />
+                              <Image url="@../../images/cat/cat-outline.png" />
                            </image>
                         </ImageView>
                         <ImageView fx:id="catEyes" fitHeight="51.0" fitWidth="147.0" layoutX="168.0" layoutY="126.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/cat/eyes.png" />
+                              <Image url="@../../images/cat/eyes.png" />
                            </image>
                         </ImageView>
                         <ImageView fx:id="catLeftWhiskers" fitHeight="105.0" fitWidth="86.0" layoutX="63.0" layoutY="123.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/cat/left-whiskers.png" />
+                              <Image url="@../../images/cat/left-whiskers.png" />
                            </image>
                         </ImageView>
                         <ImageView fx:id="catRightWhiskers" fitHeight="85.0" fitWidth="96.0" layoutX="326.0" layoutY="139.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/cat/right-whiskers.png" />
+                              <Image url="@../../images/cat/right-whiskers.png" />
                            </image>
                         </ImageView>
                         <ImageView fx:id="catSnout" fitHeight="77.0" fitWidth="72.0" layoutX="190.0" layoutY="171.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/cat/snout.png" />
+                              <Image url="@../../images/cat/snout.png" />
                            </image>
                         </ImageView>
                         <ImageView fx:id="catTopHead" fitHeight="106.0" fitWidth="351.0" layoutX="64.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/cat/top-head.png" />
+                              <Image url="@../../images/cat/top-head.png" />
                            </image>
                         </ImageView>
                         <ImageView fx:id="catBottomHead" fitHeight="59.0" fitWidth="197.0" layoutX="124.0" layoutY="230.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/cat/bottom-head.png" />
+                              <Image url="@../../images/cat/bottom-head.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -388,7 +388,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -402,7 +402,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -416,7 +416,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -430,7 +430,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -444,7 +444,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -458,7 +458,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -472,7 +472,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -486,7 +486,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -500,7 +500,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -514,7 +514,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -528,7 +528,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -542,7 +542,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -556,7 +556,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -570,7 +570,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -584,7 +584,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -598,7 +598,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -612,7 +612,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -626,7 +626,7 @@
                               </Label>
                               <ImageView fitHeight="7.0" fitWidth="72.0" layoutX="8.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/line_blank.png" />
+                                    <Image url="@../../images/line_blank.png" />
                                  </image>
                               </ImageView>
                            </children>

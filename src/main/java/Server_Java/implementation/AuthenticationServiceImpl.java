@@ -86,7 +86,47 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
     @Override
     public String adminLogin(String username, String password, IntHolder adminID)
             throws AuthenticationException, AlreadyLoggedInException {
-        return "";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT admin_id, password, is_logged_in FROM admin WHERE username = ?")) {
+
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (!rs.next()) {
+                throw new AuthenticationException("Account does not exist.");
+            }
+
+            String dbPassword = rs.getString("password");
+            boolean isLoggedIn = rs.getBoolean("is_logged_in");
+            int dbAdminID = rs.getInt("admin_id");
+
+            if (!dbPassword.equals(password)) {
+                throw new AuthenticationException("Invalid password.");
+            }
+
+            if (isLoggedIn) {
+                // Force logout old session
+                forceAdminLogout(dbAdminID);
+                System.out.println("[SERVER] Force-Logged out previous session for user: " + username);
+            }
+
+            // Update login status
+            updateAdminLoginStatus(dbAdminID);
+            adminID.value = dbAdminID;
+
+            // Add to active clients list
+            activeClients.add(username);
+
+            System.out.println("[SERVER] LOGIN SUCCESS: " + username + " has logged in.");
+
+            // Return session token
+            return generateSessionToken(username);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new AuthenticationException("Database error: " + e.getMessage());
+        }
     }
 
     @Override
@@ -108,6 +148,24 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
              PreparedStatement stmt = conn.prepareStatement(
                      "UPDATE players SET is_logged_in = 1 WHERE player_id = ?")) {
             stmt.setInt(1, playerId);
+            stmt.executeUpdate();
+        }
+    }
+
+    private void forceAdminLogout(int adminId) throws SQLException {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE admin SET is_logged_in = 0 WHERE admin_id = ?")) {
+            stmt.setInt(1, adminId);
+            stmt.executeUpdate();
+        }
+    }
+
+    private void updateAdminLoginStatus(int adminId) throws SQLException {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE admin SET is_logged_in = 1 WHERE admin_id = ?")) {
+            stmt.setInt(1, adminId);
             stmt.executeUpdate();
         }
     }
