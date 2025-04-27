@@ -3,6 +3,7 @@ package Client_Java.player.controller;
 import Client_Java.player.PlayerClient_Java;
 import Client_Java.player.model.GameLobbyModel;
 import Client_Java.player.model.LogInPageModel;
+import Client_Java.player.model.PlayerClient_Model;
 import Client_Java.player.view.GameLobbyPageView;
 import Client_Java.player.view.LoginPageView;
 import Shared_Files.PlayerAccount;
@@ -31,7 +32,6 @@ public class LogInPageController {
         String username = view.getUsernameField().getText();
         String password = view.getPasswordField().getText();
 
-        // Validation
         if (username.isEmpty() || password.isEmpty()) {
             view.setPromptLabel("Username or password cannot be empty!");
             view.setPromptLabelVisible(true);
@@ -47,7 +47,17 @@ public class LogInPageController {
 
                 System.out.println("[Client] Logged In: " + PlayerClient_Java.getSessionToken());
 
-                // Redirect to Game Lobby after successful login
+                try {
+//                    PlayerClient_Model.authService.registerLoginCallback(
+//                            username,
+//                            new Server_Java.implementation.PlayerCallBackImpl()
+//                   );
+                    System.out.println("[Client] Registered callback for forced logout.");
+                } catch (Exception e) {
+                    System.err.println("[Client ERROR] Failed to register callback: " + e.getMessage());
+                    e.printStackTrace();
+                }
+
                 redirectToGameLobby(PlayerClient_Java.getLoggedInPlayer());
             } else {
                 view.setPromptLabel("Login Failed. Please try again!");
