@@ -11,13 +11,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AuthenticationServiceImpl extends AuthenticationServicePOA {
 
     private static final Set<String> activeClients = Collections.synchronizedSet(new HashSet<>());
+    private static final Map<Integer, String> sessionTokens = new ConcurrentHashMap<>();
 
     @Override
     public String login(String username, String password, IntHolder playerID)
@@ -44,7 +44,7 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
             if (isLoggedIn) {
                 // Force logout old session
                 forceLogout(dbPlayerID);
-                System.out.println("[SERVER] Force-Logged out previous session for user: " + username);
+                System.out.println("[SERVER] [FORCE LOGOUT] Previous session invalidated for playerID=" + dbPlayerID);
             }
 
             // Update login status
@@ -54,10 +54,10 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
             // Add to active clients list
             activeClients.add(username);
 
-            System.out.println("[SERVER] LOGIN SUCCESS: " + username + " has logged in.");
+            System.out.println("[SERVER] [LOGIN SUCCESS] " + username + " (ID=" + dbPlayerID + ") has logged in.");
 
-            // Return session token
-            return generateSessionToken(username);
+            // Return generated session token
+            return generateSessionToken(dbPlayerID);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -70,13 +70,15 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "UPDATE players SET is_logged_in = 0 WHERE player_id = ?")) {
+
             stmt.setInt(1, playerID);
             stmt.executeUpdate();
 
-            // Find username from ID (optional if you want to remove from active list)
-            // activeClients.remove(username);
+            // Remove session token
+            sessionTokens.remove(playerID);
 
-            System.out.println("[SERVER] LOGOUT SUCCESS for playerID: " + playerID);
+            System.out.println("[SERVER] [LOGOUT SUCCESS] for playerID=" + playerID);
+
         } catch (SQLException e) {
             e.printStackTrace();
             throw new NotLoggedInException("Database error: " + e.getMessage());
@@ -108,20 +110,15 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
             if (isLoggedIn) {
                 // Force logout old session
                 forceAdminLogout(dbAdminID);
-                System.out.println("[SERVER] Force-Logged out previous session for user: " + username);
+                System.out.println("[SERVER] [FORCE LOGOUT] Previous admin session invalidated for adminID=" + dbAdminID);
             }
 
-            // Update login status
             updateAdminLoginStatus(dbAdminID);
             adminID.value = dbAdminID;
 
-            // Add to active clients list
-            activeClients.add(username);
+            System.out.println("[SERVER] [ADMIN LOGIN SUCCESS] " + username + " (adminID=" + dbAdminID + ") logged in.");
 
-            System.out.println("[SERVER] LOGIN SUCCESS: " + username + " has logged in.");
-
-            // Return session token
-            return generateSessionToken(username);
+            return generateSessionToken(dbAdminID);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -131,13 +128,28 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
 
     @Override
     public void adminLogout(int adminID, String sessionToken) throws NotLoggedInException {
-        // Admin logout logic
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE admin SET is_logged_in = 0 WHERE admin_id = ?")) {
+
+            stmt.setInt(1, adminID);
+            stmt.executeUpdate();
+
+            sessionTokens.remove(adminID);
+
+            System.out.println("[SERVER] [ADMIN LOGOUT SUCCESS] for adminID=" + adminID);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new NotLoggedInException("Database error: " + e.getMessage());
+        }
     }
 
     private void forceLogout(int playerId) throws SQLException {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "UPDATE players SET is_logged_in = 0 WHERE player_id = ?")) {
+
             stmt.setInt(1, playerId);
             stmt.executeUpdate();
         }
@@ -147,6 +159,7 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "UPDATE players SET is_logged_in = 1 WHERE player_id = ?")) {
+
             stmt.setInt(1, playerId);
             stmt.executeUpdate();
         }
@@ -156,6 +169,7 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "UPDATE admin SET is_logged_in = 0 WHERE admin_id = ?")) {
+
             stmt.setInt(1, adminId);
             stmt.executeUpdate();
         }
@@ -165,12 +179,22 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "UPDATE admin SET is_logged_in = 1 WHERE admin_id = ?")) {
+
             stmt.setInt(1, adminId);
             stmt.executeUpdate();
         }
     }
 
-    private String generateSessionToken(String username) {
-        return username + "-" + System.currentTimeMillis();
+    private String generateSessionToken(int id) {
+        if (sessionTokens.containsKey(id)) {
+            System.out.println("[FORCE LOGOUT] Previous session invalidated for ID=" + id);
+            sessionTokens.remove(id);
+        }
+
+        String token = UUID.randomUUID().toString();
+        sessionTokens.put(id, token);
+
+        System.out.println("[SERVER] [SESSION TOKEN GENERATED] ID=" + id + ", Token=" + token);
+        return token;
     }
 }

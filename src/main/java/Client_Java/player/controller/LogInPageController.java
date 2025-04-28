@@ -3,6 +3,7 @@ package Client_Java.player.controller;
 import Client_Java.player.PlayerClient_Java;
 import Client_Java.player.model.GameLobbyModel;
 import Client_Java.player.model.LogInPageModel;
+import Client_Java.player.model.PlayerClient_Model;
 import Client_Java.player.view.GameLobbyPageView;
 import Client_Java.player.view.LoginPageView;
 import Shared_Files.PlayerAccount;
@@ -47,10 +48,10 @@ public class LogInPageController {
                 System.out.println("[Client] Logged In: " + PlayerClient_Java.getSessionToken());
 
                 try {
-//                    PlayerClient_Model.authService.registerLoginCallback(
+//                   PlayerClient_Model.authService.registerLoginCallback(
 //                            username,
 //                            new Server_Java.implementation.PlayerCallBackImpl()
-//                   );
+                   ;
                     System.out.println("[Client] Registered callback for forced logout.");
                 } catch (Exception e) {
                     System.err.println("[Client ERROR] Failed to register callback: " + e.getMessage());
