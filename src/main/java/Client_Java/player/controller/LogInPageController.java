@@ -3,7 +3,6 @@ package Client_Java.player.controller;
 import Client_Java.player.PlayerClient_Java;
 import Client_Java.player.model.GameLobbyModel;
 import Client_Java.player.model.LogInPageModel;
-import Client_Java.player.model.PlayerClient_Model;
 import Client_Java.player.view.GameLobbyPageView;
 import Client_Java.player.view.LoginPageView;
 import Shared_Files.PlayerAccount;
@@ -74,7 +73,7 @@ public class LogInPageController {
 
     private void redirectToGameLobby(PlayerAccount player) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/WWGameLobbyPage.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/GameLobbyPage.fxml"));
             Parent root = loader.load();
 
             GameLobbyPageView lobbyView = loader.getController();

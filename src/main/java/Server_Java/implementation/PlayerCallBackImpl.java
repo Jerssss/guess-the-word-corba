@@ -29,7 +29,7 @@ public class PlayerCallBackImpl extends PlayerCallBackServicePOA {
 
         Platform.runLater(() -> {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client_Java/player/res/fxml/WWLogInPage.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client_Java/player/res/fxml/LogInPage.fxml"));
                 Parent root = loader.load();
 
                 Scene loginScene = new Scene(root);

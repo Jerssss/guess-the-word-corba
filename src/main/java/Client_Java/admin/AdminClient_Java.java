@@ -35,7 +35,7 @@ public class AdminClient_Java extends Application {
 
     private void loadLoginGUI() {
         try {
-            File fxmlFile = new File("src/main/java/Client_Java/player/res/fxml/WWLogInPage.fxml");
+            File fxmlFile = new File("src/main/java/Client_Java/player/res/fxml/LogInPage.fxml");
             FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
             Parent root = loader.load();
 

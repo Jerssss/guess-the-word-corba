@@ -1,12 +1,12 @@
 .login-field {
-    -fx-border-color: black;
+    -fx-border-color: white;
     -fx-border-radius: 7px;
-    -fx-border-width: 2px;
+    -fx-border-width: 1px;
     -fx-background-radius: 7px;
 }
 
 .login-continue-button {
-    -fx-background-color: black;
+    -fx-background-color: white;
     -fx-max-width: 100px;
     -fx-background-radius: 7px;
     -fx-border-radius: 7px;
@@ -51,4 +51,16 @@
 
 .lobby-leaderboard-scrollpane .scroll-bar .thumb {
     -fx-background-color: black;
+}
+
+.glass-card {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-background-radius: 15;
+
+    -fx-border-width: 1;
+    -fx-border-radius: 15;
+    -fx-effect: 
+        dropshadow(gaussian, rgba(0,0,0,0.2), 50, 0.1, 0, 0),
+        innershadow(gaussian, rgba(255,255,255,0.4), 5, 0.1, 0, 0);
+
 }
