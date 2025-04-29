@@ -2,7 +2,7 @@ package Server_Java.implementation;
 
 import Server_Java.idls.PlayerCallBackIDL.GameCallBackServicePOA;
 
-public class GameCallbackImpl extends GameCallBackServicePOA {
+public class GameCallbackServiceImpl extends GameCallBackServicePOA {
     @Override
     public void notifyGameStart(String gameToken, String sessionToken) {
 

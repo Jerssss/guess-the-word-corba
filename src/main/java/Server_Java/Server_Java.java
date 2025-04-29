@@ -1,18 +1,18 @@
 package Server_Java;
 
-import IDL_Files.AdminIDL.AdminService;
-import IDL_Files.AdminIDL.AdminServiceHelper;
-import IDL_Files.AuthenticationIDL.AuthenticationService;
-import IDL_Files.AuthenticationIDL.AuthenticationServiceHelper;
-import IDL_Files.GameIDL.GameService;
-import IDL_Files.GameIDL.GameServiceHelper;
-import IDL_Files.PlayerCallBackIDL.PlayerCallBackService;
-import IDL_Files.PlayerCallBackIDL.PlayerCallBackServiceHelper;
-import Server_Java.implementation.AdminServiceImpl;
-import Server_Java.implementation.AuthenticationServiceImpl;
-import Server_Java.implementation.GameServiceImpl;
-import Server_Java.implementation.PlayerCallBackImpl;
 
+
+import Server_Java.idls.AdminIDL.AdminService;
+import Server_Java.idls.AdminIDL.AdminServiceHelper;
+import Server_Java.idls.AuthenticationIDL.AuthenticationService;
+import Server_Java.idls.AuthenticationIDL.AuthenticationServiceHelper;
+import Server_Java.idls.GameIDL.GameService;
+import Server_Java.idls.GameIDL.GameServiceHelper;
+import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
+import Server_Java.idls.PlayerCallBackIDL.GameCallBackServiceHelper;
+import Server_Java.idls.PlayerCallBackIDL.LoginCallbackService;
+import Server_Java.idls.PlayerCallBackIDL.LoginCallbackServiceHelper;
+import Server_Java.implementation.*;
 import org.omg.CORBA.ORB;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
@@ -39,19 +39,22 @@ public class Server_Java {
 
             // Initialize implementations
             AuthenticationServiceImpl authService = new AuthenticationServiceImpl();
-            PlayerCallBackImpl callbackService = new PlayerCallBackImpl();
+            GameCallbackServiceImpl gameCallbackService = new GameCallbackServiceImpl();
+            LoginCallBackServiceImpl loginCallBackService = new LoginCallBackServiceImpl();
             GameServiceImpl gameService = new GameServiceImpl();
             AdminServiceImpl adminService = new AdminServiceImpl();
 
             // Convert servants to CORBA object references
             org.omg.CORBA.Object authRef = rootpoa.servant_to_reference(authService);
-            org.omg.CORBA.Object callbackRef = rootpoa.servant_to_reference(callbackService);
+            org.omg.CORBA.Object gameCallbackRef = rootpoa.servant_to_reference(gameCallbackService);
+            org.omg.CORBA.Object loginCallbackRef = rootpoa.servant_to_reference(loginCallBackService);
             org.omg.CORBA.Object gameRef = rootpoa.servant_to_reference(gameService);
             org.omg.CORBA.Object adminRef = rootpoa.servant_to_reference(adminService);
 
             // Narrow to specific helper types
             AuthenticationService paRef = AuthenticationServiceHelper.narrow(authRef);
-            PlayerCallBackService cbRef = PlayerCallBackServiceHelper.narrow(callbackRef);
+            GameCallBackService gcbRef = GameCallBackServiceHelper.narrow(gameCallbackRef);
+            LoginCallbackService lcbRef = LoginCallbackServiceHelper.narrow(loginCallbackRef);
             GameService pgRef = GameServiceHelper.narrow(gameRef);
             AdminService asRef = AdminServiceHelper.narrow(adminRef);
 
@@ -60,7 +63,8 @@ public class Server_Java {
             NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
 
             ncRef.rebind(ncRef.to_name("AuthenticationService"), paRef);
-            ncRef.rebind(ncRef.to_name("PlayerCallBackService"), cbRef);
+            ncRef.rebind(ncRef.to_name("GameCallBackService"), gcbRef);
+            ncRef.rebind(ncRef.to_name("LoginCallBackService"), lcbRef);
             ncRef.rebind(ncRef.to_name("GameService"), pgRef);
             ncRef.rebind(ncRef.to_name("AdminService"), asRef);
 
