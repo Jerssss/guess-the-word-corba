@@ -4,32 +4,18 @@ module PlayerCallBackIDL {
 
     // Callback that the server uses to force‐logout a player
     interface LoginCallbackService {
-        void notifyForcedLogout(
-            in long   playerID,
-            in string sessionToken
-        ) raises(PlayerCallBackIDL::NotLoggedInException);
+        void notifyForcedLogout(in long playerID, in string sessionToken)
+            raises(PlayerCallBackIDL::NotLoggedInException);
     };
 
     // Callbacks for game events
     interface GameCallBackService {
-        void notifyGameStart(
-            in string gameToken,
-            in string sessionToken
-        );
-        void notifyRoundStart(
-            in string gameToken,
-            in long   roundNumber,
-            in string sessionToken
-        );
-        void notifyRoundEnd(
-            in string gameToken,
-            in string sessionToken,
-            in string result
-        );
-        void notifyGameEnd(
-            in string gameToken,
-            in string sessionToken,
-            in string result
-        );
+        void notifyGameStart(in string gameToken, in string sessionToken);
+
+        void notifyRoundStart(in string gameToken, in long roundNumber, in string sessionToken);
+
+        void notifyRoundEnd(in string gameToken, in string sessionToken, in string result);
+
+        void notifyGameEnd(in string gameToken, in string sessionToken, in string result);
     };
 };

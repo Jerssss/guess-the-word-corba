@@ -1,5 +1,5 @@
 // Admin.idl
-module AdminIDL{
+module AdminIDL {
 
     exception NotLoggedInException {};
     exception AccountExistsException {};

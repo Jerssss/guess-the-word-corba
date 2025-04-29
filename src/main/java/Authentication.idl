@@ -7,36 +7,19 @@ module AuthenticationIDL {
 
     interface AuthenticationService {
         // Player login: client hands us its callback servant
-        string login(
-            in string                          username,
-            in string                          password,
-            out   long                        playerID,
-            in    PlayerCallBackIDL::LoginCallbackService cb
-        )
-            raises(AuthenticationException,
-                   AlreadyLoggedInException);
+        string login(in string username, in string password, out long playerID, in PlayerCallBackIDL::LoginCallbackService cb)
+            raises(AuthenticationException, AlreadyLoggedInException);
 
         // Player logout using session token
-        void logout(
-            in long   playerID,
-            in string sessionToken
-        )
+        void logout(in long playerID, in string sessionToken)
             raises(AuthenticationIDL::NotLoggedInException);
 
         // Admin login (no callback needed)
-        string adminLogin(
-            in string username,
-            in string password,
-            out   long   adminID
-        )
-            raises(AuthenticationException,
-                   AlreadyLoggedInException);
+        string adminLogin(in string username, in string password, out long adminID)
+            raises(AuthenticationException, AlreadyLoggedInException);
 
         // Admin logout
-        void adminLogout(
-            in long   adminID,
-            in string sessionToken
-        )
+        void adminLogout(in long adminID, in string sessionToken)
             raises(AuthenticationIDL::NotLoggedInException);
     };
 };
