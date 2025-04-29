@@ -1,8 +1,9 @@
 package Server_Java.implementation;
 
-import IDL_Files.AdminIDL.*;
+import Server_Java.idls.AdminIDL.*;
 
 public class AdminServiceImpl extends AdminServicePOA {
+
     @Override
     public void createPlayer(String username, String password, String sessionToken, int adminID) throws AccountExistsException, NotLoggedInException {
 

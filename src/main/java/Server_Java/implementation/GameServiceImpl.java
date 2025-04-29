@@ -1,10 +1,13 @@
 package Server_Java.implementation;
 
-import IDL_Files.GameIDL.*;
+import Server_Java.idls.GameIDL.*;
+import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
+import org.omg.CORBA.StringHolder;
 
 public class GameServiceImpl extends GameServicePOA {
+
     @Override
-    public String getDisplayName(String username, String sessionToken) throws NotLoggedInException {
+    public String getDisplayName(int playerID, String sessionToken) throws NotLoggedInException {
         return "";
     }
 
@@ -14,17 +17,17 @@ public class GameServiceImpl extends GameServicePOA {
     }
 
     @Override
-    public String joinWaitingLobby(int playerID, String sessionToken) throws NotLoggedInException {
+    public void getSetting(String key, StringHolder value, String sessionToken) throws NotLoggedInException {
+
+    }
+
+    @Override
+    public String joinLobby(int playerID, String sessionToken) throws NotLoggedInException {
         return "";
     }
 
     @Override
-    public void registerCallBack(int playerID, String gameToken, String sessionToken) throws NotLoggedInException {
-
-    }
-
-    @Override
-    public String getWaitingLobbyStatus(String gameToken) throws NotLoggedInException, GameTimeOutException, NotEnoughPlayersException {
+    public String getLobbyStatus(String sessionToken) throws NotLoggedInException, GameTimeOutException, NotEnoughPlayersException {
         return "";
     }
 
@@ -39,7 +42,12 @@ public class GameServiceImpl extends GameServicePOA {
     }
 
     @Override
-    public int startRound(String gameToken, int playerID, String sessionToken) throws GameNotFoundException, NotLoggedInException {
+    public void registerCallBack(int playerID, String gameToken, String sessionToken, GameCallBackService cb) throws NotLoggedInException {
+
+    }
+
+    @Override
+    public int startRound(String gameToken, int roundNumber, int playerID, String sessionToken) throws GameNotFoundException, NotLoggedInException {
         return 0;
     }
 
@@ -51,16 +59,6 @@ public class GameServiceImpl extends GameServicePOA {
     @Override
     public int[] guessLetter(String gameToken, int playerID, String sessionToken, char letter) throws MaxAttemptsReachedException, GameNotFoundException, AlreadyGuessedLetterException, NotLoggedInException {
         return new int[0];
-    }
-
-    @Override
-    public int getRemainingWaitingTime(String gameToken, int playerID, String sessionToken) throws GameTimeOutException, NotLoggedInException {
-        return 0;
-    }
-
-    @Override
-    public int getRemainingRoundTime(String gameToken, int playerID, String sessionToken) throws GameTimeOutException, NotLoggedInException {
-        return 0;
     }
 
     @Override
