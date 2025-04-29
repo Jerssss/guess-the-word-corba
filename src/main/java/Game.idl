@@ -37,6 +37,9 @@ module GameIDL {
         string joinLobby(in long playerID, in string sessionToken)
             raises(NotLoggedInException);
 
+        void leaveLobby(in long   playerID,in string gameToken,in string sessionToken)
+            raises(NotLoggedInException);
+
         string getLobbyStatus(in string sessionToken)
             raises(NotLoggedInException, GameTimeOutException, NotEnoughPlayersException);
 

@@ -1,6 +1,7 @@
 
 package Client_Java.player.model;
 
+
 import Server_Java.idls.GameIDL.GameService;
 import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
 import org.omg.CORBA.StringHolder;
@@ -11,6 +12,13 @@ import org.omg.CORBA.StringHolder;
  */
 public class WaitingRoomModel {
     private final GameService gameService;
+    public void leaveLobby(int playerId, String gameToken, String sessionToken) {
+        try {
+            gameService.leaveLobby(playerId, gameToken, sessionToken);
+        } catch (Exception e) {
+            System.err.println("[WaitingRoomModel] leaveLobby failed: " + e.getMessage());
+        }
+    }
 
     public WaitingRoomModel(GameService gameService) {
         this.gameService = gameService;

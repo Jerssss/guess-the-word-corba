@@ -4,7 +4,6 @@ import Server_Java.database.DatabaseConnection;
 import Server_Java.idls.GameIDL.GameServicePOA;
 import Server_Java.idls.GameIDL.NotEnoughPlayersException;
 import Server_Java.idls.GameIDL.NotLoggedInException;
-import Server_Java.idls.GameIDL.GameTimeOutException;
 import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
 import org.omg.CORBA.StringHolder;
 
@@ -27,6 +26,8 @@ public class GameServiceImpl extends GameServicePOA {
     private static final Map<String, Lobby> lobbies = new ConcurrentHashMap<>();
     // Map sessionToken to gameToken
     private static final Map<String, String> sessionToGame = new ConcurrentHashMap<>();
+    // NEW: map sessionToken → callback stub
+    private static final Map<String, GameCallBackService> sessionToCallback = new ConcurrentHashMap<>();
 
     // Minimum players to start (could fetch from settings dynamically)
     private static final int DEFAULT_MIN_PLAYERS = 2;
@@ -39,28 +40,96 @@ public class GameServiceImpl extends GameServicePOA {
     }
 
     @Override
-    public String joinLobby(int playerID, String sessionToken) throws NotLoggedInException {
+    public synchronized String joinLobby(int playerID, String sessionToken)
+            throws NotLoggedInException
+    {
         if (sessionToken == null) throw new NotLoggedInException();
-        // Create or reuse a lobby
-        String gameToken = sessionToGame.computeIfAbsent(sessionToken, st -> {
-            String newToken = UUID.randomUUID().toString();
-            lobbies.put(newToken, new Lobby(newToken));
-            return newToken;
-        });
-        Lobby lobby = lobbies.get(gameToken);
-        boolean added = false;
-        if (!lobby.players.contains(playerID)) {
-            lobby.players.add(playerID);
-            added = true;
+
+        // 1) Already joined?
+        if (sessionToGame.containsKey(sessionToken)) {
+            System.out.println("[GameService DEBUG] joinLobby: player=" + playerID +
+                    " already in lobby=" + sessionToGame.get(sessionToken) +
+                    " (count=" + lobbies.get(sessionToGame.get(sessionToken)).players.size() + ")");
+            debugPrintAllLobbies("joinLobby (already in)");
+            return sessionToGame.get(sessionToken);
         }
-        // Debug: print online vs lobby vs in-game counts
-        int onlineCount = sessionToGame.size();
-        int totalLobbyPlayers = lobbies.values().stream().mapToInt(l -> l.players.size()).sum();
-        int inGameCount = onlineCount - totalLobbyPlayers;
-        System.out.println("[GameService DEBUG] joinLobby: added=" + added + ", online=" + onlineCount +
-                ", inLobby=" + totalLobbyPlayers + ", inGame=" + inGameCount);
-        return gameToken;
+
+        // 2) Find or create a waiting lobby
+        Lobby target = null;
+        for (Lobby l : lobbies.values()) {
+            if (l.players.size() < DEFAULT_MIN_PLAYERS) {
+                target = l;
+                break;
+            }
+        }
+        if (target == null) {
+            target = new Lobby(UUID.randomUUID().toString());
+            lobbies.put(target.token, target);
+            System.out.println("[GameService DEBUG] Created new lobby: " + target.token);
+        }
+
+        // 3) Add player if not already present
+        if (!target.players.contains(playerID)) {
+            target.players.add(playerID);
+            sessionToGame.put(sessionToken, target.token);
+            System.out.println("[GameService DEBUG] joinLobby: player=" + playerID +
+                    " joined lobby=" + target.token +
+                    " (count=" + target.players.size() + ")");
+        } else {
+            System.out.println("[GameService DEBUG] joinLobby: player=" + playerID +
+                    " was already in lobby=" + target.token +
+                    " (count=" + target.players.size() + ")");
+        }
+
+        debugPrintAllLobbies("joinLobby");
+        return target.token;
     }
+
+    /** Helper to dump all lobbies & their player counts */
+    private void debugPrintAllLobbies(String context) {
+        System.out.println(">>> [GameService DEBUG][" + context + "] Current lobbies:");
+        for (Lobby l : lobbies.values()) {
+            System.out.println("    - " + l.token + ": players=" +
+                    l.players + " (count=" + l.players.size() + ")");
+        }
+        if (lobbies.isEmpty()) {
+            System.out.println("    (none)");
+        }
+    }
+
+    @Override
+    public synchronized void leaveLobby(int playerID, String gameToken, String sessionToken)
+            throws NotLoggedInException
+    {
+        if (sessionToken == null || !sessionToGame.containsKey(sessionToken))
+            throw new NotLoggedInException();
+
+        Lobby lobby = lobbies.get(gameToken);
+        if (lobby != null) {
+            // Remove *every* occurrence of this player
+            boolean removedAny = lobby.players.removeIf(pid -> pid == playerID);
+
+            // Remove their callback stub (if any)
+            GameCallBackService cb = sessionToCallback.remove(sessionToken);
+            if (cb != null) lobby.callbacks.remove(cb);
+
+            System.out.println("[GameService DEBUG] leaveLobby: player=" + playerID +
+                    " left lobby=" + gameToken +
+                    " removedAny=" + removedAny +
+                    " (new count=" + lobby.players.size() + ")");
+
+            // If nobody left, destroy the lobby
+            if (lobby.players.isEmpty()) {
+                lobbies.remove(gameToken);
+                System.out.println("[GameService DEBUG] Lobby " + gameToken + " is now empty → removed");
+            }
+        }
+
+        // Finally drop the session→lobby mapping
+        sessionToGame.remove(sessionToken);
+        debugPrintAllLobbies("leaveLobby");
+    }
+
 
     @Override
     public int getNumberOfPlayersJoined(int playerID, String sessionToken) throws NotLoggedInException {
@@ -72,14 +141,19 @@ public class GameServiceImpl extends GameServicePOA {
         return size;
     }
 
+
     @Override
-    public void registerCallBack(int playerID, String gameToken, String sessionToken, GameCallBackService cb)
-            throws NotLoggedInException {
+    public synchronized void registerCallBack(
+            int playerID,
+            String gameToken,
+            String sessionToken,
+            GameCallBackService cb
+    ) throws NotLoggedInException {
         Lobby lobby = lobbies.get(gameToken);
         if (lobby == null) throw new NotLoggedInException();
+
         lobby.callbacks.add(cb);
-        System.out.println("[GameService DEBUG] registerCallBack: playerID=" + playerID + ", gameToken=" + gameToken +
-                ", callbacksCount=" + lobby.callbacks.size());
+        sessionToCallback.put(sessionToken, cb);
     }
 
     @Override
@@ -116,6 +190,8 @@ public class GameServiceImpl extends GameServicePOA {
                 ", inLobby=" + totalLobbyPlayers + ", inGame(after)=" + inGameCount);
         return lobby.players.size();
     }
+
+
 
     // Existing setting fetch remains unchanged
     @Override

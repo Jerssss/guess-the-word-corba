@@ -30,6 +30,7 @@
         private ScheduledExecutorService scheduler;
         private int countdown;
         private int minimumPlayers;
+        private int initialCountdown;
 
         @FXML private Label countdownLabel;
         @FXML private Label playerCountLabel;
@@ -101,10 +102,15 @@
         }
 
         private void handleCancel(ActionEvent event) {
+            // stop the scheduler
             if (scheduler != null && !scheduler.isShutdown()) {
                 scheduler.shutdownNow();
             }
-            // Leave lobby and return to lobby screen
+            // tell the server we're leaving
+            model.leaveLobby(playerId, gameToken, sessionToken);
+
+            // go back to lobby screen
             PlayerClient_Java.navigateToLobby();
         }
+
     }
