@@ -1,17 +1,42 @@
-
 package Client_Java.player.model;
-
 
 import Server_Java.idls.GameIDL.GameService;
 import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
+import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackService;
 import org.omg.CORBA.StringHolder;
 
 /**
- * Model for waiting room: handles joining the lobby, fetching settings,
- * polling player counts, and registering callbacks.
+ * Model for the waiting room: 
+ * - joins and leaves the lobby
+ * - fetches settings
+ * - queries player counts
+ * - registers both game-start and waiting-room callbacks
  */
 public class WaitingRoomModel {
     private final GameService gameService;
+
+    /**
+     * @param gameService the CORBA stub for GameService
+     */
+    public WaitingRoomModel(GameService gameService) {
+        this.gameService = gameService;
+    }
+
+    /**
+     * Joins the game lobby on the server and returns a gameToken.
+     */
+    public String joinLobby(int playerId, String sessionToken) {
+        try {
+            return gameService.joinLobby(playerId, sessionToken);
+        } catch (Exception e) {
+            System.err.println("[WaitingRoomModel] joinLobby failed: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Leaves the waiting lobby (called on Cancel).
+     */
     public void leaveLobby(int playerId, String gameToken, String sessionToken) {
         try {
             gameService.leaveLobby(playerId, gameToken, sessionToken);
@@ -20,37 +45,43 @@ public class WaitingRoomModel {
         }
     }
 
-    public WaitingRoomModel(GameService gameService) {
-        this.gameService = gameService;
-    }
-
     /**
-     * Joins the game lobby on the server and returns a game token.
+     * Registers the client's waiting-room callback servant with the server.
      */
-    public String joinLobby(int playerId, String sessionToken) {
+    public void registerWaitingRoomCallback(
+            int playerId,
+            String gameToken,
+            String sessionToken,
+            WaitingRoomGameCallbackService cb
+    ) {
         try {
-            return gameService.joinLobby(playerId, sessionToken);
+            gameService.registerWaitingRoomCallback(
+                    playerId, gameToken, sessionToken, cb
+            );
         } catch (Exception e) {
-            System.err.println("[WaitingRoomModel] Error joining lobby: " + e.getMessage());
-            return null;
+            System.err.println("[WaitingRoomModel] registerWaitingRoomCallback failed: "
+                    + e.getMessage());
         }
     }
 
     /**
-     * Registers a callback with the server to receive game start notifications.
+     * Registers the client's game-start callback servant with the server.
      */
-    public void registerCallback(int playerId, String gameToken,
-                                 String sessionToken,
-                                 GameCallBackService callbackStub) {
+    public void registerCallback(
+            int playerId,
+            String gameToken,
+            String sessionToken,
+            GameCallBackService callbackStub
+    ) {
         try {
             gameService.registerCallBack(playerId, gameToken, sessionToken, callbackStub);
         } catch (Exception e) {
-            System.err.println("[WaitingRoomModel] Error registering callback: " + e.getMessage());
+            System.err.println("[WaitingRoomModel] registerCallback failed: " + e.getMessage());
         }
     }
 
     /**
-     * Retrieves a named integer setting from the server.
+     * Retrieves a named integer setting (e.g. "minimum_players") from the server.
      */
     public int getSetting(String key, String sessionToken) {
         StringHolder holder = new StringHolder();
@@ -58,19 +89,21 @@ public class WaitingRoomModel {
             gameService.getSetting(key, holder, sessionToken);
             return Integer.parseInt(holder.value);
         } catch (Exception e) {
-            System.err.println("[WaitingRoomModel] Error fetching setting '" + key + "': " + e.getMessage());
+            System.err.println("[WaitingRoomModel] getSetting('" + key + "') failed: "
+                    + e.getMessage());
             return 0;
         }
     }
 
     /**
-     * Retrieves the current number of players joined from the server.
+     * Retrieves the current number of players in the lobby.
      */
     public int getNumberOfPlayersJoined(int playerId, String sessionToken) {
         try {
-            return gameService.getNumberOfPlayersJoined(playerId, sessionToken);
+            return (int)gameService.getNumberOfPlayersJoined(playerId, sessionToken);
         } catch (Exception e) {
-            System.err.println("[WaitingRoomModel] Error fetching joined count: " + e.getMessage());
+            System.err.println("[WaitingRoomModel] getNumberOfPlayersJoined failed: "
+                    + e.getMessage());
             return 0;
         }
     }

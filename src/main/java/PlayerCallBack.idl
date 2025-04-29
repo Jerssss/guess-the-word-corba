@@ -8,6 +8,32 @@ module PlayerCallBackIDL {
             raises(PlayerCallBackIDL::NotLoggedInException);
     };
 
+
+    interface WaitingRoomGameCallbackService {
+        // A new player has joined the lobby; totalPlayers is the current count
+        void notifyPlayerJoined(
+            in string gameToken,
+            in long   totalPlayers,
+            in string sessionToken
+        )
+        raises(PlayerCallBackIDL::NotLoggedInException);
+
+        // Time to start the synchronized countdown
+        void notifyCountdownStart(
+            in string gameToken,
+            in long   countdownSeconds,
+            in string sessionToken
+        )
+        raises(PlayerCallBackIDL::NotLoggedInException);
+
+        // Countdown aborted/reset because someone left
+        void notifyCountdownReset(
+            in string gameToken,
+            in string sessionToken
+        )
+        raises(PlayerCallBackIDL::NotLoggedInException);
+    };
+
     // Callbacks for game events
     interface GameCallBackService {
         void notifyGameStart(in string gameToken, in string sessionToken);

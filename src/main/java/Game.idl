@@ -40,6 +40,10 @@ module GameIDL {
         void leaveLobby(in long   playerID,in string gameToken,in string sessionToken)
             raises(NotLoggedInException);
 
+        // ─── Waiting-room callback registration ─────────────────────────
+        void registerWaitingRoomCallback(in long   playerID,in string gameToken, in string sessionToken,in PlayerCallBackIDL::WaitingRoomGameCallbackService cb)
+            raises(NotLoggedInException);
+
         string getLobbyStatus(in string sessionToken)
             raises(NotLoggedInException, GameTimeOutException, NotEnoughPlayersException);
 

@@ -1,116 +1,143 @@
-    package Client_Java.player.controller;
+package Client_Java.player.controller;
 
-    import Client_Java.player.PlayerClient_Model;
-    import Client_Java.player.PlayerClient_Java;
-    import Client_Java.player.model.WaitingRoomModel;
-    import Client_Java.player.view.WaitingRoomView;
-    import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
+import Client_Java.player.PlayerClient_Model;
+import Client_Java.player.PlayerClient_Java;
+import Client_Java.player.model.WaitingRoomModel;
+import Client_Java.player.view.WaitingRoomView;
 
-    import Server_Java.implementation.GameCallbackServiceImpl;
-    import javafx.application.Platform;
-    import javafx.event.ActionEvent;
-    import javafx.fxml.FXML;
-    import javafx.scene.control.Label;
+import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackService;
+import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
 
-    import java.util.concurrent.Executors;
-    import java.util.concurrent.ScheduledExecutorService;
-    import java.util.concurrent.TimeUnit;
+import Server_Java.implementation.GameCallbackServiceImpl;
 
-    /**
-     * Controller for the waiting room: joins lobby, registers game callback,
-     * waits until minimum players then counts down.
-     */
-    public class WaitingRoomController {
-        private final WaitingRoomModel model;
-        private final WaitingRoomView view;
-        private final int playerId;
-        private final String sessionToken;
-        private String gameToken;
+import Server_Java.implementation.WaitingRoomCallbackServiceImpl;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 
-        private ScheduledExecutorService scheduler;
-        private int countdown;
-        private int minimumPlayers;
-        private int initialCountdown;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-        @FXML private Label countdownLabel;
-        @FXML private Label playerCountLabel;
+/**
+ * Controller for the waiting room: joins lobby, registers both waiting-room
+ * and game-start callbacks, and drives the UI in response to server pushes.
+ */
+public class WaitingRoomController {
+    private final WaitingRoomModel model;
+    private final WaitingRoomView view;
+    private final int playerId;
+    private final String sessionToken;
+    private String gameToken;
 
-        public WaitingRoomController(WaitingRoomModel model, WaitingRoomView view,
-                                     int playerId, String sessionToken) {
-            this.model = model;
-            this.view = view;
-            this.playerId = playerId;
-            this.sessionToken = sessionToken;
-            initialize();
+    private ScheduledExecutorService scheduler;
+
+    private int countdown;
+    private final int initialCountdown;
+    private final int minimumPlayers;
+
+    @FXML private Label countdownLabel;
+    @FXML private Label playerCountLabel;
+
+    public WaitingRoomController(
+            WaitingRoomModel model,
+            WaitingRoomView view,
+            int playerId,
+            String sessionToken
+    ) {
+        this.model        = model;
+        this.view         = view;
+        this.playerId     = playerId;
+        this.sessionToken = sessionToken;
+
+        // fetch server-configured settings up front
+        this.initialCountdown = model.getSetting("countdown_to_game_start", sessionToken);
+        this.minimumPlayers   = model.getSetting("minimum_players",       sessionToken);
+        this.countdown        = initialCountdown;
+
+        initialize();
+    }
+
+    private void initialize() {
+        // 1) join the lobby
+        gameToken = model.joinLobby(playerId, sessionToken);
+        if (gameToken == null) {
+            System.err.println("[WaitingRoom] Failed to join lobby.");
+            return;
         }
 
-        private void initialize() {
-            // 1. Join the lobby and get a game token
-            this.gameToken = model.joinLobby(playerId, sessionToken);
-            if (gameToken == null) {
-                System.err.println("[WaitingRoom] Failed to join lobby.");
-                return;
-            }
+        // 2) initialize UI
+        int joined = model.getNumberOfPlayersJoined(playerId, sessionToken);
+        view.setWaitingPlayersCount(joined);
+        view.setRemainingTime(countdown);
+        view.setActionCancelButton(this::handleCancel);
 
-            // 2. Register game callback for start notifications
-            GameCallbackServiceImpl callbackImpl = new GameCallbackServiceImpl();
-            GameCallBackService callbackStub = PlayerClient_Model.registerGameCallback(callbackImpl);
-            model.registerCallback(playerId, gameToken, sessionToken, callbackStub);
+        // 3) register waiting-room callback
+        WaitingRoomCallbackServiceImpl waitServant =
+                new WaitingRoomCallbackServiceImpl(this);
+        WaitingRoomGameCallbackService waitStub =
+                PlayerClient_Model.registerWaitingRoomCallback(waitServant);
+        System.out.println("[WaitingRoomController] registering waiting callback for session=" + sessionToken);
+        model.registerWaitingRoomCallback(
+                playerId, gameToken, sessionToken, waitStub
+        );
 
-            // 3. Fetch settings
-            countdown = model.getSetting("countdown_to_game_start", sessionToken);
-            minimumPlayers = model.getSetting("minimum_players", sessionToken);
+        // 4) register game-start callback
+        GameCallbackServiceImpl gameServant = new GameCallbackServiceImpl();
+        GameCallBackService gameStub =
+                PlayerClient_Model.registerGameCallback(gameServant);
+        System.out.println("[WaitingRoomController] registering game-start callback for session=" + sessionToken);
+        model.registerCallback(
+                playerId, gameToken, sessionToken, gameStub
+        );
+    }
 
-            // 4. Initialize UI
-            view.setWaitingPlayersCount(0);
-            view.setRemainingTime(countdown);
-            view.setActionCancelButton(this::handleCancel);
+    // --- Methods invoked by the WaitingRoomCallbackServiceImpl on the FX thread ---
 
-            // 5. Start polling until minimum players joined
-            scheduler = Executors.newSingleThreadScheduledExecutor();
-            scheduler.scheduleAtFixedRate(this::pollJoin, 1, 1, TimeUnit.SECONDS);
+    public void onPlayerCountUpdate(int totalPlayers) {
+        view.setWaitingPlayersCount(totalPlayers);
+    }
+
+    public void onCountdownStart(int seconds) {
+        this.countdown = seconds;
+        view.setRemainingTime(seconds);
+
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdownNow();
         }
 
-        private void pollJoin() {
-            int joined = model.getNumberOfPlayersJoined(playerId, sessionToken);
-            Platform.runLater(() -> view.setWaitingPlayersCount(joined));
-
-            if (joined >= minimumPlayers) {
-                scheduler.shutdownNow();
-                // Start countdown phase
-                scheduler = Executors.newSingleThreadScheduledExecutor();
-                scheduler.scheduleAtFixedRate(this::pollCountdown, 1, 1, TimeUnit.SECONDS);
-            }
-        }
-
-        private void pollCountdown() {
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(() -> {
             countdown--;
             Platform.runLater(() -> view.setRemainingTime(countdown));
-
             if (countdown <= 0) {
                 scheduler.shutdownNow();
                 onReadyToStart();
             }
-        }
-
-        /**
-         * Called when countdown finishes or callback triggers game start.
-         */
-        private void onReadyToStart() {
-            System.out.println("[WaitingRoom] Game starting now.");
-            // TODO: Transition to actual game view
-        }
-
-        private void handleCancel(ActionEvent event) {
-            // stop the scheduler
-            if (scheduler != null && !scheduler.isShutdown()) {
-                scheduler.shutdownNow();
-            }
-            // tell the server we're leaving
-            model.leaveLobby(playerId, gameToken, sessionToken);
-
-            // go back to lobby screen
-            PlayerClient_Java.navigateToLobby();
-        }
-
+        }, 1, 1, TimeUnit.SECONDS);
     }
+
+    public void onCountdownReset() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdownNow();
+        }
+        countdown = initialCountdown;
+        view.setRemainingTime(countdown);
+    }
+
+    public void onReadyToStart() {
+        System.out.println("[WaitingRoom] Game starting now.");
+        // TODO: transition to the actual game scene / controller
+    }
+
+    // --- User action handlers ---
+
+    private void handleCancel(ActionEvent event) {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdownNow();
+        }
+        model.leaveLobby(playerId, gameToken, sessionToken);
+        PlayerClient_Java.navigateToLobby();
+    }
+}

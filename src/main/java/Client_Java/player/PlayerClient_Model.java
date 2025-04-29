@@ -1,11 +1,22 @@
 package Client_Java.player;
 
+import Server_Java.idls.AuthenticationIDL.AuthenticationService;
+import Server_Java.idls.AuthenticationIDL.AuthenticationServiceHelper;
+import Server_Java.idls.GameIDL.GameService;
+
+import Server_Java.idls.GameIDL.GameServiceHelper;
 import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
 import Server_Java.idls.PlayerCallBackIDL.GameCallBackServiceHelper;
 import Server_Java.idls.PlayerCallBackIDL.LoginCallbackService;
 import Server_Java.idls.PlayerCallBackIDL.LoginCallbackServiceHelper;
+
+// NEW imports for waiting-room callback
+import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackService;
+import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackServiceHelper;
+
 import Server_Java.implementation.GameCallbackServiceImpl;
 import Server_Java.implementation.LoginCallBackServiceImpl;
+import Server_Java.implementation.WaitingRoomCallbackServiceImpl;
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
@@ -14,9 +25,9 @@ import org.omg.PortableServer.POAHelper;
  * Handles ORB initialization and callback registration for client.
  */
 public class PlayerClient_Model {
-    public static Server_Java.idls.AuthenticationIDL.AuthenticationService authService;
-    public static Server_Java.idls.GameIDL.GameService gameService;
-    public static Server_Java.idls.PlayerCallBackIDL.GameCallBackService gameCallbackService;
+    public static AuthenticationService authService;
+    public static GameService gameService;
+    public static GameCallBackService gameCallbackService;
 
     // Keep ORB and POA references for callback registration
     private static ORB orb;
@@ -41,11 +52,11 @@ public class PlayerClient_Model {
                     org.omg.CosNaming.NamingContextExtHelper.narrow(objRef);
 
             // Narrow service references
-            authService = Server_Java.idls.AuthenticationIDL.AuthenticationServiceHelper
+            authService = AuthenticationServiceHelper
                     .narrow(ncRef.resolve_str("AuthenticationService"));
-            gameService = Server_Java.idls.GameIDL.GameServiceHelper
+            gameService = GameServiceHelper
                     .narrow(ncRef.resolve_str("GameService"));
-            gameCallbackService = Server_Java.idls.PlayerCallBackIDL.GameCallBackServiceHelper
+            gameCallbackService = GameCallBackServiceHelper
                     .narrow(ncRef.resolve_str("GameCallBackService"));
 
             System.out.println("[Client] CORBA Services Initialized Successfully!");
@@ -78,6 +89,21 @@ public class PlayerClient_Model {
             return GameCallBackServiceHelper.narrow(ref);
         } catch (Exception e) {
             System.err.println("[Client ERROR] Failed to register game callback: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * NEW: Registers the given WaitingRoom callback servant with the ORB and returns its stub.
+     */
+    public static WaitingRoomGameCallbackService registerWaitingRoomCallback(WaitingRoomCallbackServiceImpl callbackImpl)
+  {
+        try {
+            org.omg.CORBA.Object ref = rootPOA.servant_to_reference(callbackImpl);
+            return WaitingRoomGameCallbackServiceHelper.narrow(ref);
+        } catch (Exception e) {
+            System.err.println("[Client ERROR] Failed to register waiting‐room callback: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
