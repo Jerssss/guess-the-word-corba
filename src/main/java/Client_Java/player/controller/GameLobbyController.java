@@ -1,8 +1,12 @@
 package Client_Java.player.controller;
 
 import Client_Java.player.PlayerClient_Java;
+import Client_Java.player.PlayerClient_Model;
 import Client_Java.player.model.GameLobbyModel;
+import Client_Java.player.model.WaitingRoomModel;
 import Client_Java.player.view.GameLobbyView;
+import Client_Java.player.view.WaitingRoomView;
+import Client_Java.player.controller.WaitingRoomController;
 import Shared_Files.PlayerAccount;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -16,6 +20,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * Controller for the game lobby screen.
+ */
 public class GameLobbyController {
     private final GameLobbyModel model;
     private final GameLobbyView view;
@@ -23,7 +30,8 @@ public class GameLobbyController {
     private final int gameId;
     private final String sessionToken;
 
-    public GameLobbyController(GameLobbyModel model, GameLobbyView view, PlayerAccount player, int gameId, String sessionToken) {
+    public GameLobbyController(GameLobbyModel model, GameLobbyView view,
+                               PlayerAccount player, int gameId, String sessionToken) {
         this.model = model;
         this.view = view;
         this.player = player;
@@ -37,43 +45,40 @@ public class GameLobbyController {
         // Bind button actions
         view.setActionEnterGameButton(this::handleEnterGame);
         view.setActionQuitButton(this::handleQuit);
-        view.setActionAboutButton(this:: handleAbout);
+        view.setActionAboutButton(this::handleAbout);
         view.setActionRefreshLeaderboardButton(this::refreshLeaderboard);
-
-        // Display player info
-//        view.getCurrentUserLB().setText(player.getUsername());
-  //      view.getPlayerNameLabelLB().setText(player.getUsername());
-  //      view.getCurrentUserPointsLB().setText(Integer.toString(player.getGame_wins())); // Temporary
 
         // Initial Leaderboard Load
         loadLeaderboard();
     }
 
-
     private void handleEnterGame(ActionEvent event) {
         System.out.println("[Client] Enter Game button pressed.");
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/WaitingRoomPage.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/player/WaitingRoomPage.fxml"));
             Parent root = loader.load();
 
-            // TODO: Setup WaitingRoom controller
+            // Setup WaitingRoom MVC
+            WaitingRoomView waitingView = loader.getController();
+            WaitingRoomModel waitingModel = new WaitingRoomModel(
+                    PlayerClient_Model.gameService);
+            // Assume PlayerAccount has getPlayerId(), else use PlayerClient_Java.getLoggedInPlayerID()
+            int playerId = player.getPlayerId();
+            new WaitingRoomController(waitingModel, waitingView,
+                    playerId, sessionToken);
 
             Scene waitingScene = new Scene(root);
-
-            try {
-                URL stylesheet = getClass().getClassLoader().getResource("css/styles.css");
-                if (stylesheet != null) {
-                    waitingScene.getStylesheets().add(stylesheet.toExternalForm());
-                    System.out.println("[Client] Waiting Room Stylesheet loaded.");
-                } else {
-                    System.out.println("[Client] No Waiting Room stylesheet found.");
-                }
-            } catch (Exception e) {
-                System.err.println("[Client ERROR] Error loading Waiting Room stylesheet: " + e.getMessage());
+            URL stylesheet = getClass().getClassLoader()
+                    .getResource("css/styles.css");
+            if (stylesheet != null) {
+                waitingScene.getStylesheets().add(stylesheet.toExternalForm());
+                System.out.println("[Client] Waiting Room Stylesheet loaded.");
+            } else {
+                System.out.println("[Client] No Waiting Room stylesheet found.");
             }
 
-            // Update the Stage
             Platform.runLater(() -> {
                 Stage stage = PlayerClient_Java.getStage();
                 stage.setScene(waitingScene);
@@ -82,11 +87,10 @@ public class GameLobbyController {
             });
 
         } catch (IOException e) {
+            System.err.println("[Client ERROR] Failed to load WaitingRoomPage.fxml: " + e.getMessage());
             e.printStackTrace();
-            System.err.println("[Client ERROR] Failed to load WaitingRoomPage.fxml");
         }
     }
-
 
     private void handleQuit(ActionEvent event) {
         System.out.println("[Client] Quit button pressed.");
@@ -94,8 +98,8 @@ public class GameLobbyController {
     }
 
     private void handleAbout(ActionEvent event) {
-        // TODO: Implement about dialog
         System.out.println("Showing about dialog");
+        // TODO: Implement about dialog
     }
 
     private void refreshLeaderboard(ActionEvent event) {
@@ -105,7 +109,7 @@ public class GameLobbyController {
 
     private void loadLeaderboard() {
         FlowPane pane = view.getLeaderboardsFlowPane();
-        pane.getChildren().clear(); // Clear old entries
+        pane.getChildren().clear();
 
         model.fetchLeaderboard().forEach(entry -> {
             Label label = new Label(entry);
@@ -113,6 +117,4 @@ public class GameLobbyController {
             pane.getChildren().add(label);
         });
     }
-
-
 }

@@ -7,7 +7,7 @@ import java.util.Arrays;
 public class GameLobbyModel {
     private final PlayerAccount player;
 
-    public GameLobbyModel(PlayerAccount player) {
+        public GameLobbyModel(PlayerAccount player) {
         this.player = player;
     }
 

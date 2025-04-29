@@ -1,7 +1,10 @@
 package Client_Java.player;
 
+import Client_Java.player.controller.GameLobbyController;
 import Client_Java.player.controller.LogInController;
+import Client_Java.player.model.GameLobbyModel;
 import Client_Java.player.model.LogInPageModel;
+import Client_Java.player.view.GameLobbyView;
 import Client_Java.player.view.LoginPageView;
 import Shared_Files.PlayerAccount;
 import javafx.application.Application;
@@ -37,6 +40,30 @@ public class PlayerClient_Java extends Application {
         loadLoginGUI();
     }
 
+    public static void navigateToLobby() {
+        try {
+            // Load FXML for game lobby
+            File fxmlFile = new File("src/main/resources/fxml/player/GameLobbyPage.fxml");
+            FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
+            Parent root = loader.load();
+
+            // Initialize MVC for lobby
+            GameLobbyView view = loader.getController();
+            GameLobbyModel model = new GameLobbyModel(getLoggedInPlayer());
+            PlayerAccount account = getLoggedInPlayer();
+            new GameLobbyController(model, view, account, (int)loggedInPlayerID, sessionToken);
+
+            // Set scene
+            Scene scene = new Scene(root);
+            Stage stage = getStage();
+            stage.setScene(scene);
+            stage.setTitle("What's The Word - Lobby");
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("[Client ERROR] Failed to navigate to lobby: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void start(Stage stage) {

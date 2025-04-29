@@ -49,7 +49,7 @@ public class LogInController {
             // 1. Create client-side callback servant and register with ORB
             //    (Assumes PlayerClient_Java exposes ORB and POA setup)
             LoginCallBackServiceImpl callbackImpl = new LoginCallBackServiceImpl();
-            LoginCallbackService callbackStub = PlayerClient_Model.registerCallback(callbackImpl);
+            LoginCallbackService callbackStub = PlayerClient_Model.registerLoginCallback(callbackImpl);
 
             // 2. Perform login through model
             boolean success = model.login(username, password, callbackStub);

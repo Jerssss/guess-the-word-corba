@@ -1,7 +1,10 @@
 package Client_Java.player;
 
+import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
+import Server_Java.idls.PlayerCallBackIDL.GameCallBackServiceHelper;
 import Server_Java.idls.PlayerCallBackIDL.LoginCallbackService;
 import Server_Java.idls.PlayerCallBackIDL.LoginCallbackServiceHelper;
+import Server_Java.implementation.GameCallbackServiceImpl;
 import Server_Java.implementation.LoginCallBackServiceImpl;
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.POA;
@@ -55,14 +58,26 @@ public class PlayerClient_Model {
     /**
      * Registers the given LoginCallbackServiceImpl with the ORB and returns its stub.
      */
-    public static LoginCallbackService registerCallback(LoginCallBackServiceImpl callbackImpl) {
+    public static LoginCallbackService registerLoginCallback(LoginCallBackServiceImpl callbackImpl) {
         try {
-            // Activate the servant to obtain an object reference
             org.omg.CORBA.Object ref = rootPOA.servant_to_reference(callbackImpl);
-            // Narrow to LoginCallbackService stub
             return LoginCallbackServiceHelper.narrow(ref);
         } catch (Exception e) {
-            System.err.println("[Client ERROR] Failed to register callback: " + e.getMessage());
+            System.err.println("[Client ERROR] Failed to register login callback: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Registers the given GameCallbackServiceImpl with the ORB and returns its stub.
+     */
+    public static GameCallBackService registerGameCallback(GameCallbackServiceImpl callbackImpl) {
+        try {
+            org.omg.CORBA.Object ref = rootPOA.servant_to_reference(callbackImpl);
+            return GameCallBackServiceHelper.narrow(ref);
+        } catch (Exception e) {
+            System.err.println("[Client ERROR] Failed to register game callback: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
