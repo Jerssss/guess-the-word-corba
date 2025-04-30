@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * Server-side implementation for GameService, handling lobby,
@@ -57,46 +58,109 @@ public class GameServiceImpl extends GameServicePOA {
      * - callbacks: stubs to notify when game really starts
      * - waitingCallbacks: stubs to notify on join/countdown/reset
      */
+    // in GameServiceImpl.java
+
+// 1) Update your Lobby class to hold every setting:
     private static class Lobby {
         final String token;
+        final int    lobbyWaitingTime;    // seconds to wait before force‐starting
+        final int    roundDuration;       // seconds per round
+        final int    nextRoundDelay;      // seconds between rounds
+        final int    countdownSeconds;    // seconds countdown before start
+        final int    totalRounds;         // how many rounds in the game
+        final int    minimumPlayers;      // players needed to start
+        final int    numberOfLives;       // wrong‐guess lives per player
+
         final List<Integer> players           = new CopyOnWriteArrayList<>();
         final List<GameCallBackService> callbacks         = new CopyOnWriteArrayList<>();
         final List<WaitingRoomGameCallbackService> waitingCallbacks = new CopyOnWriteArrayList<>();
 
-        Lobby(String token) { this.token = token; }
+        Lobby(
+                String token,
+                int lobbyWaitingTime,
+                int roundDuration,
+                int nextRoundDelay,
+                int countdownSeconds,
+                int totalRounds,
+                int minimumPlayers,
+                int numberOfLives
+        ) {
+            this.token             = token;
+            this.lobbyWaitingTime  = lobbyWaitingTime;
+            this.roundDuration     = roundDuration;
+            this.nextRoundDelay    = nextRoundDelay;
+            this.countdownSeconds  = countdownSeconds;
+            this.totalRounds       = totalRounds;
+            this.minimumPlayers    = minimumPlayers;
+            this.numberOfLives     = numberOfLives;
+        }
     }
+
 
     @Override
     public synchronized String joinLobby(int playerID, String sessionToken)
             throws NotLoggedInException
     {
-        if (sessionToken == null)
+        if (sessionToken == null) {
             throw new NotLoggedInException();
+        }
 
-        // Already in a lobby?
+        // 1) If this session is already in a lobby, return it
         if (sessionToGame.containsKey(sessionToken)) {
             String existingToken = sessionToGame.get(sessionToken);
             debugPrintAllLobbies("joinLobby (already in)");
             return existingToken;
         }
 
-        // Find a lobby that still needs players
+        // 2) Try to find a lobby that hasn’t filled yet
         Lobby target = null;
         for (Lobby l : lobbies.values()) {
-            if (l.players.size() < DEFAULT_MIN_PLAYERS) {
+            if (l.players.size() < l.minimumPlayers) {
                 target = l;
                 break;
             }
         }
-        // Or create a fresh one
+
+        // 3) If none found, create a new one and snapshot all settings
         if (target == null) {
+            // Helper to fetch an integer setting
+            Function<String,Integer> fetchInt = key -> {
+                StringHolder sh = new StringHolder();
+                getSetting(key, sh, sessionToken);
+                return Integer.parseInt(sh.value);
+            };
+
+            int lobbyWaitingTime  = fetchInt.apply("lobby_waiting_time");
+            int roundDuration     = fetchInt.apply("round_duration");
+            int nextRoundDelay    = fetchInt.apply("next_round_delay");
+            int countdownSeconds  = fetchInt.apply("countdown_to_game_start");
+            int totalRounds       = fetchInt.apply("total_rounds");
+            int minimumPlayers    = fetchInt.apply("minimum_players");
+            int numberOfLives     = fetchInt.apply("number_of_lives");
+
             String newToken = UUID.randomUUID().toString();
-            target = new Lobby(newToken);
+            target = new Lobby(
+                    newToken,
+                    lobbyWaitingTime,
+                    roundDuration,
+                    nextRoundDelay,
+                    countdownSeconds,
+                    totalRounds,
+                    minimumPlayers,
+                    numberOfLives
+            );
             lobbies.put(newToken, target);
-            System.out.println("[GameService DEBUG] Created new lobby: " + newToken);
+            System.out.println("[GameService DEBUG] Created lobby=" + newToken +
+                    " [wait=" + lobbyWaitingTime +
+                    ", roundDur=" + roundDuration +
+                    ", nextDelay=" + nextRoundDelay +
+                    ", countdown=" + countdownSeconds +
+                    ", totalRounds=" + totalRounds +
+                    ", minPlayers=" + minimumPlayers +
+                    ", lives=" + numberOfLives + "]");
         }
 
-        // Add player
+        // 4) Add the player if not already present
         if (!target.players.contains(playerID)) {
             target.players.add(playerID);
             sessionToGame.put(sessionToken, target.token);
@@ -105,7 +169,7 @@ public class GameServiceImpl extends GameServicePOA {
                     " (count=" + target.players.size() + ")");
         }
 
-        // Notify waiting-room callbacks of new count
+        // 5) Notify all waiting-room callbacks of the new player count
         for (WaitingRoomGameCallbackService cb : target.waitingCallbacks) {
             try {
                 cb.notifyPlayerJoined(
@@ -116,36 +180,38 @@ public class GameServiceImpl extends GameServicePOA {
             } catch (Exception ignored) {}
         }
 
-        // If threshold reached, schedule countdown after a short delay
-        if (target.players.size() == DEFAULT_MIN_PLAYERS) {
-            // Cancel any existing pending countdown
-            ScheduledFuture<?> old = pendingCountdowns.remove(target.token);
-            if (old != null) {
-                old.cancel(false);
+        // 6) If we've just hit the minimum, schedule the countdown-start notification
+        if (target.players.size() == target.minimumPlayers) {
+            // Cancel any previously scheduled countdown for this lobby
+            ScheduledFuture<?> oldTask = pendingCountdowns.remove(target.token);
+            if (oldTask != null) {
+                oldTask.cancel(false);
             }
 
-            // Schedule new countdown 100ms later
-            Lobby finalTarget = target;
-            ScheduledFuture<?> future = countdownScheduler.schedule(() -> {
-                for (WaitingRoomGameCallbackService cb : finalTarget.waitingCallbacks) {
+            // Schedule notifyCountdownStart after a brief delay
+            Lobby lobbyRef = target;
+            ScheduledFuture<?> newTask = countdownScheduler.schedule(() -> {
+                for (WaitingRoomGameCallbackService cb : lobbyRef.waitingCallbacks) {
                     try {
                         cb.notifyCountdownStart(
-                                finalTarget.token,
-                                DEFAULT_COUNTDOWN_SECONDS,
+                                lobbyRef.token,
+                                lobbyRef.countdownSeconds,
                                 sessionToken
                         );
                     } catch (Exception ignored) {}
                 }
-                System.out.println("[GameService DEBUG] scheduled notifyCountdownStart for lobby="
-                        + finalTarget.token);
+                System.out.println("[GameService DEBUG] notifyCountdownStart sent for lobby=" +
+                        lobbyRef.token);
             }, 100, TimeUnit.MILLISECONDS);
 
-            pendingCountdowns.put(target.token, future);
+            pendingCountdowns.put(target.token, newTask);
         }
 
+        // 7) Debug dump and return
         debugPrintAllLobbies("joinLobby");
         return target.token;
     }
+
 
     @Override
     public synchronized void leaveLobby(int playerID,
