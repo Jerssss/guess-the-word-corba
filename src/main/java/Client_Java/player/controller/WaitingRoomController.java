@@ -2,20 +2,27 @@ package Client_Java.player.controller;
 
 import Client_Java.player.PlayerClient_Model;
 import Client_Java.player.PlayerClient_Java;
+import Client_Java.player.model.GameRoomModel;
 import Client_Java.player.model.WaitingRoomModel;
+import Client_Java.player.view.GameRoomView;
 import Client_Java.player.view.WaitingRoomView;
 
 import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackService;
 import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
 
-import Server_Java.implementation.GameCallbackServiceImpl;
 
+import Server_Java.implementation.GameCallbackServiceImpl;
 import Server_Java.implementation.WaitingRoomCallbackServiceImpl;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -83,14 +90,11 @@ public class WaitingRoomController {
                 playerId, gameToken, sessionToken, waitStub
         );
 
-        // 4) register game-start callback
-        GameCallbackServiceImpl gameServant = new GameCallbackServiceImpl();
-        GameCallBackService gameStub =
-                PlayerClient_Model.registerGameCallback(gameServant);
-        System.out.println("[WaitingRoomController] registering game-start callback for session=" + sessionToken);
-        model.registerCallback(
-                playerId, gameToken, sessionToken, gameStub
-        );
+        // Register game callbacks properly here
+   //     WaitingRoomCallbackServiceImpl callbackServant = new WaitingRoomCallbackServiceImpl(model, sessionToken);
+     //   GameCallBackService callbackStub = PlayerClient_Model.registerGameCallback(callbackServant);
+   //     model.registerCallback(playerId, gameToken, sessionToken, callbackStub);
+
     }
 
     // --- Methods invoked by the WaitingRoomCallbackServiceImpl on the FX thread ---
@@ -128,8 +132,41 @@ public class WaitingRoomController {
 
     public void onReadyToStart() {
         System.out.println("[WaitingRoom] Game starting now.");
-        // TODO: transition to the actual game scene / controller
+        // Ensure UI work happens on the FX thread
+        Platform.runLater(() -> {
+            try {
+                // 1) Load the GameRoom FXML
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/fxml/player/GameRoomPage.fxml")
+                );
+                Parent root = loader.load();
+
+                // 2) Grab the view (controller from FXML) and build the model
+                GameRoomView view   = loader.getController();
+                GameRoomModel model = new GameRoomModel(PlayerClient_Model.gameService);
+
+                // 3) Instantiate your GameRoomController with the same playerId, sessionToken, and gameToken
+                new GameRoomController(
+                        model,
+                        view,
+                        this.playerId,
+                        this.sessionToken,
+                        this.gameToken
+                );
+
+                // 4) Swap scenes
+                Stage stage = PlayerClient_Java.getStage();
+                stage.setScene(new Scene(root));
+                stage.setTitle("What's The Word - Game");
+                stage.show();
+
+            } catch (IOException e) {
+                System.err.println("[WaitingRoomController] Failed to load GameRoomPage.fxml: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
     }
+
 
     // --- User action handlers ---
 

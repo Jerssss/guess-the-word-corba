@@ -12,13 +12,15 @@ import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
 import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackService;
 import org.omg.CORBA.StringHolder;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
@@ -44,13 +46,21 @@ public class GameServiceImpl extends GameServicePOA {
     private static final Map<String, GameCallBackService> sessionToCallback = new ConcurrentHashMap<>();
     // Maps sessionToken → waiting-room callback stub
     private static final Map<String, WaitingRoomGameCallbackService> sessionToWaitingCallback = new ConcurrentHashMap<>();
-
+    private static final Map<String, String> roundWords = new ConcurrentHashMap<>();
+    private static final Map<String, Map<Integer, RoundState>> roundStates = new ConcurrentHashMap<>();
+    private static final Map<String,Integer> currentRoundNumbers = new ConcurrentHashMap<>();
+    private static final Map<String,String>  roundWinners       = new ConcurrentHashMap<>();
     // — NEW: scheduler to delay countdown notifications —
     private static final ScheduledExecutorService countdownScheduler =
             Executors.newSingleThreadScheduledExecutor();
     // Tracks pending countdown tasks by lobby token
     private static final Map<String, ScheduledFuture<?>> pendingCountdowns =
             new ConcurrentHashMap<>();
+    private static final Random RAND = new Random();
+
+// 1) Store a map of playerID→RoundState for each gameToken:
+// new: per-game → per-player RoundState
+
 
     /**
      * Represents a lobby waiting to start:
@@ -95,7 +105,34 @@ public class GameServiceImpl extends GameServicePOA {
             this.numberOfLives     = numberOfLives;
         }
     }
+    private static class RoundState {
+        /** The secret word for this round (never exposed directly to clients) */
+        final String word;
 
+        /** All letters that have been guessed so far */
+        final Set<Character> guessed = ConcurrentHashMap.newKeySet();
+
+        /** How many incorrect guesses so far */
+        int wrongCount = 0;
+
+        /** Create a new round with the given secret word */
+        RoundState(String word) {
+            this.word = word;
+        }
+    }
+
+
+    // in your GameServiceImpl class‐scope, once:
+    private static final List<String> WORDS;
+    static {
+        try {
+            WORDS = Files.readAllLines(
+                    Paths.get("src/main/java/Server_Java/word/words.txt")
+            );
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
 
     @Override
     public synchronized String joinLobby(int playerID, String sessionToken)
@@ -357,34 +394,170 @@ public class GameServiceImpl extends GameServicePOA {
                 + playerID + ", lobby=" + gameToken
                 + " (gameCallbacks=" + lobby.callbacks.size() + ")");
     }
-
     @Override
-    public int startRound(String gameToken, int roundNumber, int playerID, String sessionToken)
-            throws GameNotFoundException, NotLoggedInException
-    {
-        return 0;
+    public synchronized int startRound(
+            String gameToken,
+            int roundNumber,
+            int playerID,
+            String sessionToken
+    ) throws GameNotFoundException, NotLoggedInException {
+        Lobby lobby = lobbies.get(gameToken);
+        if (lobby == null) throw new GameNotFoundException();
+
+        // Record current round number for this game
+        currentRoundNumbers.put(gameToken, roundNumber);
+
+        // 1) If first time or new round → generate & store the word
+        String currentWord = roundWords.computeIfAbsent(gameToken, t -> {
+            String raw = WORDS.get(RAND.nextInt(WORDS.size()));
+            return raw.toUpperCase();
+        });
+
+        // 2) Store per‐player state
+        roundStates
+                .computeIfAbsent(gameToken, t -> new ConcurrentHashMap<>())
+                .put(playerID, new RoundState(currentWord));
+
+        // 3) Notify everyone
+        for (GameCallBackService cb : lobby.callbacks) {
+            try { cb.notifyRoundStart(gameToken, roundNumber, sessionToken); }
+            catch (Exception ignored) {}
+        }
+        return lobby.players.size();
     }
 
-    @Override
-    public String getRandomWord(String gameToken, int roundNumber, int playerID, String sessionToken)
-            throws GameNotFoundException, NotLoggedInException
-    {
-        return "";
-    }
 
     @Override
-    public int[] guessLetter(String gameToken, int playerID, String sessionToken, char letter)
-            throws MaxAttemptsReachedException, GameNotFoundException, AlreadyGuessedLetterException, NotLoggedInException
-    {
-        return new int[0];
+    public String getRandomWord(
+            String gameToken,
+            int roundNumber,
+            int playerID,
+            String sessionToken
+    ) throws GameNotFoundException, NotLoggedInException {
+        // 1) Verify the player has a RoundState
+        Map<Integer, RoundState> perPlayer = roundStates.get(gameToken);
+        if (perPlayer == null || !perPlayer.containsKey(playerID)) {
+            throw new GameNotFoundException();
+        }
+
+        // 2) Pull the shared word (we already upper-cased it in startRound)
+        String word = roundWords.get(gameToken);
+        if (word == null) throw new GameNotFoundException();
+
+        // 3) Mask it out
+        char[] mask = new char[word.length()];
+        Arrays.fill(mask, '_');
+        return new String(mask);
     }
 
+
+
+
     @Override
-    public String getRoundWinner(String gameToken, int playerID, String sessionToken)
-            throws NotLoggedInException
-    {
-        return "";
+    public int[] guessLetter(
+            String gameToken,
+            int playerID,
+            String sessionToken,
+            char letter
+    ) throws MaxAttemptsReachedException,
+            GameNotFoundException,
+            AlreadyGuessedLetterException,
+            NotLoggedInException {
+        // 1) Lookup per-player RoundState
+        Map<Integer, RoundState> perPlayer = roundStates.get(gameToken);
+        if (perPlayer == null || !perPlayer.containsKey(playerID)) {
+            throw new GameNotFoundException();
+        }
+        RoundState rs = perPlayer.get(playerID);
+
+        // 2) Duplicate–guess check
+        if (!rs.guessed.add(letter)) {
+            throw new AlreadyGuessedLetterException();
+        }
+
+        // 3) Shared word
+        String word = roundWords.get(gameToken);
+        if (word == null) throw new GameNotFoundException();
+
+        // 4) Find any hits
+        List<Integer> hits = new ArrayList<>();
+        for (int i = 0; i < word.length(); i++) {
+            if (word.charAt(i) == letter) hits.add(i);
+        }
+
+        // 5) Wrong–guess handling
+        if (hits.isEmpty()) {
+            rs.wrongCount++;
+            StringHolder sh = new StringHolder();
+            getSetting("number_of_lives", sh, sessionToken);
+            int maxLives = Integer.parseInt(sh.value);
+            if (rs.wrongCount >= maxLives) {
+                throw new MaxAttemptsReachedException();
+            }
+        }
+
+        // 6) Check for complete word → record winner & broadcast end-of-round
+        boolean allRevealed = true;
+        for (char c : word.toCharArray()) {
+            if (!rs.guessed.contains(c)) {
+                allRevealed = false;
+                break;
+            }
+        }
+        if (allRevealed) {
+            int roundNum = currentRoundNumbers.getOrDefault(gameToken, 1);
+            String key  = gameToken + ":" + roundNum;
+            String username = lookupUsername(playerID);
+            roundWinners.put(key, username);
+
+            // Broadcast to everyone in this lobby
+            Lobby lobby = lobbies.get(gameToken);
+            if (lobby != null) {
+                for (GameCallBackService cb : lobby.callbacks) {
+                    try {
+                        // sessionToken parameter here isn’t used on the client side;
+                        // winnerName is sent in the 'result' field.
+                        cb.notifyRoundEnd(gameToken, sessionToken, username);
+                    } catch (Exception ignore) { }
+                }
+            }
+        }
+
+        // 7) Return the hit positions array
+        return hits.stream().mapToInt(Integer::intValue).toArray();
     }
+
+
+    /**
+     * Helper to map playerID → username (used when recording winners).
+     * You can cache this or fetch each time.
+     */
+    private String lookupUsername(int playerID) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT username FROM players WHERE id = ?"
+             )) {
+            stmt.setInt(1, playerID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getString("username");
+        } catch (SQLException e) {
+            System.err.println("[GameService] lookupUsername failed: " + e);
+        }
+        return "Player" + playerID;
+    }
+
+
+    @Override
+    public String getRoundWinner(String gameToken,
+                                 int playerID,
+                                 String sessionToken)
+            throws NotLoggedInException {
+        // (optional) verify sessionToken validity here
+        int roundNum = currentRoundNumbers.getOrDefault(gameToken, 1);
+        String key   = gameToken + ":" + roundNum;
+        return roundWinners.getOrDefault(key, "Unknown");
+    }
+
 
     @Override
     public String getGameWinner(String gameToken, int playerID, String sessionToken)
