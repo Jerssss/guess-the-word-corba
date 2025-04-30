@@ -401,30 +401,116 @@ public class GameServiceImpl extends GameServicePOA {
             int playerID,
             String sessionToken
     ) throws GameNotFoundException, NotLoggedInException {
+
         Lobby lobby = lobbies.get(gameToken);
         if (lobby == null) throw new GameNotFoundException();
 
-        // Record current round number for this game
+        // 0) Update and log the current round number
         currentRoundNumbers.put(gameToken, roundNumber);
+        System.out.println("[GameService DEBUG] startRound(): gameToken="
+                + gameToken + ", roundNumber=" + roundNumber);
 
-        // 1) If first time or new round → generate & store the word
-        String currentWord = roundWords.computeIfAbsent(gameToken, t -> {
-            String raw = WORDS.get(RAND.nextInt(WORDS.size()));
-            return raw.toUpperCase();
-        });
+        // 1) Pick & store the new word
+        String currentWord = WORDS.get(RAND.nextInt(WORDS.size())).toUpperCase();
+        roundWords.put(gameToken, currentWord);
+        System.out.println("[GameService DEBUG]   new secret word chosen (length="
+                + currentWord.length() + ")");
 
-        // 2) Store per‐player state
-        roundStates
-                .computeIfAbsent(gameToken, t -> new ConcurrentHashMap<>())
-                .put(playerID, new RoundState(currentWord));
-
-        // 3) Notify everyone
-        for (GameCallBackService cb : lobby.callbacks) {
-            try { cb.notifyRoundStart(gameToken, roundNumber, sessionToken); }
-            catch (Exception ignored) {}
+        // 2) Reset per-player state for all
+        Map<Integer, RoundState> perPlayerMap =
+                roundStates.computeIfAbsent(gameToken, t -> new ConcurrentHashMap<>());
+        perPlayerMap.clear();
+        for (Integer pid : lobby.players) {
+            perPlayerMap.put(pid, new RoundState(currentWord));
         }
+        System.out.println("[GameService DEBUG]   per-player RoundState initialized for "
+                + perPlayerMap.size() + " players");
+
+        // 3) Broadcast start to all callbacks
+        for (GameCallBackService cb : lobby.callbacks) {
+            try {
+                System.out.println("[GameService DEBUG]   -> cb.notifyRoundStart(stub="
+                        + cb + ")");
+                cb.notifyRoundStart(gameToken, roundNumber, sessionToken);
+                System.out.println("[GameService DEBUG]   <- returned notifyRoundStart");
+            } catch (Exception e) {
+                System.err.println("[GameService ERROR] notifyRoundStart threw: " + e);
+            }
+        }
+
+        // 4) Schedule a timeout to fire after the roundDuration
+        countdownScheduler.schedule(
+                () -> handleRoundTimeout(gameToken, roundNumber),
+                lobby.roundDuration,
+                TimeUnit.SECONDS
+        );
+        System.out.println("[GameService DEBUG]   timeout scheduled in "
+                + lobby.roundDuration + "s");
+
         return lobby.players.size();
     }
+
+
+    /**
+     * Invoked by the scheduler if a round’s timer expires.
+     */
+    private synchronized void handleRoundTimeout(String gameToken, int roundNumber) {
+        Integer current = currentRoundNumbers.get(gameToken);
+        if (current == null || current != roundNumber) return;
+
+        Lobby lobby = lobbies.get(gameToken);
+        if (lobby == null) return;
+
+        int totalRounds = lobby.totalRounds;
+
+        // If someone already won this round, do nothing
+        String key = gameToken + ":" + roundNumber;
+        if (roundWinners.containsKey(key)) return;
+
+        if (roundNumber >= totalRounds) {
+            // LAST ROUND TIMED OUT → end game with no winner
+            System.out.println("[GameService DEBUG] Timeout: final‐round reached for gameToken="
+                    + gameToken + "; broadcasting notifyGameEnd(no‐winner)");
+            for (GameCallBackService cb : lobby.callbacks) {
+                try {
+                    System.out.println("[GameService DEBUG]   -> calling cb.notifyGameEnd() stub=" + cb);
+                    cb.notifyGameEnd(gameToken, "", "");
+                    System.out.println("[GameService DEBUG]   <- returned from notifyGameEnd()");
+                } catch (Exception e) {
+                    System.err.println("[GameService ERROR] notifyGameEnd threw: " + e);
+                }
+            }
+            // Clean up
+            lobbies.remove(gameToken);
+            sessionToGame.values().removeIf(t -> t.equals(gameToken));
+            sessionToCallback.keySet().removeIf(st -> !sessionToGame.containsKey(st));
+            sessionToWaitingCallback.keySet().removeIf(st -> !sessionToGame.containsKey(st));
+        } else {
+            // INTERMEDIATE ROUND TIMED OUT → no-winner round end + next round
+            System.out.println("[GameService DEBUG] Timeout: intermediate‐round " + roundNumber
+                    + " for gameToken=" + gameToken + "; broadcasting notifyRoundEnd(no‐winner)");
+            for (GameCallBackService cb : lobby.callbacks) {
+                try {
+                    cb.notifyRoundEnd(gameToken, "", "");
+                } catch (Exception ignored) {}
+            }
+            int nextRound = roundNumber + 1;
+            // Kick off next round via any player/session in this lobby
+            if (!lobby.players.isEmpty()) {
+                int anyPlayer = lobby.players.get(0);
+                String anySession = sessionToGame.entrySet().stream()
+                        .filter(e -> e.getValue().equals(gameToken))
+                        .map(Map.Entry::getKey)
+                        .findFirst().orElse(null);
+                if (anySession != null) {
+                    try {
+                        startRound(gameToken, nextRound, anyPlayer, anySession);
+                    } catch (Exception ignore) {}
+                }
+            }
+        }
+    }
+
 
 
     @Override
@@ -459,10 +545,11 @@ public class GameServiceImpl extends GameServicePOA {
             int playerID,
             String sessionToken,
             char letter
-    ) throws MaxAttemptsReachedException,
+    ) throws AlreadyGuessedLetterException,
             GameNotFoundException,
-            AlreadyGuessedLetterException,
-            NotLoggedInException {
+            NotLoggedInException,
+            MaxAttemptsReachedException {
+
         // 1) Lookup per-player RoundState
         Map<Integer, RoundState> perPlayer = roundStates.get(gameToken);
         if (perPlayer == null || !perPlayer.containsKey(playerID)) {
@@ -470,7 +557,7 @@ public class GameServiceImpl extends GameServicePOA {
         }
         RoundState rs = perPlayer.get(playerID);
 
-        // 2) Duplicate–guess check
+        // 2) Duplicate-guess check
         if (!rs.guessed.add(letter)) {
             throw new AlreadyGuessedLetterException();
         }
@@ -485,18 +572,59 @@ public class GameServiceImpl extends GameServicePOA {
             if (word.charAt(i) == letter) hits.add(i);
         }
 
-        // 5) Wrong–guess handling
+        // 5) Wrong-guess handling
         if (hits.isEmpty()) {
             rs.wrongCount++;
             StringHolder sh = new StringHolder();
             getSetting("number_of_lives", sh, sessionToken);
             int maxLives = Integer.parseInt(sh.value);
+
             if (rs.wrongCount >= maxLives) {
+                // This player just died—check if _all_ are dead:
+                Lobby lobby = lobbies.get(gameToken);
+                boolean allLost = true;
+                for (int pid : lobby.players) {
+                    RoundState other = perPlayer.get(pid);
+                    if (other.wrongCount < maxLives) {
+                        allLost = false;
+                        break;
+                    }
+                }
+
+                if (allLost) {
+                    System.out.println("[GameService DEBUG] All players out in round; broadcasting notifyRoundEnd(no‐winner)");
+                    for (GameCallBackService cb : lobby.callbacks) {
+                        try { cb.notifyRoundEnd(gameToken, sessionToken, ""); }
+                        catch (Exception ignore) {}
+                    }
+                    // Auto-start next (or end) round
+                    int roundNum    = currentRoundNumbers.getOrDefault(gameToken, 1);
+                    int totalRounds = lobby.totalRounds;
+                    int nextRound   = roundNum + 1;
+                    if (roundNum < totalRounds) {
+                        try {
+                            startRound(gameToken, nextRound, playerID, sessionToken);
+                        } catch (Exception ignore) {}
+                    } else {
+                        System.out.println("[GameService DEBUG] Last round ended with no winner; broadcasting notifyGameEnd(no‐winner)");
+                        for (GameCallBackService cb : lobby.callbacks) {
+                            try { cb.notifyGameEnd(gameToken, sessionToken, ""); }
+                            catch (Exception ignore) {}
+                        }
+                        // Clean up
+                        lobbies.remove(gameToken);
+                        sessionToGame.values().removeIf(t -> t.equals(gameToken));
+                        sessionToCallback.keySet().removeIf(st -> !sessionToGame.containsKey(st));
+                        sessionToWaitingCallback.keySet().removeIf(st -> !sessionToGame.containsKey(st));
+                    }
+                }
+
+                // Finally, signal this client is out
                 throw new MaxAttemptsReachedException();
             }
         }
 
-        // 6) Check for complete word → record winner & broadcast end-of-round
+        // 6) Winner check
         boolean allRevealed = true;
         for (char c : word.toCharArray()) {
             if (!rs.guessed.contains(c)) {
@@ -506,27 +634,49 @@ public class GameServiceImpl extends GameServicePOA {
         }
         if (allRevealed) {
             int roundNum = currentRoundNumbers.getOrDefault(gameToken, 1);
-            String key  = gameToken + ":" + roundNum;
+            String key   = gameToken + ":" + roundNum;
             String username = lookupUsername(playerID);
             roundWinners.put(key, username);
 
-            // Broadcast to everyone in this lobby
             Lobby lobby = lobbies.get(gameToken);
-            if (lobby != null) {
+            int totalRounds = lobby.totalRounds;
+
+            if (roundNum >= totalRounds) {
+                // FINAL ROUND: broadcast game end
+                System.out.println("[GameService DEBUG] Final‐round win detected for gameToken="
+                        + gameToken + ", winner=" + username);
                 for (GameCallBackService cb : lobby.callbacks) {
                     try {
-                        // sessionToken parameter here isn’t used on the client side;
-                        // winnerName is sent in the 'result' field.
-                        cb.notifyRoundEnd(gameToken, sessionToken, username);
-                    } catch (Exception ignore) { }
+                        System.out.println("[GameService DEBUG]   -> calling cb.notifyGameEnd(stub=" + cb + ")");
+                        cb.notifyGameEnd(gameToken, sessionToken, username);
+                        System.out.println("[GameService DEBUG]   <- returned from notifyGameEnd()");
+                    } catch (Exception e) {
+                        System.err.println("[GameService ERROR] notifyGameEnd threw: " + e);
+                    }
                 }
+                // Clean up
+                lobbies.remove(gameToken);
+                sessionToGame.values().removeIf(t -> t.equals(gameToken));
+                sessionToCallback.keySet().removeIf(st -> !sessionToGame.containsKey(st));
+                sessionToWaitingCallback.keySet().removeIf(st -> !sessionToGame.containsKey(st));
+            } else {
+                // INTERMEDIATE ROUND: broadcast round end, then next round
+                System.out.println("[GameService DEBUG] Round " + roundNum + " won by " + username
+                        + "; broadcasting notifyRoundEnd and kicking off next round");
+                for (GameCallBackService cb : lobby.callbacks) {
+                    try { cb.notifyRoundEnd(gameToken, sessionToken, username); }
+                    catch (Exception ignore) {}
+                }
+                int nextRound = roundNum + 1;
+                try {
+                    startRound(gameToken, nextRound, playerID, sessionToken);
+                } catch (Exception ignore) {}
             }
         }
 
-        // 7) Return the hit positions array
+        // 7) Return the hit positions
         return hits.stream().mapToInt(Integer::intValue).toArray();
     }
-
 
     /**
      * Helper to map playerID → username (used when recording winners).
@@ -535,7 +685,7 @@ public class GameServiceImpl extends GameServicePOA {
     private String lookupUsername(int playerID) {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT username FROM players WHERE id = ?"
+                     "SELECT username FROM players WHERE player_id = ?"
              )) {
             stmt.setInt(1, playerID);
             ResultSet rs = stmt.executeQuery();
@@ -545,6 +695,7 @@ public class GameServiceImpl extends GameServicePOA {
         }
         return "Player" + playerID;
     }
+
 
 
     @Override

@@ -57,9 +57,10 @@ public class GameRoomController {
         System.out.println("[GameRoomController] Starting lives = " + remainingLives);
         view.getLifeCountLabel().setText("Lives: " + remainingLives);
 
-        // Register the game callback here
-        GameCallbackServiceImpl callbackServant = new GameCallbackServiceImpl(model, sessionToken);
-        GameCallBackService callbackStub = PlayerClient_Model.registerGameCallback(callbackServant);
+        GameCallbackServiceImpl callbackServant =
+                new GameCallbackServiceImpl(model, sessionToken, this);
+        GameCallBackService callbackStub =
+                PlayerClient_Model.registerGameCallback(callbackServant);
         model.registerCallback(playerId, gameToken, sessionToken, callbackStub);
 
         startRound();
@@ -67,14 +68,18 @@ public class GameRoomController {
 
     private void startRound() {
         System.out.println("[GameRoomController] Starting round " + roundNumber);
+
+        // — NEW: Update the round counter in the UI —
+        view.getRoundLabel().setText("Round " + roundNumber);
+
+        // Then pull down mask & lives and build UI as before:
         model.startRound(gameToken, roundNumber, playerId, sessionToken);
         secretWord = model.getRandomWord(gameToken, roundNumber, playerId, sessionToken);
-        System.out.println("[GameRoomController] Secret word mask = " + secretWord);
+        remainingLives = model.getNumberOfLives(sessionToken);
 
         setupBlanks();
         setupAlphabet();
 
-        // Keep lives label in sync if you ever reuse startRound()
         view.getLifeCountLabel().setText("Lives: " + remainingLives);
     }
 
@@ -121,7 +126,31 @@ public class GameRoomController {
             af.getChildren().add(btn);
         }
         System.out.println("[GameRoomController] Alphabet buttons ready");
+    }// In Client_Java.player.controller.GameRoomController
+
+    /**
+     * Called by the server callback when a new round really begins.
+     */
+    public void handleServerRoundStart(int roundNumber) {
+        // 1) Update our local round counter
+        this.roundNumber = roundNumber;
+
+        // — NEW: Update the round counter in the UI —
+        view.getRoundLabel().setText("Round " + roundNumber);
+
+        // 2) Fetch new mask & lives
+        this.secretWord     = model.getRandomWord(gameToken, roundNumber, playerId, sessionToken);
+        this.remainingLives = model.getNumberOfLives(sessionToken);
+
+        // 3) Rebuild the blanks and alphabet
+        setupBlanks();
+        setupAlphabet();
+
+        // 4) Sync the lives label (in case it changed)
+        view.getLifeCountLabel().setText("Lives: " + remainingLives);
     }
+
+
 
     private void handleGuess(Button btn) {
         char letter = btn.getText().charAt(0);
@@ -198,6 +227,8 @@ public class GameRoomController {
         }
     }
 
+    // In Client_Java.player.controller.GameRoomController
+
     private void onRoundWon() {
         System.out.println("[GameRoomController] Round " + roundNumber + " won!");
 
@@ -208,7 +239,7 @@ public class GameRoomController {
                 ? "You won!"
                 : winnerName + " won!";
 
-        // 2) Load the popup FXML
+        // 2) Show popup on JavaFX thread
         Platform.runLater(() -> {
             try {
                 FXMLLoader loader = new FXMLLoader(
@@ -218,25 +249,19 @@ public class GameRoomController {
                 RoundWinnerPopupView popupController = loader.getController();
                 popupController.setWinnerName(displayMessage);
 
-                // 3) Create a new transparent stage
                 Stage popupStage = new Stage(StageStyle.TRANSPARENT);
-                // No blocking modality so each player sees it immediately
                 popupStage.initModality(Modality.NONE);
                 popupStage.initOwner(PlayerClient_Java.getStage());
+                popupStage.setScene(new Scene(popupRoot));
 
-                Scene scene = new Scene(popupRoot);
-                // Optional: scene.setFill(Color.TRANSPARENT) if you want see-through corners
-                popupStage.setScene(scene);
-
-                // 4) Center over the main window
+                // Center
                 Stage main = PlayerClient_Java.getStage();
                 popupStage.setX(main.getX() + (main.getWidth()  - popupRoot.prefWidth(-1)) / 2);
                 popupStage.setY(main.getY() + (main.getHeight() - popupRoot.prefHeight(-1)) / 2);
 
-                // 5) Show it (non-blocking)
                 popupStage.show();
 
-                // 6) Schedule it to close after your nextRoundDelay
+                // Auto-close after delay
                 int delay = model.getNextRoundDelay(sessionToken);
                 PauseTransition wait = new PauseTransition(Duration.seconds(delay));
                 wait.setOnFinished(evt -> popupStage.close());
@@ -248,15 +273,23 @@ public class GameRoomController {
             }
         });
 
-        // 7) Prepare for next round (you can start immediately or after a delay)
-        roundNumber++;
-        remainingLives = model.getNumberOfLives(sessionToken);
-        Platform.runLater(() ->
-                view.getLifeCountLabel().setText("Lives: " + remainingLives)
-        );
-        // if you want to wait until popup closes, you could kick off startRound() in wait.setOnFinished
-        startRound();
+        // 7) Tell the SERVER to start the next round (roundNumber + 1).
+        int nextRound = roundNumber + 1;
+        try {
+            model.startRound(gameToken, nextRound, playerId, sessionToken);
+        } catch (Exception e) {
+            System.err.println("[GameRoomController] failed to start next round: " + e);
+        }
     }
+// In GameRoomController.java
+
+    public void handleGameEnd() {
+        System.out.println("[GameRoomController] handleGameEnd() — navigating back to lobby");
+        // Simply delegate all the FXML loading & MVC wiring to navigateToLobby()
+        PlayerClient_Java.navigateToLobby();
+    }
+
+
 
     private void onRoundLost() {
         System.out.println("[GameRoomController] Round " + roundNumber + " lost!");
@@ -268,4 +301,5 @@ public class GameRoomController {
         System.out.println("[GameRoomController] Cancel pressed, navigating back to lobby");
         PlayerClient_Java.navigateToLobby();
     }
+
 }

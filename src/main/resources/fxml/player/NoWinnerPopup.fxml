@@ -7,7 +7,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<HBox alignment="CENTER" prefHeight="510.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.modals.GameWinnerPopupView">
+<HBox alignment="CENTER" prefHeight="510.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.modals.NoWinnerPopupView">
    <children>
       <Pane prefHeight="510.0" prefWidth="515.0">
          <children>
@@ -18,16 +18,8 @@
             </ImageView>
             <Pane layoutX="27.0" layoutY="84.0" prefHeight="328.0" prefWidth="461.0" style="-fx-background-radius: 20; -fx-border-radius: 20;">
                <children>
-                  <Pane layoutY="208.0" prefHeight="71.0" prefWidth="461.0">
-                     <children>
-                        <Text fx:id="winningUsernameLabel" layoutX="-74.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Winner Name" textAlignment="CENTER" wrappingWidth="608.9999694824219">
-                           <font>
-                              <Font size="76.0" />
-                           </font>
-                        </Text>
-                     </children>
-                  </Pane>
-                  <Text fx:id="gameTitleLabel1" layoutX="-78.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Game Winner!" textAlignment="CENTER" wrappingWidth="616.5519714355469">
+                  <Pane layoutY="208.0" prefHeight="71.0" prefWidth="461.0" />
+                  <Text fx:id="gameTitleLabel" layoutX="-16.0" layoutY="91.0" strokeType="OUTSIDE" strokeWidth="0.0" text="NO WINNER" textAlignment="CENTER" wrappingWidth="492.552001953125">
                      <font>
                         <Font name="Marykate" size="90.0" />
                      </font>
