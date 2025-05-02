@@ -35,7 +35,7 @@ public class PlayerClient_Model {
 
     public void init() {
         try {
-            String[] orbArgs = {"-ORBInitialPort", "2000", "-ORBInitialHost", "192.168.191.28"};
+            String[] orbArgs = {"-ORBInitialPort", "2000", "-ORBInitialHost", "localhost"}; //192.168.191.28
             orb = ORB.init(orbArgs, null);
 
             org.omg.CORBA.Object poaRef = orb.resolve_initial_references("RootPOA");

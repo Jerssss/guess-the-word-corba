@@ -7,129 +7,113 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane prefHeight="760.0" prefWidth="1300.0"
-            xmlns="http://javafx.com/javafx/23.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="Client_Java.player.view.GameRoomView">
-
-   <!-- RIGHT SIDE: round info, cat graphic, lives -->
-   <right>
-      <VBox spacing="20" BorderPane.alignment="CENTER">
-         <padding>
-            <Insets top="20" right="20" bottom="20" left="20"/>
-         </padding>
-
-         <!-- Round info -->
-         <HBox spacing="10" alignment="CENTER_LEFT">
-            <Text text="Round:">
-               <font><Font size="53.0"/></font>
-            </Text>
-            <Label fx:id="roundLabel" text="R1">
-               <font><Font size="52.0"/></font>
-            </Label>
-         </HBox>
-
-         <!-- Cat graphic pieces -->
-         <VBox spacing="5" alignment="CENTER">
-            <ImageView fx:id="catShadow"
-                       pickOnBounds="true" preserveRatio="true"
-                       fitWidth="200.0" fitHeight="150.0">
-               <image>
-                  <Image url="@../../images/cat/cat-outline.png"/>
-               </image>
-            </ImageView>
-            <ImageView fx:id="catTopHead" visible="false"
-                       pickOnBounds="true" preserveRatio="true"
-                       fitWidth="200.0" fitHeight="60.0">
-               <image>
-                  <Image url="@../../images/cat/top-head.png"/>
-               </image>
-            </ImageView>
-            <ImageView fx:id="catEyes" visible="false"
-                       pickOnBounds="true" preserveRatio="true"
-                       fitWidth="150.0" fitHeight="40.0">
-               <image>
-                  <Image url="@../../images/cat/eyes.png"/>
-               </image>
-            </ImageView>
-            <ImageView fx:id="catSnout" visible="false"
-                       pickOnBounds="true" preserveRatio="true"
-                       fitWidth="80.0"  fitHeight="50.0">
-               <image>
-                  <Image url="@../../images/cat/snout.png"/>
-               </image>
-            </ImageView>
-            <ImageView fx:id="catLeftWhiskers" visible="false"
-                       pickOnBounds="true" preserveRatio="true"
-                       fitWidth="80.0"  fitHeight="80.0">
-               <image>
-                  <Image url="@../../images/cat/left-whiskers.png"/>
-               </image>
-            </ImageView>
-            <ImageView fx:id="catRightWhiskers" visible="false"
-                       pickOnBounds="true" preserveRatio="true"
-                       fitWidth="80.0"  fitHeight="80.0">
-               <image>
-                  <Image url="@../../images/cat/right-whiskers.png"/>
-               </image>
-            </ImageView>
-            <ImageView fx:id="catBottomHead" visible="false"
-                       pickOnBounds="true" preserveRatio="true"
-                       fitWidth="200.0" fitHeight="60.0">
-               <image>
-                  <Image url="@../../images/cat/bottom-head.png"/>
-               </image>
-            </ImageView>
-         </VBox>
-
-         <!-- Lives display -->
-         <HBox spacing="5" alignment="CENTER">
-            <Text text="Lives:">
-               <font><Font size="43.0"/></font>
-            </Text>
-            <Label fx:id="lifeCountLabel" text="5">
-               <font><Font size="47.0"/></font>
-            </Label>
-         </HBox>
-      </VBox>
-   </right>
-
-   <!-- CENTER: title, blanks, alphabet -->
-   <center>
-      <VBox spacing="30" alignment="CENTER" BorderPane.alignment="CENTER">
-         <padding>
-            <Insets top="20" right="20" bottom="20" left="20"/>
-         </padding>
-
-         <!-- Game title -->
-         <Label text="What's the Word?">
-            <font><Font name="Marykate" size="60.0"/></font>
-         </Label>
-
-         <!-- Dynamically populated blanks -->
-         <FlowPane fx:id="wordFlow"
-                   hgap="10" vgap="10"
-                   prefWrapLength="700"
-                   alignment="CENTER">
-            <padding>
-               <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
-         </FlowPane>
-
-         <!-- Dynamically populated alphabet keys -->
-         <FlowPane fx:id="alphabetFlow"
-                   hgap="5" vgap="5"
-                   prefWrapLength="700"
-                   alignment="CENTER">
-            <padding>
-               <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
-         </FlowPane>
-      </VBox>
-   </center>
-
-</BorderPane>
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="778.0" prefWidth="1167.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.GameRoomPageView">
+   <children>
+      <ImageView fx:id="gameRoomBackgroundImage" fitHeight="778.0" fitWidth="1175.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../images/testUI/game_room.png" />
+         </image>
+      </ImageView>
+      <BorderPane prefHeight="760.0" prefWidth="1300.0">
+         <left>
+            <Pane prefHeight="778.0" prefWidth="557.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label layoutX="152.0" layoutY="142.0" text="What's the Word?">
+                     <font>
+                        <Font name="Pencilant Script" size="57.0" />
+                     </font>
+                  </Label>
+                  <FlowPane fx:id="wordFlow" alignment="CENTER" hgap="10" layoutX="134.0" layoutY="275.0" prefHeight="40.0" prefWidth="395.0" prefWrapLength="700" vgap="10">
+                     <padding>
+                        <Insets bottom="20" left="20" right="20" top="20" />
+                     </padding>
+                  </FlowPane>
+                  <FlowPane fx:id="alphabetFlow" alignment="CENTER" hgap="5" layoutX="117.0" layoutY="413.0" prefHeight="40.0" prefWidth="409.0" prefWrapLength="700" vgap="5">
+                     <padding>
+                        <Insets bottom="20" left="20" right="20" top="20" />
+                     </padding>
+                  </FlowPane>
+               </children>
+            </Pane>
+         </left>
+         <right>
+            <Pane prefHeight="778.0" prefWidth="611.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER_LEFT" layoutX="118.0" layoutY="141.0" spacing="10">
+                     <children>
+                        <Text text="Round:">
+                           <font>
+                              <Font name="Pencilant Script" size="60.0" />
+                           </font>
+                        </Text>
+                        <Label fx:id="roundLabel" text="R1">
+                           <font>
+                              <Font name="Pencilant Script" size="60.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <StackPane layoutX="29.0" layoutY="230.0" prefHeight="305.0" prefWidth="415.0">
+                     <children>
+                        <ImageView fx:id="catShadow1" fitHeight="220.0" fitWidth="311.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/cat/cat-outline.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="catTopHead1" fitHeight="77.0" fitWidth="324.0" pickOnBounds="true" preserveRatio="true" translateY="-70.0">
+                           <image>
+                              <Image url="@../../images/cat/top-head.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="catEyes1" fitHeight="44.0" fitWidth="137.0" pickOnBounds="true" preserveRatio="true" translateX="2.0" translateY="-6.0">
+                           <image>
+                              <Image url="@../../images/cat/eyes.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="catSnout1" fitHeight="57.0" fitWidth="76.0" pickOnBounds="true" preserveRatio="true" translateX="-12.0" translateY="40.0">
+                           <image>
+                              <Image url="@../../images/cat/snout.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="catBottomHead1" fitHeight="51.0" fitWidth="187.0" pickOnBounds="true" preserveRatio="true" translateX="-16.0" translateY="86.0">
+                           <image>
+                              <Image url="@../../images/cat/bottom-head.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="catRightWhiskers1" fitHeight="74.0" fitWidth="84.0" pickOnBounds="true" preserveRatio="true" translateX="112.0" translateY="19.0">
+                           <image>
+                              <Image url="@../../images/cat/right-whiskers.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="catLeftWhiskers1" fitHeight="88.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" translateX="-115.0" translateY="12.0">
+                           <image>
+                              <Image url="@../../images/cat/left-whiskers.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </StackPane>
+                  <HBox alignment="CENTER" layoutX="306.0" layoutY="541.0" spacing="5">
+                     <children>
+                        <Text text="Lives:">
+                           <font>
+                              <Font name="Pencilant Script" size="54.0" />
+                           </font>
+                        </Text>
+                        <Label fx:id="lifeCountLabel1" text="5">
+                           <font>
+                              <Font name="Pencilant Script" size="54.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+            </Pane>
+         </right>
+      </BorderPane>
+   </children>
+</StackPane>

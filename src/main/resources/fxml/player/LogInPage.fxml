@@ -1,77 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.GaussianBlur?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.LoginPageView">
-   <top>
-      <VBox alignment="CENTER" prefHeight="357.0" prefWidth="1300.0" BorderPane.alignment="CENTER">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1140.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.LoginPageView">
+   <children>
+      <StackPane prefHeight="760.0" prefWidth="1140.0">
          <children>
-            <Label fx:id="title1Label" alignment="CENTER" prefHeight="94.0" prefWidth="732.0" text="What's the" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
-               <font>
-                  <Font name="Marykate" size="140.0" />
-               </font>
-            </Label>
-            <Label fx:id="title2Label" alignment="CENTER" layoutX="294.0" layoutY="119.0" prefHeight="96.0" prefWidth="732.0" text=" Word?" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
-               <font>
-                  <Font name="Marykate" size="140.0" />
-               </font>
-               <VBox.margin>
-                  <Insets top="-20.0" />
-               </VBox.margin>
-            </Label>
+            <ImageView fitHeight="760.0" fitWidth="1300.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/testUI/shack-with-sign.png" />
+               </image>
+            </ImageView>
+            <BorderPane prefHeight="200.0" prefWidth="200.0">
+               <center>
+                  <StackPane prefHeight="760.0" prefWidth="912.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" opacity="0.31" prefHeight="225.0" prefWidth="468.0" styleClass="glass-card" stylesheets="@../../../../../../temp/resources/css/styles.css" translateY="30.0">
+                           <effect>
+                              <GaussianBlur radius="63.0" />
+                           </effect>
+                        </Pane>
+                        <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="306.0" prefWidth="530.0">
+                           <children>
+                              <Label fx:id="loginLabel" alignment="CENTER" prefHeight="42.0" prefWidth="166.0" text="Log In" textFill="WHITE">
+                                 <font>
+                                    <Font name="Marykate" size="49.0" />
+                                 </font>
+                              </Label>
+                              <StackPane prefHeight="150.0" prefWidth="200.0">
+                                 <children>
+                                    <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="219.0" prefWidth="556.0" spacing="10.0">
+                                       <children>
+                                          <HBox alignment="CENTER" prefHeight="28.0" prefWidth="556.0">
+                                             <children>
+                                                <Label fx:id="promptLabel" textFill="#e19393">
+                                                   <font>
+                                                      <Font name="Marykate" size="23.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <TextField fx:id="usernameField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="300.0" promptText="Username" style="-fx-background-radius: 7; -fx-background-color: transparent;" styleClass="login-field" stylesheets="@../../../../../../temp/resources/css/styles.css">
+                                             <font>
+                                                <Font name="Amatic SC Bold" size="20.0" />
+                                             </font>
+                                          </TextField>
+                                          <PasswordField fx:id="passwordField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="300.0" promptText="Password" style="-fx-background-color: transparent;" styleClass="login-field" stylesheets="@../../../../../../temp/resources/css/styles.css">
+                                             <font>
+                                                <Font name="Amatic SC Bold" size="20.0" />
+                                             </font>
+                                          </PasswordField>
+                                          <HBox alignment="CENTER" prefHeight="49.0" prefWidth="493.0">
+                                             <children>
+                                                <Button fx:id="quitButton" mnemonicParsing="false" prefHeight="48.0" prefWidth="67.0" styleClass="login-quit-button" stylesheets="@../../../../../../temp/resources/css/styles.css" text="Quit" textFill="WHITE" translateX="70.0">
+                                                   <font>
+                                                      <Font name="Amatic SC Bold" size="24.0" />
+                                                   </font>
+                                                </Button>
+                                                <Button fx:id="continueButton" alignment="CENTER" cancelButton="true" maxHeight="40.0" maxWidth="-Infinity" minHeight="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" styleClass="login-continue-button" stylesheets="@../../../../../../temp/resources/css/styles.css" text="Continue" textAlignment="CENTER" translateX="70.0" wrapText="true">
+                                                   <font>
+                                                      <Font name="Amatic SC Bold" size="20.0" />
+                                                   </font>
+                                                </Button>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </StackPane>
+                           </children>
+                        </VBox>
+                     </children>
+                  </StackPane>
+               </center>
+            </BorderPane>
          </children>
-      </VBox>
-   </top>
-   <center>
-      <VBox alignment="TOP_CENTER" prefHeight="364.0" prefWidth="1300.0" spacing="10.0" BorderPane.alignment="CENTER">
-         <children>
-            <Label fx:id="loginLabel" alignment="CENTER" text="Log In">
-               <font>
-                  <Font name="Amatic SC Bold" size="43.0" />
-               </font>
-            </Label>
-            <TextField fx:id="usernameField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="414.0" promptText="Username" style="-fx-background-radius: 7;" styleClass="login-field" stylesheets="@../../css/styles.css">
-               <font>
-                  <Font name="Amatic SC Bold" size="20.0" />
-               </font>
-            </TextField>
-            <PasswordField fx:id="passwordField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="414.0" promptText="Password" styleClass="login-field" stylesheets="@../../css/styles.css">
-               <font>
-                  <Font name="Amatic SC Bold" size="20.0" />
-               </font>
-            </PasswordField>
-            <HBox alignment="CENTER" prefHeight="14.0" prefWidth="1300.0">
-               <children>
-                  <Label fx:id="promptLabel" alignment="CENTER" textFill="#e44545" wrapText="true">
-                     <font>
-                        <Font name="Marykate" size="18.0" />
-                     </font>
-                  </Label>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="0.0" prefWidth="1300.0">
-               <children>
-                  <Button fx:id="quitButton" mnemonicParsing="false" styleClass="login-quit-button" stylesheets="@../../css/styles.css" text="Quit" translateX="123.0">
-                     <font>
-                        <Font name="Amatic SC Bold" size="24.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="continueButton" alignment="CENTER" cancelButton="true" maxHeight="40.0" maxWidth="-Infinity" minHeight="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" styleClass="login-continue-button" stylesheets="@../../css/styles.css" text="Continue" textAlignment="CENTER" textFill="WHITE" translateX="123.0" wrapText="true">
-                     <font>
-                        <Font name="Amatic SC Bold" size="20.0" />
-                     </font>
-                  </Button>
-               </children>
-            </HBox>
-         </children>
-      </VBox>
-   </center>
-</BorderPane>
+      </StackPane>
+   </children>
+</Pane>

@@ -27,7 +27,7 @@ public class Server_Java {
     public static void main(String[] args) {
         try {
             // Configured ORB host and port
-            String hostIP = "192.168.191.28";
+            String hostIP = "localhost"; //192.168.191.28
             String[] orbArgs = {"-ORBInitialPort", "2000", "-ORBInitialHost", hostIP};
             ORB orb = ORB.init(orbArgs, null);
 

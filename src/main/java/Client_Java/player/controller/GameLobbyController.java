@@ -46,7 +46,7 @@ public class GameLobbyController {
         view.setActionEnterGameButton(this::handleEnterGame);
         view.setActionQuitButton(this::handleQuit);
         view.setActionAboutButton(this::handleAbout);
-        view.setActionRefreshLeaderboardButton(this::refreshLeaderboard);
+//        view.setActionRefreshLeaderboardButton(this::refreshLeaderboard);
 
         // Initial Leaderboard Load
         loadLeaderboard();

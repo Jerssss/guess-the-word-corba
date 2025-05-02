@@ -7,94 +7,108 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Circle?>
-<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.WaitingRoomView">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="764.0" prefWidth="1145.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.WaitingRoomView">
    <children>
-      <Pane prefHeight="98.0" prefWidth="1300.0">
+      <ImageView fx:id="waitingRoomBackgroundView" fitHeight="765.0" fitWidth="1229.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../images/testUI/waiting_room.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="flame1" fitHeight="82.0" fitWidth="153.0" pickOnBounds="true" preserveRatio="true" translateX="-375.0" translateY="80.0">
+         <image>
+            <Image url="@../../images/testUI/fire-nobg.gif" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="flame2" fitHeight="85.0" fitWidth="148.0" pickOnBounds="true" preserveRatio="true" translateX="260.0" translateY="200.0">
+         <image>
+            <Image url="@../../images/testUI/fire-nobg.gif" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="flame4" fitHeight="76.0" fitWidth="142.0" pickOnBounds="true" preserveRatio="true" translateX="485.0" translateY="130.0">
+         <image>
+            <Image url="@../../images/testUI/fire-nobg.gif" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="flame3" fitHeight="76.0" fitWidth="142.0" pickOnBounds="true" preserveRatio="true" translateX="-245.0" translateY="137.0">
+         <image>
+            <Image url="@../../images/testUI/fire-nobg.gif" />
+         </image>
+      </ImageView>
+      <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="769.0" prefWidth="1148.0">
          <children>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="99.0" stroke="#ffffff00" strokeType="INSIDE" width="1300.0" />
-            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="1300.0">
+            <Pane prefHeight="98.0" prefWidth="1300.0">
                <children>
-                  <Pane prefHeight="100.0" prefWidth="427.0">
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="1148.0">
                      <children>
-                        <ImageView fitHeight="72.0" fitWidth="84.0" layoutX="43.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../images/logo.png" />
-                           </image>
-                        </ImageView>
+                        <Pane prefHeight="100.0" prefWidth="410.0" translateX="80.0">
+                           <children>
+                              <Label fx:id="waitingRoomLabel" layoutX="13.0" layoutY="14.0" text="WAITING ROOM" textFill="WHITE">
+                                 <font>
+                                    <Font name="Marykate" size="72.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="91.0" prefWidth="175.0" translateX="250.0">
+                           <children>
+                              <Button id="cancelBT" fx:id="cancelButton" layoutX="28.0" layoutY="15.0" mnemonicParsing="false" prefHeight="62.0" prefWidth="121.0" styleClass="lobby-about-button" stylesheets="@../../css/styles.css" text="CANCEL" textFill="WHITE">
+                                 <font>
+                                    <Font name="Amatic SC Bold" size="31.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </Pane>
                      </children>
-                  </Pane>
-                  <Pane prefHeight="100.0" prefWidth="410.0">
-                     <children>
-                        <Text layoutX="70.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WAITING ROOM">
-                           <font>
-                              <Font name="Marykate" size="63.0" />
-                           </font>
-                        </Text>
-                     </children>
-                  </Pane>
-                  <Pane prefHeight="100.0" prefWidth="443.0">
-                     <children>
-                        <Button id="cancelBT" fx:id="cancelButton" layoutX="265.0" layoutY="22.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="137.0" styleClass="lobby-about-button" stylesheets="@../../css/styles.css" text="CANCEL">
-                           <font>
-                              <Font name="Amatic SC Bold" size="31.0" />
-                           </font>
-                        </Button>
-                     </children>
-                  </Pane>
-               </children>
-               <padding>
-                  <Insets top="9.0" />
-               </padding>
-            </HBox>
-         </children>
-      </Pane>
-      <HBox alignment="CENTER" prefHeight="563.0" prefWidth="1300.0">
-         <children>
-            <Pane>
-               <children>
-                  <Circle fill="WHITE" layoutX="203.0" layoutY="276.0" radius="202.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="17.0" visible="false" />
-                  <Label fx:id="countdownLabel" alignment="CENTER" layoutX="83.0" layoutY="130.0" prefHeight="292.0" prefWidth="225.0" text="10" textAlignment="CENTER">
-                     <font>
-                        <Font name="Amatic SC Bold" size="180.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="secondsLabel" alignment="CENTER" layoutX="93.0" layoutY="341.0" prefHeight="91.0" prefWidth="225.0" text="seconds" textAlignment="CENTER">
-                     <font>
-                        <Font name="Amatic SC Bold" size="46.0" />
-                     </font>
-                  </Label>
+                     <padding>
+                        <Insets top="9.0" />
+                     </padding>
+                  </HBox>
                </children>
             </Pane>
-         </children>
-      </HBox>
-      <Pane layoutX="10.0" layoutY="10.0" prefHeight="94.0" prefWidth="1300.0">
-         <children>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="99.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="1300.0" />
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="64.0" layoutY="17.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="1300.0" />
-            <HBox alignment="CENTER" layoutX="419.0" layoutY="2.0" prefHeight="100.0" prefWidth="452.0">
+            <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="563.0" prefWidth="1147.0">
                <children>
-                  <Label text="PLAYERS: ">
-                     <font>
-                        <Font name="Marykate" size="50.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="playerCountLabel" text="10">
-                     <font>
-                        <Font name="Marykate" size="48.0" />
-                     </font>
-                  </Label>
+                  <Pane prefHeight="563.0" prefWidth="411.0">
+                     <children>
+                        <Label fx:id="countdownLabel" alignment="CENTER" layoutX="75.0" layoutY="136.0" prefHeight="292.0" prefWidth="225.0" text="10" textAlignment="CENTER" textFill="WHITE">
+                           <font>
+                              <Font name="Amatic SC Bold" size="180.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="secondsLabel" alignment="CENTER" layoutX="85.0" layoutY="347.0" prefHeight="91.0" prefWidth="225.0" text="seconds" textAlignment="CENTER" textFill="WHITE">
+                           <font>
+                              <Font name="Amatic SC Bold" size="46.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </Pane>
                </children>
             </HBox>
+            <Pane layoutX="10.0" layoutY="10.0" prefHeight="94.0" prefWidth="1300.0">
+               <children>
+                  <HBox alignment="CENTER" layoutX="348.0" layoutY="-3.0" prefHeight="100.0" prefWidth="452.0">
+                     <children>
+                        <Label fx:id="playersLabel" text="PLAYERS: " textFill="WHITE">
+                           <font>
+                              <Font name="Marykate" size="50.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="playerCountLabel" text="10" textFill="WHITE">
+                           <font>
+                              <Font name="Marykate" size="48.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </Pane>
          </children>
-         <VBox.margin>
-            <Insets />
-         </VBox.margin>
-      </Pane>
+      </VBox>
    </children>
-</VBox>
+</StackPane>
