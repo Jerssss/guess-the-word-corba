@@ -13,6 +13,8 @@ public class GameRoomView {
 
     @FXML private Label      roundLabel;
     @FXML private Label      lifeCountLabel;
+    @FXML private Label      timerLabel;           // ← new timer label
+
     @FXML private FlowPane   wordFlow;
     @FXML private FlowPane   alphabetFlow;
 
@@ -25,12 +27,14 @@ public class GameRoomView {
     @FXML private ImageView  catBottomHead;
 
     // getters for Controller
-    public BorderPane getRootPane()       { return rootPane;       }
-    public Pane       getGameContentPane(){ return gameContentPane;}
-    public Label      getRoundLabel()     { return roundLabel;     }
-    public Label      getLifeCountLabel() { return lifeCountLabel; }
-    public FlowPane   getWordFlow()       { return wordFlow;       }
-    public FlowPane   getAlphabetFlow()   { return alphabetFlow;   }
+    public BorderPane getRootPane()        { return rootPane;       }
+    public Pane       getGameContentPane() { return gameContentPane;}
+    public Label      getRoundLabel()      { return roundLabel;     }
+    public Label      getLifeCountLabel()  { return lifeCountLabel; }
+    public Label      getTimerLabel()      { return timerLabel;     } // ← expose it
+
+    public FlowPane   getWordFlow()        { return wordFlow;       }
+    public FlowPane   getAlphabetFlow()    { return alphabetFlow;   }
 
     public ImageView getCatShadow()        { return catShadow;       }
     public ImageView getCatTopHead()       { return catTopHead;      }

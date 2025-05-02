@@ -31,7 +31,16 @@ public class GameRoomModel {
         }
 
     }
-
+    public int getRoundDuration(String sessionToken) {
+        try {
+            StringHolder h = new StringHolder();
+            gameService.getSetting("round_duration", h, sessionToken);
+            return Integer.parseInt(h.value);
+        } catch (Exception e) {
+            System.err.println("[GameRoomModel] getRoundDuration failed: " + e.getMessage());
+            return 0;
+        }
+    }
     public String getRandomWord(String gameToken, int roundNumber, int playerId, String sessionToken) {
         try {
             return gameService.getRandomWord(gameToken, roundNumber, playerId, sessionToken);
@@ -40,6 +49,17 @@ public class GameRoomModel {
             return "";
         }
     }
+    public int getTotalRounds(String sessionToken) {
+        try {
+            StringHolder h = new StringHolder();
+            gameService.getSetting("total_rounds", h, sessionToken);
+            return Integer.parseInt(h.value);
+        } catch (Exception e) {
+            System.err.println("[GameRoomModel] getTotalRounds failed: " + e.getMessage());
+            return 0;
+        }
+    }
+
 
     public List<Integer> guessLetter(String gameToken,
                                      int playerId,
