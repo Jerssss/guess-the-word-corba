@@ -16,7 +16,7 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="Client_Java.player.view.GameRoomView">
 
-   <!-- RIGHT SIDE: round info, cat graphic, lives -->
+   <!-- RIGHT SIDE: round info, cat graphic, lives, timer -->
    <right>
       <VBox spacing="20" BorderPane.alignment="CENTER">
          <padding>
@@ -25,10 +25,11 @@
 
          <!-- Round info -->
          <HBox spacing="10" alignment="CENTER_LEFT">
-            <Text text="Round:">
+            <Text text="">
                <font><Font size="53.0"/></font>
             </Text>
-            <Label fx:id="roundLabel" text="R1">
+            <!-- Only the number now (blank at startup) -->
+            <Label fx:id="roundLabel" text="">
                <font><Font size="52.0"/></font>
             </Label>
          </HBox>
@@ -88,13 +89,24 @@
 
          <!-- Lives display -->
          <HBox spacing="5" alignment="CENTER">
-            <Text text="Lives:">
+            <Text text="">
                <font><Font size="43.0"/></font>
             </Text>
             <Label fx:id="lifeCountLabel" text="5">
                <font><Font size="47.0"/></font>
             </Label>
          </HBox>
+
+         <!-- Timer display -->
+         <HBox spacing="5" alignment="CENTER">
+            <Text text="Time:">
+               <font><Font size="43.0"/></font>
+            </Text>
+            <Label fx:id="timerLabel" text="00:00">
+               <font><Font size="47.0"/></font>
+            </Label>
+         </HBox>
+
       </VBox>
    </right>
 
