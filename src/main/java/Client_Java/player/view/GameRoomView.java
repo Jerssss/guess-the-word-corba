@@ -1,14 +1,15 @@
+// File: Client_Java/player/view/GameRoomView.java
 package Client_Java.player.view;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.control.Label;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 
 import java.io.InputStream;
@@ -19,7 +20,7 @@ public class GameRoomView {
 
     @FXML private Label      roundLabel;
     @FXML private Label      lifeCountLabel;
-    @FXML private Label      timerLabel;           // ← new timer label
+    @FXML private Label      timerLabel;
 
     @FXML private Button quitButton;
 
@@ -34,38 +35,34 @@ public class GameRoomView {
     @FXML private ImageView  catRightWhiskers;
     @FXML private ImageView  catBottomHead;
 
-    @FXML
-    private ImageView gameRoomBackgroundImage;
+    @FXML private ImageView  gameRoomBackgroundImage;
 
     private Font amaticSC;
     private Font pencilant;
-    private final String AMATICSC_FONT_PATH = "/css/fonts/AmaticSC-Bold.ttf";
+    private final String AMATICSC_FONT_PATH  = "/css/fonts/AmaticSC-Bold.ttf";
     private final String PENCILANT_FONT_PATH = "/css/fonts/Pencilant Script.ttf";
 
-    public void initialize() {
-
+    @FXML
+    private void initialize() {
         loadImage(gameRoomBackgroundImage, "/images/testUI/game_room.png");
 
         loadImage(catShadow, "/images/cat/cat-outline.png");
-        loadImage(catTopHead,"/images/cat/top-head.png");
-        loadImage(catEyes,"/images/cat/eyes.png");
-        loadImage(catLeftWhiskers,"/images/cat/left-whiskers.png");
-        loadImage(catRightWhiskers,"/images/cat/right-whiskers.png");
-        loadImage(catSnout,"/images/cat/snout.png");
-        loadImage(catBottomHead,"images/cat/bottom-head.png");
+        loadImage(catTopHead, "/images/cat/top-head.png");
+        loadImage(catEyes, "/images/cat/eyes.png");
+        loadImage(catLeftWhiskers, "/images/cat/left-whiskers.png");
+        loadImage(catRightWhiskers, "/images/cat/right-whiskers.png");
+        loadImage(catSnout, "/images/cat/snout.png");
+        loadImage(catBottomHead, "/images/cat/bottom-head.png");
 
         loadCustomFonts();
         applyFonts();
-
     }
 
     private void loadCustomFonts() {
         try {
-            // Load fonts to Font objects
-            amaticSC = Font.loadFont(getClass().getResourceAsStream(AMATICSC_FONT_PATH), 10);
+            amaticSC  = Font.loadFont(getClass().getResourceAsStream(AMATICSC_FONT_PATH), 10);
             pencilant = Font.loadFont(getClass().getResourceAsStream(PENCILANT_FONT_PATH), 10);
 
-            // Fallbacks when the loading should fail
             if (amaticSC == null) {
                 System.err.println("AmaticSC font not loaded. Using system font.");
                 amaticSC = Font.font("System", 12);
@@ -76,46 +73,21 @@ public class GameRoomView {
             }
         } catch (Exception e) {
             System.err.println("[ERROR] Font loading exception: " + e.getMessage());
-            amaticSC = Font.font("System", 12);
+            amaticSC  = Font.font("System", 12);
             pencilant = Font.font("System", 12);
         }
     }
 
     private void applyFonts() {
-        // Font application to fields and labels
-//        if (waitingRoomLabel != null) {
-//            waitingRoomLabel.setFont(Font.font(maryKate.getFamily(), 72));
-//        }
-//        if (playerCountLabel != null) {
-//            playerCountLabel.setFont(Font.font(maryKate.getFamily(), 48));
-//        }
-//
-//        // Font application to buttons and titles
-//        if (cancelButton != null) {
-//            cancelButton.setFont(Font.font(amaticSC.getFamily(), 31));
-//        }
-//
-//        if (countdownLabel != null) {
-//            countdownLabel.setFont(Font.font(amaticSC.getFamily(), 180));
-//        }
-//        if (playersLabel != null) {
-//            playersLabel.setFont(Font.font(maryKate.getFamily(), 50));
-//        }
-//        if (secondsLabel != null) {
-//            secondsLabel.setFont(Font.font(amaticSC.getFamily(), 46));
-//        }
-
+        // Apply fonts as needed to labels/buttons when desired
     }
 
     private void loadImage(ImageView imageView, String resourcePath) {
         try {
-            // Try from resources first
             InputStream is = getClass().getResourceAsStream(resourcePath);
             if (is != null) {
                 imageView.setImage(new Image(is));
-                System.out.println("Loaded image: " + resourcePath);
             } else {
-                // backup
                 String absPath = "file:src/main/resources" + resourcePath;
                 imageView.setImage(new Image(absPath));
             }
@@ -126,29 +98,48 @@ public class GameRoomView {
     }
 
     @FXML
-    public void handleQuitButton(ActionEvent event){
-        //quitlogic
+    public void handleQuitButton(ActionEvent event) {
+        // wired by controller
     }
 
-
-
-    // getters for Controller
+    // Getters for Controller
     public BorderPane getRootPane()        { return rootPane;       }
     public Pane       getGameContentPane() { return gameContentPane;}
     public Label      getRoundLabel()      { return roundLabel;     }
     public Label      getLifeCountLabel()  { return lifeCountLabel; }
-    public Label      getTimerLabel()      { return timerLabel;     } // ← expose it
-
+    public Label      getTimerLabel()      { return timerLabel;     }
+    public Button     getQuitButton()      { return quitButton;     }
     public FlowPane   getWordFlow()        { return wordFlow;       }
     public FlowPane   getAlphabetFlow()    { return alphabetFlow;   }
+    public ImageView  getCatShadow()       { return catShadow;      }
+    public ImageView  getCatTopHead()      { return catTopHead;     }
+    public ImageView  getCatEyes()         { return catEyes;        }
+    public ImageView  getCatSnout()        { return catSnout;       }
+    public ImageView  getCatLeftWhiskers(){ return catLeftWhiskers;}
+    public ImageView  getCatRightWhiskers(){ return catRightWhiskers;}
+    public ImageView  getCatBottomHead()   { return catBottomHead;  }
 
-    public Button getQuitButton() { return quitButton; }
+    // Convenience methods for enabling/disabling/resetting alphabet
+    public void disableAlphabetButtons() {
+        alphabetFlow.getChildren().forEach(n -> n.setDisable(true));
+    }
 
-    public ImageView getCatShadow()        { return catShadow;       }
-    public ImageView getCatTopHead()       { return catTopHead;      }
-    public ImageView getCatEyes()          { return catEyes;         }
-    public ImageView getCatSnout()         { return catSnout;        }
-    public ImageView getCatLeftWhiskers()  { return catLeftWhiskers; }
-    public ImageView getCatRightWhiskers() { return catRightWhiskers;}
-    public ImageView getCatBottomHead()    { return catBottomHead;   }
+    public void enableAlphabetButtons() {
+        alphabetFlow.getChildren().forEach(n -> n.setDisable(false));
+    }
+
+    public void resetAlphabetButtons() {
+        alphabetFlow.getChildren().forEach(n -> {
+            n.setDisable(false);
+            // no-op text reset to refresh style if needed
+        });
+    }
+
+    public void disableLetterButton(char letter) {
+        alphabetFlow.getChildren().stream()
+                .map(n -> (Button)n)
+                .filter(b -> b.getText().charAt(0) == letter)
+                .findFirst()
+                .ifPresent(b -> b.setDisable(true));
+    }
 }

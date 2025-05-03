@@ -122,6 +122,7 @@ public class GameServiceImpl extends GameServicePOA {
             return sessionToGame.get(sessionToken);
         }
 
+        // 1) Find or create a lobby
         Lobby target = null;
         for (Lobby l : lobbies.values()) {
             if (l.players.size() < l.minimumPlayers) {
@@ -157,6 +158,7 @@ public class GameServiceImpl extends GameServicePOA {
                     ", lives=" + target.numberOfLives + "]");
         }
 
+        // 2) Add player if not already in
         if (!target.players.contains(playerID)) {
             target.players.add(playerID);
             sessionToGame.put(sessionToken, target.token);
@@ -165,6 +167,7 @@ public class GameServiceImpl extends GameServicePOA {
                     " (count=" + target.players.size() + ")");
         }
 
+        // 3) Notify all waiting‐room callbacks of the new player count
         for (WaitingRoomGameCallbackService cb : target.waitingCallbacks) {
             try {
                 cb.notifyPlayerJoined(
@@ -175,12 +178,16 @@ public class GameServiceImpl extends GameServicePOA {
             } catch (Exception ignored) {}
         }
 
+        // 4) If we now have enough players, start the countdown sequence
         if (target.players.size() == target.minimumPlayers) {
+            // Cancel any existing pending countdown for this lobby
             ScheduledFuture<?> oldTask = pendingCountdowns.remove(target.token);
             if (oldTask != null) oldTask.cancel(false);
 
             Lobby lobbyRef = target;
+            // Schedule the countdown start almost immediately
             ScheduledFuture<?> newTask = countdownScheduler.schedule(() -> {
+                // A) Broadcast “countdown start” to all waiting‐room callbacks
                 for (WaitingRoomGameCallbackService cb : lobbyRef.waitingCallbacks) {
                     try {
                         cb.notifyCountdownStart(
@@ -190,8 +197,22 @@ public class GameServiceImpl extends GameServicePOA {
                         );
                     } catch (Exception ignored) {}
                 }
-                System.out.println("[GameService DEBUG] notifyCountdownStart sent for lobby=" +
-                        lobbyRef.token);
+                System.out.println("[GameService DEBUG] notifyCountdownStart sent for lobby="
+                        + lobbyRef.token);
+
+                // B) Schedule the actual game start after countdownSeconds
+                countdownScheduler.schedule(() -> {
+                    for (GameCallBackService gcb : lobbyRef.callbacks.values()) {
+                        try {
+                            gcb.notifyGameStart(lobbyRef.token, sessionToken);
+                        } catch (Exception ignored) {}
+                    }
+                    System.out.println("[GameService DEBUG] notifyGameStart sent for lobby="
+                            + lobbyRef.token);
+
+                    // Optionally: clean up lobby here if you wish
+                }, lobbyRef.countdownSeconds, TimeUnit.SECONDS);
+
             }, 100, TimeUnit.MILLISECONDS);
 
             pendingCountdowns.put(target.token, newTask);
@@ -200,6 +221,7 @@ public class GameServiceImpl extends GameServicePOA {
         debugPrintAllLobbies("joinLobby");
         return target.token;
     }
+
 
     @Override
     public synchronized void leaveLobby(int playerID,
@@ -281,24 +303,35 @@ public class GameServiceImpl extends GameServicePOA {
                 + token + ": " + size);
         return size;
     }
-
     @Override
-    public int startGame(int playerID, String sessionToken) throws NotEnoughPlayersException {
+    public synchronized int startGame(int playerID, String sessionToken)
+            throws NotEnoughPlayersException {
         String token = sessionToGame.get(sessionToken);
-        Lobby lobby = (token == null ? null : lobbies.get(token));
-        if (lobby == null || lobby.players.size() < DEFAULT_MIN_PLAYERS)
+        Lobby lobby   = (token == null ? null : lobbies.get(token));
+        if (lobby == null || lobby.players.size() < DEFAULT_MIN_PLAYERS) {
             throw new NotEnoughPlayersException();
-
-        for (GameCallBackService cb : lobby.callbacks.values()) {
-            try { cb.notifyGameStart(token, sessionToken); }
-            catch (Exception ignored) {}
         }
 
-        lobbies.remove(token);
-        sessionToGame.values().removeIf(t -> t.equals(token));
-        sessionToCallback.keySet().removeIf(st -> !sessionToGame.containsKey(st));
-        sessionToWaitingCallback.keySet().removeIf(st -> !sessionToGame.containsKey(st));
+        // 1) Notify all clients that the game is starting
+        for (GameCallBackService cb : lobby.callbacks.values()) {
+            try {
+                cb.notifyGameStart(token, sessionToken);
+            } catch (Exception ignored) {}
+        }
+        System.out.println("[GameService DEBUG] notifyGameStart sent for lobby=" + token);
 
+        // 2) Kick off ROUND 1 immediately on the server
+        //    Pick the same playerID and sessionToken (doesn't matter who),
+        //    so that notifyRoundStart(1) is broadcast.
+        try {
+            startRound(token, 1, playerID, sessionToken);
+        } catch (Exception e) {
+            // Shouldn't happen: we know the game exists and has players
+            e.printStackTrace();
+        }
+
+        // 3) Do *not* remove the lobby here—let cleanup happen after the last round
+        //    That way future startRound/guessLetter calls work correctly.
         return lobby.players.size();
     }
 

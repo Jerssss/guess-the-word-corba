@@ -24,6 +24,11 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
     private final Map<Integer, String> sessionTokens =
             Collections.synchronizedMap(new HashMap<>());
 
+    /** new: allow external code to check if a token is known/valid */
+    public synchronized boolean isTokenValid(String token) {
+        return sessionTokens.containsValue(token);
+    }
+
     @Override
     public synchronized String login(String username, String password, IntHolder playerID, LoginCallbackService cb)
             throws AuthenticationException, AlreadyLoggedInException {

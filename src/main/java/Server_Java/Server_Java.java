@@ -6,8 +6,9 @@ import Server_Java.idls.AuthenticationIDL.AuthenticationService;
 import Server_Java.idls.AuthenticationIDL.AuthenticationServiceHelper;
 import Server_Java.idls.GameIDL.GameService;
 import Server_Java.idls.GameIDL.GameServiceHelper;
-import Server_Java.idls.PlayerCallBackIDL.*;
-import Server_Java.implementation.*;
+import Server_Java.implementation.AuthenticationServiceImpl;
+import Server_Java.implementation.GameServiceImpl;
+import Server_Java.implementation.AdminServiceImpl;
 
 import org.omg.CORBA.ORB;
 import org.omg.CosNaming.NamingContextExt;
@@ -22,69 +23,56 @@ import java.util.Set;
 
 public class Server_Java {
 
-    private static final Set<String> activeClients = Collections.synchronizedSet(new HashSet<>());
+    private static final Set<String> activeClients =
+            Collections.synchronizedSet(new HashSet<>());
 
     public static void main(String[] args) {
         try {
-            // Configured ORB host and port
-            String hostIP = "localhost"; //192.168.191.28
+            // 1) ORB & POA initialization
+            String hostIP = "localhost";
             String[] orbArgs = {"-ORBInitialPort", "2000", "-ORBInitialHost", hostIP};
             ORB orb = ORB.init(orbArgs, null);
 
-            // Get RootPOA
-            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-            rootpoa.the_POAManager().activate();
+            POA rootPoa = POAHelper.narrow(
+                    orb.resolve_initial_references("RootPOA")
+            );
+            rootPoa.the_POAManager().activate();
 
-            // Initialize implementations
+            // 2) Instantiate your core servants
             AuthenticationServiceImpl authService = new AuthenticationServiceImpl();
-            // GameCallbackServiceImpl gameCallbackService = new GameCallbackServiceImpl();
-            LoginCallBackServiceImpl loginCallBackService = new LoginCallBackServiceImpl();
             GameServiceImpl gameService = new GameServiceImpl();
             AdminServiceImpl adminService = new AdminServiceImpl();
 
-            // Convert servants to CORBA object references
-            org.omg.CORBA.Object authRef = rootpoa.servant_to_reference(authService);
-            // org.omg.CORBA.Object gameCallbackRef = rootpoa.servant_to_reference(gameCallbackService);
-            org.omg.CORBA.Object loginCallbackRef = rootpoa.servant_to_reference(loginCallBackService);
-            org.omg.CORBA.Object gameRef = rootpoa.servant_to_reference(gameService);
-            org.omg.CORBA.Object adminRef = rootpoa.servant_to_reference(adminService);
+            // 3) Convert servants to CORBA object references
+            org.omg.CORBA.Object authRef  = rootPoa.servant_to_reference(authService);
+            org.omg.CORBA.Object gameRef  = rootPoa.servant_to_reference(gameService);
+            org.omg.CORBA.Object adminRef = rootPoa.servant_to_reference(adminService);
 
-            // Narrow to specific helper types
-            AuthenticationService paRef = AuthenticationServiceHelper.narrow(authRef);
-            // GameCallBackService gcbRef = GameCallBackServiceHelper.narrow(gameCallbackRef);
-            LoginCallbackService lcbRef = LoginCallbackServiceHelper.narrow(loginCallbackRef);
-            GameService pgRef = GameServiceHelper.narrow(gameRef);
-            AdminService asRef = AdminServiceHelper.narrow(adminRef);
+            // 4) Narrow to typed interfaces
+            AuthenticationService authSrv = AuthenticationServiceHelper.narrow(authRef);
+            GameService gameSrv           = GameServiceHelper.narrow(gameRef);
+            AdminService adminSrv         = AdminServiceHelper.narrow(adminRef);
 
-            // Bind to naming service
-            org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
-            NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
+            // 5) Bind into the Naming Service
+            NamingContextExt ncRef = NamingContextExtHelper.narrow(
+                    orb.resolve_initial_references("NameService")
+            );
+            ncRef.rebind(ncRef.to_name("AuthenticationService"), authSrv);
+            ncRef.rebind(ncRef.to_name("GameService"),           gameSrv);
+            ncRef.rebind(ncRef.to_name("AdminService"),          adminSrv);
 
-            ncRef.rebind(ncRef.to_name("AuthenticationService"), paRef);
-            // ncRef.rebind(ncRef.to_name("GameCallBackService"), gcbRef);
-            ncRef.rebind(ncRef.to_name("LoginCallBackService"), lcbRef);
-            ncRef.rebind(ncRef.to_name("GameService"), pgRef);
-            ncRef.rebind(ncRef.to_name("AdminService"), asRef);
-
-            // --- Styled Welcome Message ---
-            System.out.println();
-            System.out.println("=============================================");
-            System.out.println("Welcome to What's The Word? Game Server");
-            System.out.println("---------------------------------------------");
-            System.out.println("Server Status: Running and Listening...");
-            System.out.println("Configured CORBA Host: " + hostIP);
-            System.out.println("CORBA ORB initialized on port: 2000");
-
-            // Display actual local IP address
+            // 6) Log status
+            System.out.println("\n=============================================");
+            System.out.println("What's The Word? Game Server is up!");
+            System.out.println("Host: " + hostIP + ", Port: 2000");
             InetAddress localhost = InetAddress.getLocalHost();
-            String localAddress = localhost.getHostAddress();
-            System.out.println("Server IP Address (Detected Local): " + localAddress);
+            System.out.println("Local IP: " + localhost.getHostAddress());
+            System.out.println("Published Services: Authentication, Game, Admin");
+            System.out.println("=============================================\n");
 
-            System.out.println("Services: Authentication, Game, Callback, Admin");
-            System.out.println("=============================================");
-            System.out.println();
-
+            // 7) Run the ORB loop
             orb.run();
+
         } catch (Exception e) {
             System.err.println("SERVER ERROR: " + e.getMessage());
             e.printStackTrace();
@@ -102,11 +90,11 @@ public class Server_Java {
     }
 
     public static void printActiveClients() {
-        System.out.println("[SERVER] Current Active Clients:");
+        System.out.println("[SERVER] Active Clients:");
         if (activeClients.isEmpty()) {
-            System.out.println(" - No active clients.");
+            System.out.println(" - none");
         } else {
-            activeClients.forEach(user -> System.out.println(" - " + user));
+            activeClients.forEach(u -> System.out.println(" - " + u));
         }
         System.out.println("----------------------------------");
     }

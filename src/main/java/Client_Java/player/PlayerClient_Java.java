@@ -1,142 +1,46 @@
+// File: Client_Java/player/PlayerClient_Java.java
 package Client_Java.player;
 
-import Client_Java.player.controller.GameLobbyController;
-import Client_Java.player.controller.LogInController;
-import Client_Java.player.model.GameLobbyModel;
-import Client_Java.player.model.LogInPageModel;
-import Client_Java.player.view.GameLobbyView;
-import Client_Java.player.view.LoginPageView;
-import Shared_Files.PlayerAccount;
+import Client_Java.player.view.ViewNavigator;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.IOException;
-
 public class PlayerClient_Java extends Application {
-    public static Stage APPLICATION_STAGE;
-    private static PlayerAccount loggedInPlayer; // Updated to PlayerAccount
-    private static long loggedInPlayerID;
-    private static String sessionToken;
+    private static PlayerClient_Model corbaClient;
+    private static Stage              primaryStage;
 
     public static void main(String[] args) {
-        PlayerClient_Model clientModel = new PlayerClient_Model();
-        clientModel.init(); // Initialize CORBA connections
-        PlayerClient_Model.startOrb();
-        launch(args);
-    }
-    public static void handleForcedLogout() {
-        // Clear session
-        sessionToken = null;
-        loggedInPlayer = null;
-        loggedInPlayerID = 0;
-
-        // Reload the login UI
-        Stage stage = getStage();
-        // You might refactor loadLoginGUI() to be public or extract its logic here
-        loadLoginGUI();
-    }
-
-    public static void navigateToLobby() {
         try {
-            // Load FXML for game lobby
-            File fxmlFile = new File("src/main/resources/fxml/player/GameLobbyPage.fxml");
-            FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
-            Parent root = loader.load();
-
-            // Initialize MVC for lobby
-            GameLobbyView view = loader.getController();
-            GameLobbyModel model = new GameLobbyModel(getLoggedInPlayer());
-            PlayerAccount account = getLoggedInPlayer();
-            new GameLobbyController(model, view, account, (int)loggedInPlayerID, sessionToken);
-
-            // Set scene
-            Scene scene = new Scene(root);
-            Stage stage = getStage();
-            stage.setScene(scene);
-            stage.setTitle("What's The Word - Lobby");
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("[Client ERROR] Failed to navigate to lobby: " + e.getMessage());
+            corbaClient = new PlayerClient_Model(new String[]{
+                    "-ORBInitialPort", "2000",
+                    "-ORBInitialHost", "localhost"
+            });
+            corbaClient.startOrb();
+            // Set services so SessionManager can hand them out
+            SessionManager.setGameService(corbaClient.getGameService());
+            SessionManager.setAuthService(corbaClient.getAuthService());
+            launch(args);
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /** Expose the CORBA client helper for callback registration */
+    public static PlayerClient_Model getClientModel() {
+        return corbaClient;
+    }
+
+    /** Expose the main JavaFX Stage for ViewNavigator */
+    public static Stage getStage() {
+        return primaryStage;
     }
 
     @Override
-    public void start(Stage stage) {
-        APPLICATION_STAGE = stage;
-        loadLoginGUI();
-    }
-
-    private static void loadLoginGUI() {
-        try {
-            File fxmlFile = new File("src/main/resources/fxml/player/LogInPage.fxml");
-            FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
-            Parent root = loader.load();
-
-            LoginPageView loginPageView = loader.getController();
-            if (loginPageView == null) {
-                System.err.println("[ERROR] LoginPageView is NULL after FXML load!");
-            } else {
-                System.out.println("[DEBUG] LoginPageView controller loaded successfully.");
-                LogInPageModel model = new LogInPageModel(PlayerClient_Model.authService);
-                new LogInController(model, loginPageView);
-            }
-
-            Scene scene = new Scene(root);
-            APPLICATION_STAGE.setScene(scene);
-            APPLICATION_STAGE.centerOnScreen();
-            APPLICATION_STAGE.setResizable(false);
-
-            APPLICATION_STAGE.setOnCloseRequest(event -> {
-                System.out.println("[INFO] Application is closing...");
-                System.exit(0);
-            });
-
-            APPLICATION_STAGE.setTitle("What's The Word!!");
-            APPLICATION_STAGE.show();
-
-            System.out.println("[Client] LOGIN GUI LOADED SUCCESSFULLY");
-
-        } catch (IOException e) {
-            System.err.println("[ERROR] IOException while loading GUI: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.err.println("[ERROR] Unexpected exception: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-
-    // Session management methods
-    public static void setLoggedInPlayer(PlayerAccount player) {
-        loggedInPlayer = player;
-    }
-
-    public static PlayerAccount getLoggedInPlayer() {
-        return loggedInPlayer;
-    }
-
-    public static void setLoggedInPlayerID(long id) {
-        loggedInPlayerID = id;
-    }
-
-    public static long getLoggedInPlayerID() {
-        return loggedInPlayerID;
-    }
-
-    public static void setSessionToken(String token) {
-        sessionToken = token;
-    }
-
-    public static String getSessionToken() {
-        return sessionToken;
-    }
-
-    public static Stage getStage() {
-        return APPLICATION_STAGE;
+    public void start(Stage stage) throws Exception {
+        primaryStage = stage;
+        // Kick off the very first scene
+        ViewNavigator.goToLogin();
+        // Optional: lock window size if you like
+        stage.setResizable(false);
     }
 }

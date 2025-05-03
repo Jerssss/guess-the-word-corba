@@ -1,6 +1,8 @@
 package Client_Java.player.model;
 
+import Client_Java.player.SessionManager;
 import Server_Java.idls.GameIDL.GameService;
+import Server_Java.idls.GameIDL.NotLoggedInException;
 import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
 import org.omg.CORBA.StringHolder;
 
@@ -14,14 +16,22 @@ public class GameRoomModel {
         this.gameService = gameService;
     }
 
-    public void registerCallback(int playerId, String gameToken, String sessionToken, GameCallBackService callbackStub) {
-        try {
-            gameService.registerCallBack(playerId, gameToken, sessionToken, callbackStub);
-            System.out.println("[GameRoomModel] Game callback registered for session=" + sessionToken);
-        } catch (Exception e) {
-            System.err.println("[GameRoomModel] registerCallback failed: " + e.getMessage());
-        }
+    public void registerCallback(GameCallBackService callback) throws NotLoggedInException {
+        int    playerId     = SessionManager.getLoggedInPlayer().getPlayerId();
+        String gameToken    = SessionManager.getGameToken();
+        String sessionToken = SessionManager.getSessionToken();
+
+        System.out.println("[DEBUG][GameRoomModel] registerCallback() → "
+                + "playerId=" + playerId
+                + ", gameToken=" + gameToken
+                + ", sessionToken=" + sessionToken
+        );
+
+        // IDL order: (playerID, gameToken, sessionToken, callback)
+        gameService.registerCallBack(playerId, gameToken, sessionToken, callback);
     }
+
+
     public int startRound(String gameToken, int roundNumber, int playerId, String sessionToken) {
         try {
             return gameService.startRound(gameToken, roundNumber, playerId, sessionToken);

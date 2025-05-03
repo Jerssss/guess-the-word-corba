@@ -1,16 +1,20 @@
+// File: Client_Java/player/controller/GameRoomController.java
 package Client_Java.player.controller;
 
 import Client_Java.player.PlayerClient_Java;
-import Client_Java.player.PlayerClient_Model;
 import Client_Java.player.model.GameRoomModel;
 import Client_Java.player.view.GameRoomView;
+import Client_Java.player.view.ViewNavigator;
+import Client_Java.player.view.modals.GameRoundPopupView;
 import Client_Java.player.view.modals.RoundWinnerPopupView;
+import Client_Java.player.implementation.GameCallbackServiceImpl;
+import Server_Java.idls.GameIDL.NotLoggedInException;
 import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
-import Server_Java.implementation.GameCallbackServiceImpl;
-import javafx.animation.KeyFrame;
+import Server_Java.idls.PlayerCallBackIDL.GameCallBackServiceHelper;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,11 +22,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import org.omg.CORBA.StringHolder;
+import org.omg.CORBA.Object;
+import org.omg.PortableServer.POAPackage.ServantNotActive;
+import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,105 +38,127 @@ public class GameRoomController {
     private final int           playerId;
     private final String        sessionToken;
     private final String        gameToken;
-    private final int totalRounds;     // ← new
+    private final int           totalRounds;
 
-
-    private int roundNumber = 1;
-    private String secretWord;
-    private int remainingLives;
+    // Which round we’ve already shown
+    private int           roundNumber     = 0;
+    private String        secretWord      = "";
+    private int           remainingLives;
     private final List<Label> blankLabels = new ArrayList<>();
 
-    // —— Countdown timer support ——
     private Timeline roundTimer;
-    private int      roundSecondsRemaining;
+    private int      secondsRemaining;
 
-    public GameRoomController(GameRoomModel model,
-                              GameRoomView view,
-                              int playerId,
-                              String sessionToken,
-                              String gameToken) {
+    public GameRoomController(
+            GameRoomModel model,
+            GameRoomView view,
+            int playerId,
+            String sessionToken,
+            String gameToken
+    ) throws WrongPolicy, ServantNotActive, NotLoggedInException {
         this.model        = model;
         this.view         = view;
         this.playerId     = playerId;
         this.sessionToken = sessionToken;
         this.gameToken    = gameToken;
-        this.totalRounds = model.getTotalRounds(sessionToken);
+        this.totalRounds  = model.getTotalRounds(sessionToken);
 
-
-        System.out.println("[GameRoomController] Initializing game for player="
-                + playerId + " token=" + sessionToken + " game=" + gameToken);
-
-        // Read initial lives from settings
-        this.remainingLives = model.getNumberOfLives(sessionToken);
-        System.out.println("[GameRoomController] Starting lives = " + remainingLives);
-        view.getLifeCountLabel().setText("Lives: " + remainingLives);
-
-        // Register callbacks
-        GameCallbackServiceImpl callbackServant =
-                new GameCallbackServiceImpl(model, sessionToken, this);
-        GameCallBackService callbackStub =
-                PlayerClient_Model.registerGameCallback(callbackServant);
-        model.registerCallback(playerId, gameToken, sessionToken, callbackStub);
-
-        // Prepare the first round UI (no timer yet)
-        startRound();
-    }
-
-    private void startRound() {
-        System.out.println("[GameRoomController] Preparing round " + roundNumber);
-
-        // Update the round counter in the UI
-        view.getRoundLabel().setText(String.valueOf(roundNumber));
-
-
-        // Pull down mask & lives
-        model.startRound(gameToken, roundNumber, playerId, sessionToken);
-        secretWord     = model.getRandomWord(gameToken, roundNumber, playerId, sessionToken);
+        // 1) Initial UI
         remainingLives = model.getNumberOfLives(sessionToken);
-
-        // Build UI
-        setupBlanks();
-        setupAlphabet();
         view.getLifeCountLabel().setText("Lives: " + remainingLives);
+        view.getRoundLabel().setText("Waiting for game to start…");
+        view.disableAlphabetButtons();
+        view.getWordFlow().getChildren().clear();
 
-        // NOTE: no countdown here—wait for the server’s notifyRoundStart
+        // 2) Register CORBA callback
+        GameCallbackServiceImpl servant = new GameCallbackServiceImpl(this);
+        Object cbRef = PlayerClient_Java
+                .getClientModel()
+                .registerGameCallback(servant);
+        GameCallBackService cbStub = GameCallBackServiceHelper.narrow(cbRef);
+        model.registerCallback(cbStub);
+
+        // 3) Immediately request Round 1
+        handleGameStart();
+
+        // 4) Wire up Quit
+        view.getQuitButton().setOnAction(this::onQuit);
+
+        System.out.println("[DEBUG][GameRoomController] initialized, Round 1 requested.");
     }
 
-    /**
-     * Called by the server callback when a new round really begins (after your popup).
-     */
-    public void handleServerRoundStart(int newRoundNumber) {
-        this.roundNumber = newRoundNumber;
-        System.out.println("[GameRoomController] Server triggered start of round " + newRoundNumber);
-
-        // Mirror startRound() UI changes
-        view.getRoundLabel().setText("Round " + roundNumber);
-        secretWord     = model.getRandomWord(gameToken, roundNumber, playerId, sessionToken);
-        remainingLives = model.getNumberOfLives(sessionToken);
-        setupBlanks();
-        setupAlphabet();
-        view.getLifeCountLabel().setText("Lives: " + remainingLives);
-
-        // —— Now start the countdown timer ——
-        int duration = model.getRoundDuration(sessionToken);
-        startCountdown(duration);
+    /** Send server “start Round 1.” */
+    public void handleGameStart() {
+        System.out.println("[DEBUG][GameRoomController] handleGameStart() → request Round 1");
+        model.startRound(gameToken, 1, playerId, sessionToken);
     }
 
-    /** Shared helper to (re)start the timer countdown */
-    private void startCountdown(int durationSeconds) {
-        // Stop any old timer
-        if (roundTimer != null) {
-            roundTimer.stop();
+    /** Called by GameCallbackServiceImpl.notifyRoundStart(...) */
+    public void notifyRoundStartFromCallback(int newRound) {
+        if (newRound <= roundNumber) {
+            System.out.println("[DEBUG] Ignoring duplicate roundStart(" + newRound + ")");
+            return;
         }
-        // Initialize state
-        roundSecondsRemaining = durationSeconds;
+        roundNumber = newRound;
+        System.out.println("[DEBUG][GameRoomController] notifyRoundStart(round=" + newRound + ")");
+        Platform.runLater(() -> showRoundStartScene(newRound));
+    }
+
+    /** After the “Round N” popup, build the real UI. */
+    public void handleServerRoundStart(int roundNum) {
+        System.out.println("[DEBUG][GameRoomController] handleServerRoundStart(round=" + roundNum + ")");
+        view.getRoundLabel().setText("Round " + roundNum);
+        secretWord     = model.getRandomWord(gameToken, roundNum, playerId, sessionToken);
+        remainingLives = model.getNumberOfLives(sessionToken);
+        view.getLifeCountLabel().setText("Lives: " + remainingLives);
+
+        setupBlanks();
+        setupAlphabet();
+        startCountdown(model.getRoundDuration(sessionToken));
+    }
+
+    // ── UI Helpers ───────────────────────────────────────────────────────────
+
+    private void setupBlanks() {
+        FlowPane wf = view.getWordFlow();
+        wf.getChildren().clear();
+        blankLabels.clear();
+        for (int i = 0; i < secretWord.length(); i++) {
+            Pane cell = new Pane();
+            cell.setPrefSize(50, 75);
+            Label lbl = new Label("_");
+            lbl.setStyle("-fx-font-size:36; -fx-font-family:Marykate;");
+            lbl.layoutXProperty().bind(cell.widthProperty()
+                    .subtract(lbl.widthProperty()).divide(2));
+            lbl.layoutYProperty().bind(cell.heightProperty()
+                    .subtract(lbl.heightProperty()).divide(2));
+            cell.getChildren().add(lbl);
+            wf.getChildren().add(cell);
+            blankLabels.add(lbl);
+        }
+    }
+
+    private void setupAlphabet() {
+        FlowPane af = view.getAlphabetFlow();
+        af.getChildren().clear();
+        for (char c = 'A'; c <= 'Z'; c++) {
+            Button btn = new Button(String.valueOf(c));
+            btn.setStyle("-fx-font-size:24; -fx-font-family:Marykate;");
+            btn.setOnAction(e -> handleGuess(btn));
+            af.getChildren().add(btn);
+        }
+    }
+
+    private void startCountdown(int durationSeconds) {
+        if (roundTimer != null) roundTimer.stop();
+        secondsRemaining = durationSeconds;
         updateTimerLabel();
 
-        // Build and play the timeline
-        roundTimer = new Timeline(new KeyFrame(Duration.seconds(1), evt -> {
-            roundSecondsRemaining--;
+        roundTimer = new Timeline(new javafx.animation.KeyFrame(
+                Duration.seconds(1), evt -> {
+            secondsRemaining--;
             updateTimerLabel();
-            if (roundSecondsRemaining <= 0) {
+            if (secondsRemaining <= 0) {
                 roundTimer.stop();
                 onRoundTimeExpired();
             }
@@ -141,138 +167,124 @@ public class GameRoomController {
         roundTimer.play();
     }
 
-    /** Update the UI label to show MM:SS */
     private void updateTimerLabel() {
-        int minutes = roundSecondsRemaining / 60;
-        int seconds = roundSecondsRemaining % 60;
-        view.getTimerLabel().setText(
-                String.format("%02d:%02d", minutes, seconds)
-        );
+        int m = secondsRemaining / 60, s = secondsRemaining % 60;
+        view.getTimerLabel().setText(String.format("%02d:%02d", m, s));
     }
 
-    /** Called when the timer hits zero */
-    private void onRoundTimeExpired() {
-        System.out.println("[GameRoomController] Round time expired!");
-        // Disable all letter buttons
-        view.getAlphabetFlow().getChildren().forEach(n -> n.setDisable(true));
-        // Treat as a round loss
-        onRoundLost();
-    }
-
-    private void setupBlanks() {
-        FlowPane wf = view.getWordFlow();
-        wf.getChildren().clear();
-        blankLabels.clear();
-
-        for (int i = 0; i < secretWord.length(); i++) {
-            Pane cell = new Pane();
-            cell.setPrefSize(50, 75);
-
-            Label lbl = new Label("_");
-            lbl.setStyle("-fx-font-size:36; -fx-font-family:Marykate;");
-            lbl.layoutXProperty().bind(
-                    cell.widthProperty().subtract(lbl.widthProperty()).divide(2)
-            );
-            lbl.layoutYProperty().bind(
-                    cell.heightProperty().subtract(lbl.heightProperty()).divide(2)
-            );
-
-            cell.getChildren().add(lbl);
-            wf.getChildren().add(cell);
-            blankLabels.add(lbl);
-        }
-        System.out.println("[GameRoomController] Blanks set up for "
-                + blankLabels.size() + " letters");
-    }
-
-    private void setupAlphabet() {
-        FlowPane af = view.getAlphabetFlow();
-        af.getChildren().clear();
-
-        for (char c = 'A'; c <= 'Z'; c++) {
-            final char letter = c;
-            Button btn = new Button(String.valueOf(letter));
-            btn.setStyle("-fx-font-size:24; -fx-font-family:Marykate;");
-            btn.setOnAction(e -> handleGuess(btn));
-            af.getChildren().add(btn);
-        }
-        System.out.println("[GameRoomController] Alphabet buttons ready");
-    }
+    // ── Guess Logic ───────────────────────────────────────────────────────────
 
     private void handleGuess(Button btn) {
         char letter = btn.getText().charAt(0);
-        System.out.println("[GameRoomController] handleGuess() for letter: " + letter);
         btn.setDisable(true);
 
         List<Integer> hits = model.guessLetter(gameToken, playerId, sessionToken, letter);
-        System.out.println("[GameRoomController] guessLetter returned positions: " + hits);
-
         if (hits.isEmpty()) {
             remainingLives--;
-            System.out.println("[GameRoomController] Wrong guess. Remaining lives = " + remainingLives);
-            Platform.runLater(() -> {
-                view.getLifeCountLabel().setText("Lives: " + remainingLives);
-                revealNextCatPart();
-                if (remainingLives <= 0) {
-                    view.getAlphabetFlow().getChildren().forEach(n -> n.setDisable(true));
-                    onRoundLost();
-                }
-            });
+            view.getLifeCountLabel().setText("Lives: " + remainingLives);
+            if (remainingLives <= 0) {
+                view.disableAlphabetButtons();
+                System.out.println("[DEBUG] no lives left → round lost");
+            }
         } else {
             hits.forEach(idx -> blankLabels.get(idx).setText(String.valueOf(letter)));
-            boolean allRevealed = blankLabels.stream()
-                    .allMatch(l -> !"_".equals(l.getText()));
-            if (allRevealed) onRoundWon();
+            boolean won = blankLabels.stream()
+                    .noneMatch(l -> "_".equals(l.getText()));
+            if (won) {
+                view.disableAlphabetButtons();
+                System.out.println("[DEBUG] all letters revealed → round won");
+            }
         }
     }
 
-    private void revealNextCatPart() {
-        if (!view.getCatTopHead().isVisible()) {
-            view.getCatTopHead().setVisible(true);
-        } else if (!view.getCatEyes().isVisible()) {
-            view.getCatEyes().setVisible(true);
-        } else if (!view.getCatSnout().isVisible()) {
-            view.getCatSnout().setVisible(true);
-        } else if (!view.getCatLeftWhiskers().isVisible()) {
-            view.getCatLeftWhiskers().setVisible(true);
-        } else if (!view.getCatRightWhiskers().isVisible()) {
-            view.getCatRightWhiskers().setVisible(true);
-        } else {
-            view.getCatBottomHead().setVisible(true);
-        }
+    private void onRoundTimeExpired() {
+        view.disableAlphabetButtons();
+        System.out.println("[DEBUG] round timer expired");
     }
 
-    private void onRoundWon() {
-        if (roundNumber >= totalRounds) {
-            System.out.println("[GameRoomController] Final round won, awaiting game end.");
-            return;
-        }
+    // ── Popups ────────────────────────────────────────────────────────────────
 
-        int next = roundNumber + 1;
-        System.out.println("[GameRoomController] Requesting next round: " + next);
+    private void showRoundStartScene(int roundNum) {
         try {
-            model.startRound(gameToken, next, playerId, sessionToken);
+            Stage stage = ViewNavigator.getStage();
+            Scene original = stage.getScene();
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/player/GameRoundPopup.fxml")
+            );
+            Parent popupRoot = loader.load();
+
+            GameRoundPopupView popupCtrl = loader.getController();
+            popupCtrl.setGameTitle("What’s The Word?");
+            popupCtrl.setRoundNumber(roundNum);
+
+            stage.setScene(new Scene(popupRoot));
+
+            int delay = model.getNextRoundDelay(sessionToken);
+            PauseTransition wait = new PauseTransition(Duration.seconds(delay));
+            wait.setOnFinished(e -> {
+                stage.setScene(original);
+                handleServerRoundStart(roundNum);
+            });
+            wait.play();
+
         } catch (Exception e) {
-            System.err.println("[GameRoomController] Failed to start next round: " + e.getMessage());
             e.printStackTrace();
+            handleServerRoundStart(roundNum);
         }
     }
 
+    public void showRoundEndPopup(String winnerName) {
+        Platform.runLater(() -> {
+            try {
+                Stage stage = ViewNavigator.getStage();
+                Scene originalScene = stage.getScene();
 
-    private void onRoundLost() {
-        if (roundTimer != null) roundTimer.stop();
+                String fxmlPath = "/fxml/player/RoundWinnerPopup.fxml";
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                Parent popupRoot = loader.load();
 
-        System.out.println("[GameRoomController] Round " + roundNumber + " lost!");
-        // TODO: reveal secretWord and show game-over UI
+                RoundWinnerPopupView controller = loader.getController();
+                controller.setWinnerName(winnerName);
+
+                stage.setScene(new Scene(popupRoot));
+
+                PauseTransition wait = new PauseTransition(Duration.seconds(5));
+                wait.setOnFinished(e -> {
+                    stage.setScene(originalScene);
+                    startNextRound(); // Call your method to start the next round
+                });
+                wait.play();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                startNextRound(); // Ensure the game doesn't freeze on error
+            }
+        });
     }
 
-    public void handleGameEnd() {
-        if (roundTimer != null) roundTimer.stop();
-        PlayerClient_Java.navigateToLobby();
+
+
+    private void startNextRound() {
+        if (roundNumber < totalRounds) {
+            System.out.println("[DEBUG] Requesting server to start round " + (roundNumber + 1));
+            model.startRound(gameToken, roundNumber + 1, playerId, sessionToken);
+        } else {
+            System.out.println("[DEBUG] All rounds complete – game end not implemented yet.");
+        }
     }
 
-    public void handleCancel() {
+    private void onQuit(ActionEvent e) {
         if (roundTimer != null) roundTimer.stop();
-        PlayerClient_Java.navigateToLobby();
+        try {
+            ViewNavigator.goToLobby();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /** Placeholder for when the entire game ends */
+    public void showGameEndPopup(String winnerName) {
+        // TODO
     }
 }

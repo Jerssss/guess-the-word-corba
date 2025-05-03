@@ -1,180 +1,139 @@
+// File: Client_Java/player/controller/WaitingRoomController.java
 package Client_Java.player.controller;
 
-import Client_Java.player.PlayerClient_Model;
 import Client_Java.player.PlayerClient_Java;
-import Client_Java.player.model.GameRoomModel;
+import Client_Java.player.SessionManager;
 import Client_Java.player.model.WaitingRoomModel;
-import Client_Java.player.view.GameRoomView;
 import Client_Java.player.view.WaitingRoomView;
-
-import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackService;
+import Client_Java.player.view.ViewNavigator;
+import Client_Java.player.implementation.WaitingRoomCallbackServiceImpl;
 import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
-
-
-import Server_Java.implementation.GameCallbackServiceImpl;
-import Server_Java.implementation.WaitingRoomCallbackServiceImpl;
+import Server_Java.idls.PlayerCallBackIDL.GameCallBackServiceHelper;
+import Server_Java.idls.PlayerCallBackIDL.GameCallBackServicePOA;
+import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackService;
+import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackServiceHelper;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Controller for the waiting room: joins lobby, registers both waiting-room
- * and game-start callbacks, and drives the UI in response to server pushes.
- */
 public class WaitingRoomController {
     private final WaitingRoomModel model;
-    private final WaitingRoomView view;
-    private final int playerId;
-    private final String sessionToken;
-    private String gameToken;
+    private final WaitingRoomView  view;
+
+    private final int initialCountdown;
+    private final int minimumPlayers;
+    private int       countdown;
 
     private ScheduledExecutorService scheduler;
 
-    private int countdown;
-    private final int initialCountdown;
-    private final int minimumPlayers;
-
-    @FXML private Label countdownLabel;
-    @FXML private Label playerCountLabel;
-
     public WaitingRoomController(
             WaitingRoomModel model,
-            WaitingRoomView view,
-            int playerId,
-            String sessionToken
+            WaitingRoomView view
     ) {
-        this.model        = model;
-        this.view         = view;
-        this.playerId     = playerId;
-        this.sessionToken = sessionToken;
+        this.model    = model;
+        this.view     = view;
 
-        // fetch server-configured settings up front
-        this.initialCountdown = model.getSetting("countdown_to_game_start", sessionToken);
-        this.minimumPlayers   = model.getSetting("minimum_players",       sessionToken);
+        this.initialCountdown = model.getSetting("countdown_to_game_start");
+        this.minimumPlayers   = model.getSetting("minimum_players");
         this.countdown        = initialCountdown;
 
-        initialize();
+        view.setActionCancelButton(this::onCancel);
+        startFlow();
     }
 
-    private void initialize() {
-        // 1) join the lobby
-        gameToken = model.joinLobby(playerId, sessionToken);
+    private void startFlow() {
+        int playerId = SessionManager.getLoggedInPlayer().getPlayerId();
+        String gameToken = model.joinLobby(playerId);
         if (gameToken == null) {
-            System.err.println("[WaitingRoom] Failed to join lobby.");
+            System.err.println("[WaitingRoom] joinLobby failed");
             return;
         }
 
-        // 2) initialize UI
-        int joined = model.getNumberOfPlayersJoined(playerId, sessionToken);
-        view.setWaitingPlayersCount(joined);
+        registerWaitingRoomCallback(playerId);
+        registerGameStartCallback(playerId);
+
+        view.setWaitingPlayersCount(model.getNumberOfPlayersJoined());
         view.setRemainingTime(countdown);
-        view.setActionCancelButton(this::handleCancel);
-
-        // 3) register waiting-room callback
-        WaitingRoomCallbackServiceImpl waitServant =
-                new WaitingRoomCallbackServiceImpl(this);
-        WaitingRoomGameCallbackService waitStub =
-                PlayerClient_Model.registerWaitingRoomCallback(waitServant);
-        System.out.println("[WaitingRoomController] registering waiting callback for session=" + sessionToken);
-        model.registerWaitingRoomCallback(
-                playerId, gameToken, sessionToken, waitStub
-        );
-
-        // Register game callbacks properly here
-   //     WaitingRoomCallbackServiceImpl callbackServant = new WaitingRoomCallbackServiceImpl(model, sessionToken);
-     //   GameCallBackService callbackStub = PlayerClient_Model.registerGameCallback(callbackServant);
-   //     model.registerCallback(playerId, gameToken, sessionToken, callbackStub);
-
     }
 
-    // --- Methods invoked by the WaitingRoomCallbackServiceImpl on the FX thread ---
+    private void registerWaitingRoomCallback(int playerId) {
+        WaitingRoomCallbackServiceImpl servant =
+                new WaitingRoomCallbackServiceImpl(this);
+        org.omg.CORBA.Object cbRef =
+                PlayerClient_Java.getClientModel()
+                        .registerWaitingRoomCallback(servant);
+        WaitingRoomGameCallbackService stub =
+                WaitingRoomGameCallbackServiceHelper.narrow(cbRef);
+        model.registerWaitingRoomCallback(playerId, stub);
+    }
+
+    private void registerGameStartCallback(int playerId) {
+        GameCallBackServicePOA servant = new GameCallBackServicePOA() {
+            @Override
+            public void notifyGameStart(String gt, String st) {
+                onReadyToStart();
+            }
+            @Override public void notifyRoundStart(String gt, int r, String st) {}
+            @Override public void notifyRoundEnd  (String gt, String st, String w) {}
+            @Override public void notifyGameEnd   (String gt, String st, String w) {}
+        };
+        org.omg.CORBA.Object cbRef =
+                PlayerClient_Java.getClientModel()
+                        .registerGameCallback(servant);
+        GameCallBackService stub =
+                GameCallBackServiceHelper.narrow(cbRef);
+        model.registerGameStartCallback(playerId, stub);
+    }
 
     public void onPlayerCountUpdate(int totalPlayers) {
-        view.setWaitingPlayersCount(totalPlayers);
+        Platform.runLater(() -> view.setWaitingPlayersCount(totalPlayers));
     }
 
     public void onCountdownStart(int seconds) {
         this.countdown = seconds;
-        view.setRemainingTime(seconds);
+        Platform.runLater(() -> view.setRemainingTime(seconds));
 
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdownNow();
-        }
-
+        if (scheduler != null) scheduler.shutdownNow();
         scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
             countdown--;
             Platform.runLater(() -> view.setRemainingTime(countdown));
             if (countdown <= 0) {
-                scheduler.shutdownNow();
-                onReadyToStart();
+                scheduler.shutdown();
             }
         }, 1, 1, TimeUnit.SECONDS);
     }
 
     public void onCountdownReset() {
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdownNow();
-        }
+        if (scheduler != null) scheduler.shutdownNow();
         countdown = initialCountdown;
-        view.setRemainingTime(countdown);
+        Platform.runLater(() -> view.setRemainingTime(countdown));
     }
 
-    public void onReadyToStart() {
-        System.out.println("[WaitingRoom] Game starting now.");
-        // Ensure UI work happens on the FX thread
+    /** NOW uses the stored gameToken rather than playerId */
+    private void onReadyToStart() {
         Platform.runLater(() -> {
             try {
-                // 1) Load the GameRoom FXML
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/fxml/player/GameRoomPage.fxml")
-                );
-                Parent root = loader.load();
-
-                // 2) Grab the view (controller from FXML) and build the model
-                GameRoomView view   = loader.getController();
-                GameRoomModel model = new GameRoomModel(PlayerClient_Model.gameService);
-
-                // 3) Instantiate your GameRoomController with the same playerId, sessionToken, and gameToken
-                new GameRoomController(
-                        model,
-                        view,
-                        this.playerId,
-                        this.sessionToken,
-                        this.gameToken
-                );
-
-                // 4) Swap scenes
-                Stage stage = PlayerClient_Java.getStage();
-                stage.setScene(new Scene(root));
-                stage.setTitle("What's The Word - Game");
-                stage.show();
-
-            } catch (IOException e) {
-                System.err.println("[WaitingRoomController] Failed to load GameRoomPage.fxml: " + e.getMessage());
+                ViewNavigator.goToGameRoom();  // <-- no-arg uses SessionManager.getGameToken()
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
     }
 
-
-    // --- User action handlers ---
-
-    private void handleCancel(ActionEvent event) {
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdownNow();
-        }
-        model.leaveLobby(playerId, gameToken, sessionToken);
-        PlayerClient_Java.navigateToLobby();
+    private void onCancel(ActionEvent evt) {
+        if (scheduler != null) scheduler.shutdownNow();
+        int playerId = SessionManager.getLoggedInPlayer().getPlayerId();
+        model.leaveLobby(playerId);
+        Platform.runLater(() -> {
+            try {
+                ViewNavigator.goToLobby();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

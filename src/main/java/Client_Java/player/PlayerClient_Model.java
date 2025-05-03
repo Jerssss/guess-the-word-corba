@@ -1,117 +1,95 @@
+// File: Client_Java/player/PlayerClient_Model.java
 package Client_Java.player;
 
 import Server_Java.idls.AuthenticationIDL.AuthenticationService;
 import Server_Java.idls.AuthenticationIDL.AuthenticationServiceHelper;
 import Server_Java.idls.GameIDL.GameService;
-
 import Server_Java.idls.GameIDL.GameServiceHelper;
-import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
 import Server_Java.idls.PlayerCallBackIDL.GameCallBackServiceHelper;
-import Server_Java.idls.PlayerCallBackIDL.LoginCallbackService;
-import Server_Java.idls.PlayerCallBackIDL.LoginCallbackServiceHelper;
-
-// NEW imports for waiting-room callback
-import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackService;
 import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackServiceHelper;
-
-
-import Server_Java.implementation.GameCallbackServiceImpl;
-import Server_Java.implementation.LoginCallBackServiceImpl;
-import Server_Java.implementation.WaitingRoomCallbackServiceImpl;
+import Server_Java.idls.PlayerCallBackIDL.LoginCallbackServiceHelper;
 import org.omg.CORBA.ORB;
+import org.omg.CosNaming.NamingContextExt;
+import org.omg.CosNaming.NamingContextExtHelper;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 
 /**
- * Handles ORB initialization and callback registration for client.
+ * Bootstraps ORB/POA, resolves core services, and
+ * provides helper methods to register callback servants.
  */
 public class PlayerClient_Model {
-    public static AuthenticationService authService;
-    public static GameService gameService;
-    public static GameCallBackService gameCallbackService;
+    private final ORB orb;
+    private final POA rootPoa;
+    private final AuthenticationService authService;
+    private final GameService gameService;
 
-    private static ORB orb;
-    private static POA rootPOA;
+    public PlayerClient_Model(String[] orbArgs) throws Exception {
+        // ORB & POA init
+        this.orb = ORB.init(orbArgs, null);
+        this.rootPoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+        this.rootPoa.the_POAManager().activate();
+        SessionManager.initOrb(orb, rootPoa);
 
-    public void init() {
-        try {
-            String[] orbArgs = {"-ORBInitialPort", "2000", "-ORBInitialHost", "localhost"}; //192.168.191.28
-            orb = ORB.init(orbArgs, null);
+        // NameService lookup
+        NamingContextExt nc = NamingContextExtHelper.narrow(
+                orb.resolve_initial_references("NameService")
+        );
 
-            org.omg.CORBA.Object poaRef = orb.resolve_initial_references("RootPOA");
-            rootPOA = POAHelper.narrow(poaRef);
-            rootPOA.the_POAManager().activate();
+        // Resolve AuthenticationService
+        this.authService = AuthenticationServiceHelper.narrow(
+                nc.resolve_str("AuthenticationService")
+        );
+        SessionManager.setAuthService(this.authService);
 
-            org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
-            org.omg.CosNaming.NamingContextExt ncRef =
-                    org.omg.CosNaming.NamingContextExtHelper.narrow(objRef);
-
-            // Try resolving each service and handle individually
-            try {
-                authService = AuthenticationServiceHelper.narrow(ncRef.resolve_str("AuthenticationService"));
-                System.out.println("[Client] AuthenticationService resolved.");
-            } catch (Exception e) {
-                System.err.println("[Client ERROR] Failed to resolve 'AuthenticationService': " + e.getMessage());
-                return;
-            }
-
-            try {
-                gameService = GameServiceHelper.narrow(ncRef.resolve_str("GameService"));
-                System.out.println("[Client] GameService resolved.");
-            } catch (Exception e) {
-                System.err.println("[Client ERROR] Failed to resolve 'GameService': " + e.getMessage());
-                return;
-            }
-
-            try {
-                gameCallbackService = GameCallBackServiceHelper.narrow(ncRef.resolve_str("GameCallBackService"));
-                System.out.println("[Client] GameCallBackService resolved.");
-            } catch (Exception e) {
-                System.err.println("[Client ERROR] Failed to resolve 'GameCallBackService': " + e.getMessage());
-                return;
-            }
-
-            System.out.println("[Client] CORBA Services Initialized Successfully!");
-        } catch (Exception e) {
-            System.err.println("[Client ERROR] CORBA Initialization Failed: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // Resolve GameService
+        this.gameService = GameServiceHelper.narrow(
+                nc.resolve_str("GameService")
+        );
+        SessionManager.setGameService(this.gameService);
     }
 
-    public static LoginCallbackService registerLoginCallback(LoginCallBackServiceImpl callbackImpl) {
+    public AuthenticationService getAuthService() { return authService; }
+    public GameService getGameService()     { return gameService;   }
+
+    /** Start the ORB event‐loop. */
+    public void startOrb() {
+        new Thread(orb::run).start();
+    }
+
+    /** Register a LoginCallback servant and return its stub. */
+    public org.omg.CORBA.Object registerLoginCallback(
+            org.omg.PortableServer.Servant callbackServant
+    ) {
         try {
-            org.omg.CORBA.Object ref = rootPOA.servant_to_reference(callbackImpl);
+            org.omg.CORBA.Object ref = rootPoa.servant_to_reference(callbackServant);
             return LoginCallbackServiceHelper.narrow(ref);
         } catch (Exception e) {
-            System.err.println("[Client ERROR] Failed to register login callback: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException("Login callback registration failed", e);
         }
     }
 
-    public static GameCallBackService registerGameCallback(GameCallbackServiceImpl callbackImpl) {
+    /** Register a GameCallback servant and return its stub. */
+    public org.omg.CORBA.Object registerGameCallback(
+            org.omg.PortableServer.Servant callbackServant
+    ) {
         try {
-            org.omg.CORBA.Object ref = rootPOA.servant_to_reference(callbackImpl);
+            org.omg.CORBA.Object ref = rootPoa.servant_to_reference(callbackServant);
             return GameCallBackServiceHelper.narrow(ref);
         } catch (Exception e) {
-            System.err.println("[Client ERROR] Failed to register game callback: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException("Game callback registration failed", e);
         }
     }
 
-    public static WaitingRoomGameCallbackService registerWaitingRoomCallback(WaitingRoomCallbackServiceImpl callbackImpl) {
+    /** Register a WaitingRoom callback servant and return its stub. */
+    public org.omg.CORBA.Object registerWaitingRoomCallback(
+            org.omg.PortableServer.Servant callbackServant
+    ) {
         try {
-            org.omg.CORBA.Object ref = rootPOA.servant_to_reference(callbackImpl);
+            org.omg.CORBA.Object ref = rootPoa.servant_to_reference(callbackServant);
             return WaitingRoomGameCallbackServiceHelper.narrow(ref);
         } catch (Exception e) {
-            System.err.println("[Client ERROR] Failed to register waiting-room callback: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException("Waiting‐room callback registration failed", e);
         }
-    }
-
-    public static void startOrb() {
-        new Thread(() -> orb.run()).start();
     }
 }
