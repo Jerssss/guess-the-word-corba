@@ -1,6 +1,8 @@
 package Client_Java.player.view;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -18,6 +20,8 @@ public class GameRoomView {
     @FXML private Label      roundLabel;
     @FXML private Label      lifeCountLabel;
     @FXML private Label      timerLabel;           // ← new timer label
+
+    @FXML private Button quitButton;
 
     @FXML private FlowPane   wordFlow;
     @FXML private FlowPane   alphabetFlow;
@@ -121,6 +125,13 @@ public class GameRoomView {
         }
     }
 
+    @FXML
+    public void handleQuitButton(ActionEvent event){
+        //quitlogic
+    }
+
+
+
     // getters for Controller
     public BorderPane getRootPane()        { return rootPane;       }
     public Pane       getGameContentPane() { return gameContentPane;}
@@ -130,6 +141,8 @@ public class GameRoomView {
 
     public FlowPane   getWordFlow()        { return wordFlow;       }
     public FlowPane   getAlphabetFlow()    { return alphabetFlow;   }
+
+    public Button getQuitButton() { return quitButton; }
 
     public ImageView getCatShadow()        { return catShadow;       }
     public ImageView getCatTopHead()       { return catTopHead;      }

@@ -64,12 +64,12 @@
                                           </PasswordField>
                                           <HBox alignment="CENTER" prefHeight="49.0" prefWidth="493.0">
                                              <children>
-                                                <Button fx:id="quitButton" mnemonicParsing="false" prefHeight="48.0" prefWidth="67.0" styleClass="login-quit-button" stylesheets="@../../../../../../temp/resources/css/styles.css" text="Quit" textFill="WHITE" translateX="70.0">
+                                                <Button fx:id="quitButton" mnemonicParsing="false" prefHeight="48.0" prefWidth="67.0" styleClass="login-quit-button" stylesheets="@../../css/styles.css" text="Quit" textFill="WHITE" translateX="70.0">
                                                    <font>
                                                       <Font name="Amatic SC Bold" size="24.0" />
                                                    </font>
                                                 </Button>
-                                                <Button fx:id="continueButton" alignment="CENTER" cancelButton="true" maxHeight="40.0" maxWidth="-Infinity" minHeight="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" styleClass="login-continue-button" stylesheets="@../../../../../../temp/resources/css/styles.css" text="Continue" textAlignment="CENTER" translateX="70.0" wrapText="true">
+                                                <Button fx:id="continueButton" alignment="CENTER" cancelButton="true" maxHeight="40.0" maxWidth="-Infinity" minHeight="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" styleClass="login-continue-button" stylesheets="@../../css/styles.css" text="Continue" textAlignment="CENTER" translateX="70.0" wrapText="true">
                                                    <font>
                                                       <Font name="Amatic SC Bold" size="20.0" />
                                                    </font>
