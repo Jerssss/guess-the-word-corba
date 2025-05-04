@@ -11,27 +11,41 @@ public class GameCallbackServiceImpl extends GameCallBackServicePOA {
         this.controller = controller;
     }
 
-    /** No longer drives round 1—controller did that already. */
     @Override
-    public void notifyGameStart(String gameToken, String ignoredSessionToken) {
-        System.out.println("[DEBUG][GameCallbackService] notifyGameStart (ignored)");
+    public void notifyGameStart(String gameToken, String sessionToken) {
+        System.out.printf("[CALLBACK][GameStart] gameToken=%s session=%s%n",
+                gameToken, sessionToken);
+        // first round is client‐driven; ignore
     }
 
     @Override
-    public void notifyRoundStart(String gameToken, int roundNumber, String ignoredSessionToken) {
-        System.out.println("[DEBUG][GameCallbackService] notifyRoundStart → Round " + roundNumber);
+    public void notifyRoundStart(String gameToken, int roundNumber, String sessionToken) {
+        System.out.printf("[CALLBACK][RoundStart] → gameToken=%s round=%d session=%s%n",
+                gameToken, roundNumber, sessionToken);
         controller.notifyRoundStartFromCallback(roundNumber);
     }
 
     @Override
-    public void notifyRoundEnd(String gameToken, String ignoredSessionToken, String winnerName) {
-        System.out.println("[DEBUG][GameCallbackService] notifyRoundEnd(winner=" + winnerName + ")");
+    public void notifyRoundEnd(String gameToken, String sessionToken, String winnerName) {
+        if (winnerName != null && !winnerName.trim().isEmpty()) {
+            System.out.printf("[CALLBACK][RoundEnd] → gameToken=%s winner=\"%s\" session=%s%n",
+                    gameToken, winnerName, sessionToken);
+        } else {
+            System.out.printf("[CALLBACK][RoundEnd] → gameToken=%s NO WINNER session=%s%n",
+                    gameToken, sessionToken);
+        }
         controller.showRoundEndPopup(winnerName);
     }
 
     @Override
-    public void notifyGameEnd(String gameToken, String ignoredSessionToken, String winnerName) {
-        System.out.println("[DEBUG][GameCallbackService] notifyGameEnd(winner=" + winnerName + ")");
+    public void notifyGameEnd(String gameToken, String sessionToken, String winnerName) {
+        if (winnerName != null && !winnerName.trim().isEmpty()) {
+            System.out.printf("[CALLBACK][GameEnd] → gameToken=%s champion=\"%s\" session=%s%n",
+                    gameToken, winnerName, sessionToken);
+        } else {
+            System.out.printf("[CALLBACK][GameEnd] → gameToken=%s NO WINNER session=%s%n",
+                    gameToken, sessionToken);
+        }
         controller.showGameEndPopup(winnerName);
     }
 }

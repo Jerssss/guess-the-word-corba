@@ -1,3 +1,4 @@
+// File: Client_Java/player/model/GameRoomModel.java
 package Client_Java.player.model;
 
 import Client_Java.player.SessionManager;
@@ -31,7 +32,6 @@ public class GameRoomModel {
         gameService.registerCallBack(playerId, gameToken, sessionToken, callback);
     }
 
-
     public int startRound(String gameToken, int roundNumber, int playerId, String sessionToken) {
         try {
             return gameService.startRound(gameToken, roundNumber, playerId, sessionToken);
@@ -39,8 +39,8 @@ public class GameRoomModel {
             System.err.println("[GameRoomModel] startRound failed: " + e.getMessage());
             return 0;
         }
-
     }
+
     public int getRoundDuration(String sessionToken) {
         try {
             StringHolder h = new StringHolder();
@@ -51,6 +51,7 @@ public class GameRoomModel {
             return 0;
         }
     }
+
     public String getRandomWord(String gameToken, int roundNumber, int playerId, String sessionToken) {
         try {
             return gameService.getRandomWord(gameToken, roundNumber, playerId, sessionToken);
@@ -59,6 +60,7 @@ public class GameRoomModel {
             return "";
         }
     }
+
     public int getTotalRounds(String sessionToken) {
         try {
             StringHolder h = new StringHolder();
@@ -69,7 +71,6 @@ public class GameRoomModel {
             return 0;
         }
     }
-
 
     public List<Integer> guessLetter(String gameToken,
                                      int playerId,
@@ -84,7 +85,7 @@ public class GameRoomModel {
             return result;
         } catch (Exception e) {
             System.err.println("[GameRoomModel] guessLetter failed: " + e.getMessage());
-            return new ArrayList<>();                // or Collections.emptyList()
+            return new ArrayList<>();
         }
     }
 
@@ -98,6 +99,7 @@ public class GameRoomModel {
             return 0;
         }
     }
+
     public String getRoundWinner(String gameToken, int playerId, String sessionToken) {
         try {
             return gameService.getRoundWinner(gameToken, playerId, sessionToken);
@@ -106,6 +108,7 @@ public class GameRoomModel {
             return "Unknown";
         }
     }
+
     public String getPlayerDisplayName(int playerId, String sessionToken) {
         try {
             return gameService.getDisplayName(playerId, sessionToken);
@@ -114,9 +117,7 @@ public class GameRoomModel {
             return "";
         }
     }
-    /**
-     * Fetches the configured delay (in seconds) before the next round starts.
-     */
+
     public int getNextRoundDelay(String sessionToken) {
         try {
             StringHolder h = new StringHolder();
@@ -127,5 +128,4 @@ public class GameRoomModel {
             return 0;
         }
     }
-
 }

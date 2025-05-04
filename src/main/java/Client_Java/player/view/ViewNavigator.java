@@ -77,8 +77,6 @@ public class ViewNavigator {
         Parent root = loader.load();
         GameRoomModel model = new GameRoomModel(SessionManager.getGameService());
         PlayerAccount acct  = SessionManager.getLoggedInPlayer();
-        // Construct controller and register callbacks;
-        // first round will start when the server sends its callback.
         new GameRoomController(
                 model,
                 loader.getController(),
