@@ -9,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Font;
 import javafx.scene.control.Label;
 
+
 public class AdminLogInPageView {
     @FXML
     private Label loginLabel;
@@ -36,6 +37,7 @@ public class AdminLogInPageView {
     private final int TITLE_SIZE = 140;
     private final int MISC_SIZE = 43;
     private final int PROMPT_SIZE = 18;
+
 
     public void initialize() {
         System.out.println("[DEBUG] Initializing Login View...");
@@ -111,6 +113,7 @@ public class AdminLogInPageView {
     public void setUsernameField(TextField usernameField) {
         this.usernameField = usernameField;
     }
+
 
     public PasswordField getPasswordField() {
         return passwordField;

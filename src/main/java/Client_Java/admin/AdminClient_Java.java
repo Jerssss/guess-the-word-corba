@@ -1,8 +1,5 @@
 package Client_Java.admin;
 
-
-
-
 import Client_Java.admin.controller.AdminLogInPageController;
 import Client_Java.admin.model.AdminClientModel;
 import Client_Java.admin.model.AdminLogInPageModel;
@@ -14,14 +11,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-
-
-
 import java.io.File;
 import java.io.IOException;
-
-
-
 
 public class AdminClient_Java extends Application {
     public static Stage APPLICATION_STAGE;
@@ -29,13 +20,11 @@ public class AdminClient_Java extends Application {
     private static long loggedInAdminID;
     private static String sessionToken;
 
-
     public static void main(String[] args) {
         AdminClientModel clientModel = new AdminClientModel();
         clientModel.init(); // Initialize CORBA connections
         launch(args);
     }
-
 
     @Override
     public void start(Stage stage) {
@@ -44,8 +33,8 @@ public class AdminClient_Java extends Application {
     }
 
     private void loadLoginGUI() {
-      /*  try {
-            File fxmlFile = new File("src/main/java/Client_Java/player/res/fxml/LogInPage.fxml");
+        try {
+            File fxmlFile = new File("src/main/resources/fxml/admin/AdminLogInPage.fxml");
             FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
             Parent root = loader.load();
 
@@ -79,7 +68,7 @@ public class AdminClient_Java extends Application {
         } catch (Exception e) {
             System.err.println("[ERROR] Unexpected exception: " + e.getMessage());
             e.printStackTrace();
-        }*/
+        }
     }
 
     // Session management methods
@@ -111,8 +100,3 @@ public class AdminClient_Java extends Application {
         return APPLICATION_STAGE;
     }
 }
-
-
-
-
-

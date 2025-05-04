@@ -15,7 +15,7 @@
    <center>
       <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1018.0" BorderPane.alignment="CENTER">
          <children>
-            <Pane fx:id="pane" prefHeight="760.0" prefWidth="1018.0">
+            <Pane fx:id="Borderpane" prefHeight="760.0" prefWidth="1018.0">
                <children>
                   <Pane layoutX="135.0" layoutY="77.0" prefHeight="592.0" prefWidth="754.0" style="-fx-border-width: 3;">
                      <children>

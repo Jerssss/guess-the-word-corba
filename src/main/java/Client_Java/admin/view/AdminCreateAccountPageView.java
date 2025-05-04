@@ -1,11 +1,11 @@
 package Client_Java.admin.view;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-
-import java.beans.EventHandler;
 
 public class AdminCreateAccountPageView {
 
@@ -27,13 +27,14 @@ public class AdminCreateAccountPageView {
     @FXML
     private TextField usernameTextField;
 
-//    setActionReturnButton (EventHandler <ActionEvent> event) {
-//
-//    }
 
-//    setActionSaveButton (EventHandler <ActionEvent> event) {
-//
-//    }
+    public void setActionReturnButton(EventHandler<ActionEvent> event) {
+        returnButton.setOnAction(event);
+    }
+
+    public void setActionSaveButton(EventHandler<ActionEvent> event) {
+        saveButton.setOnAction(event);
+    }
 
     public Label getNoticeLabel() {
         return noticeLabel;
@@ -51,7 +52,11 @@ public class AdminCreateAccountPageView {
         return usernameTextField;
     }
 
-    public void setNoticeLabel(Label noticeLabel) {
-        this.noticeLabel = noticeLabel;
+    public void setNoticeLabelText(String message) {
+        noticeLabel.setText(message);
+    }
+
+    public void setNoticeVisible(boolean visible) {
+        noticeLabel.setVisible(visible);
     }
 }
