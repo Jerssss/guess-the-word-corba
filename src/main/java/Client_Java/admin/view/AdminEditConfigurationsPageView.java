@@ -1,3 +1,4 @@
+// File: Client_Java/admin/view/AdminEditConfigurationsPageView.java
 package Client_Java.admin.view;
 
 import javafx.event.ActionEvent;
@@ -39,30 +40,30 @@ public class AdminEditConfigurationsPageView {
     @FXML
     private Label waitingTimeNoticeLabel;
 
-    /** Round Length Buttons */
-    public void setActionDecrementRLwButton (EventHandler <ActionEvent> event) {
-
+    // Round Length Buttons
+    public void setActionDecrementRLwButton(EventHandler<ActionEvent> event) {
+        decrementRLButton.setOnAction(event);
     }
 
-    public void setActionIncrementRLButton (EventHandler <ActionEvent> event) {
-
+    public void setActionIncrementRLButton(EventHandler<ActionEvent> event) {
+        incrementRLButton.setOnAction(event);
     }
 
-    /** Waiting Time Buttons */
-    public void setActionDecrementWTButton (EventHandler <ActionEvent> event) {
-
+    // Waiting Time Buttons
+    public void setActionDecrementWTButton(EventHandler<ActionEvent> event) {
+        decrementWTButton.setOnAction(event);
     }
 
-    public void setActionIncrementWTButton (EventHandler <ActionEvent> event) {
-
+    public void setActionIncrementWTButton(EventHandler<ActionEvent> event) {
+        incrementWTButton.setOnAction(event);
     }
 
-    /** Save Button */
-    public void setActionSaveButton (EventHandler<ActionEvent> event) {
-
+    // Save Button
+    public void setActionSaveButton(EventHandler<ActionEvent> event) {
+        saveButton.setOnAction(event);
     }
 
-    /** Getters and Setters */
+    // Getters
     public Label getNoticeLabel() {
         return noticeLabel;
     }
@@ -83,6 +84,7 @@ public class AdminEditConfigurationsPageView {
         return waitingTimeLabel;
     }
 
+    // Setters
     public void setRoundLengthLabel(TextField roundLengthLabel) {
         this.roundLengthLabel = roundLengthLabel;
     }

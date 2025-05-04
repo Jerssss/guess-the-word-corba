@@ -1,11 +1,9 @@
+// File: AdminLogInPageController.java
 package Client_Java.admin.controller;
 
 import Client_Java.admin.AdminClient_Java;
-import Client_Java.admin.model.AdminClientModel;
-import Client_Java.admin.model.AdminLogInPageModel;
-import Client_Java.admin.model.AdminMainMenuPageModel;
-import Client_Java.admin.view.AdminLogInPageView;
-import Client_Java.admin.view.AdminMainMenuPageView;
+import Client_Java.admin.model.*;
+import Client_Java.admin.view.*;
 import Shared_Files.AdminAccount;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -68,20 +66,27 @@ public class AdminLogInPageController {
             FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
             Parent root = loader.load();
 
-            AdminMainMenuPageView view = loader.getController();
-            if (view == null) {
+            AdminMainMenuPageView pageView = loader.getController();
+            if (pageView == null) {
                 System.err.println("[ERROR] AdminMainMenuPageView is NULL after FXML load!");
                 return;
             } else {
                 System.out.println("[DEBUG] AdminMainMenuPageView loaded successfully.");
-
-                AdminMainMenuPageModel model = new AdminMainMenuPageModel(
-                        AdminClientModel.adminService,
-                        AdminClient_Java.getSessionToken(),
-                        admin.getAdmin_id()
-                );
-                new AdminMainMenuPageController(view, model);
             }
+
+            AdminMainMenuPageModel pageModel = new AdminMainMenuPageModel(
+                    AdminClientModel.adminService,
+                    AdminClient_Java.getSessionToken(),
+                    admin.getAdmin_id()
+            );
+
+            new AdminMainMenuPageController(
+                    pageView,
+                    pageModel,
+                    AdminClientModel.adminService,
+                    AdminClient_Java.getSessionToken(),
+                    admin.getAdmin_id()
+            );
 
             Scene scene = new Scene(root);
             URL css = getClass().getClassLoader().getResource("css/styles.css");
