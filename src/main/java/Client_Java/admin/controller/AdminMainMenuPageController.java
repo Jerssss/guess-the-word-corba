@@ -72,19 +72,19 @@ public class AdminMainMenuPageController {
     }
 
     private void handleViewPlayers(ActionEvent event) {
-//        try {
-//            URL resourceUrl = getClass().getResource("/fxml/admin/AdminPlayerListPage.fxml");
-//            FXMLLoader loader = new FXMLLoader(resourceUrl);
-//            Parent pageView = loader.load();
-//
-//            AdminPlayerListPageView pageViewController = loader.getController();
-//            AdminPlayerListPageModel pageModel = new AdminPlayerListPageModel(adminService, sessionToken, adminID);
-//            new AdminPlayerListPageController(pageViewController, pageModel);
-//
-//            setCenterPane(pageView);
-//        } catch (IOException e) {
-//            handleLoadError("View Players Page", e);
-//        }
+        try {
+            URL resourceUrl = getClass().getResource("/fxml/admin/AdminPlayerListPage.fxml");
+            FXMLLoader loader = new FXMLLoader(resourceUrl);
+            Parent pageView = loader.load();
+
+            AdminPlayerListPageView pageViewController = loader.getController();
+            AdminPlayerListPageModel pageModel = new AdminPlayerListPageModel();
+            new AdminPlayerListPageController(pageModel, pageViewController);
+
+            setCenterPane(pageView);
+        } catch (IOException e) {
+            handleLoadError("View Players Page", e);
+        }
     }
 
     private void handleQuit(ActionEvent event) {
