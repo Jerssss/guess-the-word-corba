@@ -1,10 +1,12 @@
 package Client_Java.admin;
 
+
+
+
 import Client_Java.admin.controller.AdminLogInPageController;
 import Client_Java.admin.model.AdminClientModel;
 import Client_Java.admin.model.AdminLogInPageModel;
 import Client_Java.admin.view.AdminLogInPageView;
-import Client_Java.player.PlayerClient_Model;
 import Shared_Files.AdminAccount;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,8 +14,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+
+
+
 import java.io.File;
 import java.io.IOException;
+
+
+
 
 public class AdminClient_Java extends Application {
     public static Stage APPLICATION_STAGE;
@@ -21,11 +29,13 @@ public class AdminClient_Java extends Application {
     private static long loggedInAdminID;
     private static String sessionToken;
 
+
     public static void main(String[] args) {
         AdminClientModel clientModel = new AdminClientModel();
         clientModel.init(); // Initialize CORBA connections
         launch(args);
     }
+
 
     @Override
     public void start(Stage stage) {
@@ -44,7 +54,7 @@ public class AdminClient_Java extends Application {
                 System.err.println("[ERROR] AdminLoginPageView is NULL after FXML load!");
             } else {
                 System.out.println("[DEBUG] AdminLoginPageView controller loaded successfully.");
-                AdminLogInPageModel model = new AdminLogInPageModel(PlayerClient_Model.authService);
+                AdminLogInPageModel model = new AdminLogInPageModel(AdminClientModel.authService);
                 new AdminLogInPageController(model, loginPageView);
             }
 
@@ -101,3 +111,8 @@ public class AdminClient_Java extends Application {
         return APPLICATION_STAGE;
     }
 }
+
+
+
+
+

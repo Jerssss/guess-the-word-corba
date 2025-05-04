@@ -13,7 +13,7 @@ public class PlayerClient_Java extends Application {
         try {
             corbaClient = new PlayerClient_Model(new String[]{
                     "-ORBInitialPort", "2000",
-                    "-ORBInitialHost", "localhost"
+                    "-ORBInitialHost", "192.168.191.28"
             });
             corbaClient.startOrb();
             // Set services so SessionManager can hand them out
