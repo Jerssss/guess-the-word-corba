@@ -2,16 +2,13 @@
 package Client_Java.admin.controller;
 
 import Client_Java.admin.model.AdminMainMenuPageModel;
-import Client_Java.admin.view.AdminCreateAccountPageView;
-import Client_Java.admin.view.AdminEditConfigurationsPageView;
 import Client_Java.admin.view.AdminMainMenuPageView;
-import Client_Java.admin.view.AdminPlayerListPageView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -56,14 +53,14 @@ public class AdminMainMenuPageController {
             }
 
             FXMLLoader loader = new FXMLLoader(resourceUrl);
-            VBox pageView = loader.load();
+            Parent loadedView = loader.load();
 
-            if (loader.getController() == null) {
-                System.err.println("[ERROR] Controller is NULL after FXML load: " + fxmlResource);
-                return;
+            if (view.getPane() instanceof BorderPane) {
+                ((BorderPane) view.getPane()).setCenter(loadedView);
+            } else {
+                System.err.println("[ERROR] Main pane is not a BorderPane. Cannot set center.");
             }
 
-            view.getPane().setCenter(pageView);
             System.out.println("[INFO] Loaded page: " + fxmlResource);
         } catch (IOException e) {
             System.err.println("[ERROR] Failed to load page: " + fxmlResource + " - " + e.getMessage());
