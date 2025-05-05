@@ -58,6 +58,7 @@ public class GameServiceImpl extends GameServicePOA {
      */
     private static class Lobby {
         final String token;
+        final int gameId;
         final int    lobbyWaitingTime;
         final int    roundDuration;
         final int    nextRoundDelay;
@@ -72,6 +73,7 @@ public class GameServiceImpl extends GameServicePOA {
 
         Lobby(
                 String token,
+                int gameId,
                 int lobbyWaitingTime,
                 int roundDuration,
                 int nextRoundDelay,
@@ -80,7 +82,8 @@ public class GameServiceImpl extends GameServicePOA {
                 int minimumPlayers,
                 int numberOfLives
         ) {
-            this.token            = token;
+            this.token = token;
+            this.gameId = gameId;
             this.lobbyWaitingTime = lobbyWaitingTime;
             this.roundDuration    = roundDuration;
             this.nextRoundDelay   = nextRoundDelay;
@@ -137,8 +140,30 @@ public class GameServiceImpl extends GameServicePOA {
                 return Integer.parseInt(sh.value);
             };
             String newToken = UUID.randomUUID().toString();
+
+            // Create game record in database first
+            int gameId = -1;
+            try (Connection conn = DatabaseConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(
+                         "INSERT INTO games (total_rounds, game_status, start_time) VALUES (?, 'waiting', NOW())",
+                         PreparedStatement.RETURN_GENERATED_KEYS)) {
+                stmt.setInt(1, fetchInt.apply("total_rounds"));
+                stmt.executeUpdate();
+
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        gameId = rs.getInt(1);
+                    }
+                }
+            } catch (SQLException e) {
+                System.err.println("[GameService] Error creating game record: " + e);
+                throw new RuntimeException("Failed to create game");
+            }
+
+            // Create lobby with gameId
             target = new Lobby(
                     newToken,
+                    gameId,
                     fetchInt.apply("lobby_waiting_time"),
                     fetchInt.apply("round_duration"),
                     fetchInt.apply("next_round_delay"),
@@ -147,15 +172,10 @@ public class GameServiceImpl extends GameServicePOA {
                     fetchInt.apply("minimum_players"),
                     fetchInt.apply("number_of_lives")
             );
+
             lobbies.put(newToken, target);
             System.out.println("[GameService DEBUG] Created lobby=" + newToken +
-                    " [wait=" + target.lobbyWaitingTime +
-                    ", roundDur=" + target.roundDuration +
-                    ", nextDelay=" + target.nextRoundDelay +
-                    ", countdown=" + target.countdownSeconds +
-                    ", totalRounds=" + target.totalRounds +
-                    ", minPlayers=" + target.minimumPlayers +
-                    ", lives=" + target.numberOfLives + "]");
+                    " with gameId=" + gameId);
         }
 
         // 2) Add player if not already in
@@ -307,11 +327,20 @@ public class GameServiceImpl extends GameServicePOA {
     public synchronized int startGame(int playerID, String sessionToken)
             throws NotEnoughPlayersException {
         String token = sessionToGame.get(sessionToken);
-        Lobby lobby   = (token == null ? null : lobbies.get(token));
+        Lobby lobby = (token == null ? null : lobbies.get(token));
         if (lobby == null || lobby.players.size() < DEFAULT_MIN_PLAYERS) {
             throw new NotEnoughPlayersException();
         }
 
+        // Update game status to in_progress
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE games SET game_status = 'in_progress' WHERE game_id = ?")) {
+            stmt.setInt(1, lobby.gameId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[GameService] Error updating game status: " + e);
+        }
         // 1) Notify all clients that the game is starting
         for (GameCallBackService cb : lobby.callbacks.values()) {
             try {
@@ -365,6 +394,18 @@ public class GameServiceImpl extends GameServicePOA {
         String currentWord = WORDS.get(RAND.nextInt(WORDS.size())).toUpperCase();
         roundWords.put(gameToken, currentWord);
 
+        // Create round record in database
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "INSERT INTO rounds (game_id, round_number, word, start_time) VALUES (?, ?, ?, NOW())")) {
+            stmt.setInt(1, lobby.gameId);
+            stmt.setInt(2, roundNumber);
+            stmt.setString(3, currentWord);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[GameService] Error creating round record: " + e);
+        }
+
         Map<Integer, RoundState> perPlayerMap =
                 roundStates.computeIfAbsent(gameToken, t -> new ConcurrentHashMap<>());
         perPlayerMap.clear();
@@ -401,7 +442,18 @@ public class GameServiceImpl extends GameServicePOA {
             } catch (Exception ignored) {}
         }
 
-        // 2) Then schedule whatever comes next—**always** after the configured delay
+        // Update round end time in database
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE rounds SET end_time = NOW() WHERE game_id = ? AND round_number = ?")) {
+            stmt.setInt(1, lobby.gameId);
+            stmt.setInt(2, roundNumber);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[GameService] Error updating round end time: " + e);
+        }
+
+        // 2) Then schedule whatever comes next
         if (roundNumber < lobby.totalRounds) {
             // schedule the next round start
             countdownScheduler.schedule(() -> {
@@ -417,19 +469,110 @@ public class GameServiceImpl extends GameServicePOA {
                     } catch (Exception ignored) {}
                 }
             }, lobby.nextRoundDelay, TimeUnit.SECONDS);
-
         } else {
-            // schedule the game end callback
+            // Final round - handle game completion
+            System.out.println("[DEBUG] Final round completed for game: " + gameToken);
+
+            // Get connection outside the scheduled task to prevent race condition
+            try (Connection conn = DatabaseConnection.getConnection()) {
+                conn.setAutoCommit(false); // Start transaction
+
+                try {
+                    // Update game status to completed
+                    try (PreparedStatement stmt = conn.prepareStatement(
+                            "UPDATE games SET game_status = 'completed', end_time = NOW() WHERE game_id = ?")) {
+                        stmt.setInt(1, lobby.gameId);
+                        stmt.executeUpdate();
+                    }
+
+                    // Determine game winner
+                    String gameWinner = determineGameWinner(gameToken);
+                    System.out.println("[DEBUG] Game winner: " + gameWinner);
+
+                    if (gameWinner != null && !gameWinner.isEmpty()) {
+                        // Get player_id from username
+                        int playerId;
+                        try (PreparedStatement stmt = conn.prepareStatement(
+                                "SELECT player_id FROM players WHERE username = ?")) {
+                            stmt.setString(1, gameWinner);
+                            ResultSet rs = stmt.executeQuery();
+                            if (rs.next()) {
+                                playerId = rs.getInt("player_id");
+
+                                // Update game winner
+                                try (PreparedStatement stmt1 = conn.prepareStatement(
+                                        "UPDATE games SET game_winner = ? WHERE game_id = ?")) {
+                                    stmt1.setInt(1, playerId);
+                                    stmt1.setInt(2, lobby.gameId);
+                                    stmt1.executeUpdate();
+                                }
+
+                                // Update player's win count
+                                try (PreparedStatement stmt2 = conn.prepareStatement(
+                                        "UPDATE players SET game_wins = game_wins + 1 WHERE player_id = ?")) {
+                                    stmt2.setInt(1, playerId);
+                                    stmt2.executeUpdate();
+                                }
+                            }
+                        }
+                    }
+
+                    conn.commit(); // Commit transaction
+                    System.out.println("[DEBUG] Game completion updates committed");
+                } catch (SQLException e) {
+                    conn.rollback();
+                    System.err.println("[GameService] Error updating game completion: " + e);
+                }
+            } catch (SQLException e) {
+                System.err.println("[GameService] Database connection error: " + e);
+            }
+
+            // Schedule game end callback (after ensuring DB updates are done)
             countdownScheduler.schedule(() -> {
+                String gameWinner = determineGameWinner(gameToken);
                 for (GameCallBackService cb : lobby.callbacks.values()) {
                     try {
-                        cb.notifyGameEnd(gameToken, "", "");
+                        cb.notifyGameEnd(gameToken, gameWinner, "");
                     } catch (Exception ignored) {}
                 }
                 cleanupGame(gameToken);
             }, lobby.nextRoundDelay, TimeUnit.SECONDS);
         }
     }
+
+    private String determineGameWinner(String gameToken) {
+        Map<String, Integer> winCounts = new HashMap<>();
+        Lobby lobby = lobbies.get(gameToken);
+        if (lobby == null) return "";
+
+        // Count wins for each player
+        for (Map.Entry<String, String> entry : roundWinners.entrySet()) {
+            if (entry.getKey().startsWith(gameToken + ":")) {
+                String winner = entry.getValue();
+                if (winner != null && !winner.isEmpty()) {
+                    winCounts.put(winner, winCounts.getOrDefault(winner, 0) + 1);
+                    System.out.println("[DEBUG] Round winner found: " + winner); // Add debug logging
+                }
+            }
+        }
+
+        if (winCounts.isEmpty()) {
+            System.out.println("[DEBUG] No round winners found for game: " + gameToken);
+            return ""; // No winner
+        }
+
+        // Find player with most wins
+        String winner = winCounts.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("");
+
+        System.out.println("[DEBUG] Determined game winner: " + winner + " with "
+                + winCounts.get(winner) + " wins");
+        return winner;
+    }
+
+
 
     @Override
     public String getRandomWord(
@@ -540,6 +683,7 @@ public class GameServiceImpl extends GameServicePOA {
                 catch (Exception ignored) {}
             });
             roundWinners.put(gameToken + ":" + roundNum, username);
+            updateRoundWinnerInDB(gameToken, roundNum, username);
 
             if (roundNum < lobby.totalRounds) {
                 // b) schedule next round
@@ -605,10 +749,87 @@ public class GameServiceImpl extends GameServicePOA {
         return roundWinners.getOrDefault(key, "Unknown");
     }
 
+    private void updateRoundWinnerInDB(String gameToken, int roundNumber, String winnerUsername) {
+        System.out.println("[DEBUG] Updating round winner: " + winnerUsername
+                + " for game: " + gameToken + " round: " + roundNumber);
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // Get player_id from username
+            int playerId;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT player_id FROM players WHERE username = ?")) {
+                stmt.setString(1, winnerUsername);
+                ResultSet rs = stmt.executeQuery();
+                if (!rs.next()) {
+                    System.err.println("[DEBUG] Player not found: " + winnerUsername);
+                    return;
+                }
+                playerId = rs.getInt("player_id");
+                System.out.println("[DEBUG] Found player ID: " + playerId);
+            }
+
+            Lobby lobby = lobbies.get(gameToken);
+            if (lobby == null) {
+                System.err.println("[DEBUG] Lobby not found for game token: " + gameToken);
+                return;
+            }
+
+            // Update round winner and end time
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE rounds SET round_winner = ?, end_time = NOW() WHERE game_id = ? AND round_number = ?")) {
+                stmt.setInt(1, playerId);
+                stmt.setInt(2, lobby.gameId);
+                stmt.setInt(3, roundNumber);
+                int updated = stmt.executeUpdate();
+                System.out.println("[DEBUG] Round winner updated, rows affected: " + updated);
+            }
+        } catch (SQLException e) {
+            System.err.println("[GameService] Error updating round winner: " + e);
+        }
+    }
+
     @Override
     public String getGameWinner(String gameToken, int playerID, String sessionToken)
             throws NotLoggedInException {
         return "";
+    }
+
+    private void updateGameWinnerInDB(String gameToken, String winnerUsername) {
+        if (winnerUsername == null || winnerUsername.isEmpty()) {
+            return;
+        }
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // Get player_id from username
+            int playerId;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT player_id FROM players WHERE username = ?")) {
+                stmt.setString(1, winnerUsername);
+                ResultSet rs = stmt.executeQuery();
+                if (!rs.next()) return;
+                playerId = rs.getInt("player_id");
+            }
+
+            Lobby lobby = lobbies.get(gameToken);
+            if (lobby == null) return;
+
+            // Update game winner, status, and end time
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE games SET game_winner = ?, game_status = 'completed', end_time = NOW() WHERE game_id = ?")) {
+                stmt.setInt(1, playerId);
+                stmt.setInt(2, lobby.gameId);
+                stmt.executeUpdate();
+            }
+
+            // Update player's win count
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE players SET game_wins = game_wins + 1 WHERE player_id = ?")) {
+                stmt.setInt(1, playerId);
+                stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            System.err.println("[GameService] Error updating game winner: " + e);
+        }
     }
 
     @Override
