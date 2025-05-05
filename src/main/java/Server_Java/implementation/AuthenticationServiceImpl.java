@@ -1,6 +1,5 @@
 package Server_Java.implementation;
 
-
 import Server_Java.database.DatabaseConnection;
 import Server_Java.idls.AuthenticationIDL.AlreadyLoggedInException;
 import Server_Java.idls.AuthenticationIDL.AuthenticationException;
@@ -112,10 +111,10 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
     @Override
     public String adminLogin(String username, String password, IntHolder adminID)
             throws AuthenticationException, AlreadyLoggedInException {
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT admin_id, password, is_logged_in FROM admin WHERE username = ?")) {
-
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // 1. Verify credentials
+            String query = "SELECT admin_id, password FROM admin WHERE username = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
 
@@ -123,27 +122,26 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
                 throw new AuthenticationException("Account does not exist.");
             }
 
+            int id = rs.getInt("admin_id");
             String dbPassword = rs.getString("password");
-            boolean isLoggedIn = rs.getBoolean("is_logged_in");
-            int dbAdminID = rs.getInt("admin_id");
 
             if (!dbPassword.equals(password)) {
                 throw new AuthenticationException("Invalid password.");
             }
 
-            if (isLoggedIn) {
-                // Force logout old session
-                forceAdminLogout(dbAdminID);
-                System.out.println("[SERVER] [FORCE LOGOUT] Previous admin session invalidated for adminID=" + dbAdminID);
-            }
+            // 2. Update DB: mark logged in
+            PreparedStatement update = conn.prepareStatement("UPDATE admin SET is_logged_in = 1 WHERE admin_id = ?");
+            update.setInt(1, id);
+            update.executeUpdate();
 
-            updateAdminLoginStatus(dbAdminID);
-            adminID.value = dbAdminID;
+            // 3. Generate new session token and store callback
+            String newToken = UUID.randomUUID().toString();
+            sessionTokens.put(id, newToken);
 
-            System.out.println("[SERVER] [ADMIN LOGIN SUCCESS] " + username + " (adminID=" + dbAdminID + ") logged in.");
-
-            return generateSessionToken(dbAdminID);
-
+            // 4. Return values
+            adminID.value = id;
+            System.out.println("[SERVER] [ADMIN LOGIN SUCCESS] " + username + " (adminID=" + id + ") logged in.");
+            return newToken;
         } catch (SQLException e) {
             e.printStackTrace();
             throw new AuthenticationException("Database error: " + e.getMessage());
@@ -169,36 +167,53 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
         }
     }
 
-    private void forceAdminLogout(int adminId) throws SQLException {
+    public synchronized String getAdminUsernameByToken(String token) {
+        // Search for the token in the map
+        for (Map.Entry<Integer, String> entry : sessionTokens.entrySet()) {
+            int possibleId = entry.getKey();
+            String storedToken = entry.getValue();
+
+            if (storedToken.equals(token)) {
+                if (isAdmin(possibleId)) {
+                    String username = getAdminUsernameById(possibleId);
+                    return username;
+                } else {
+                    System.err.println("[ERROR] ID " + possibleId + " is NOT an admin.");
+                }
+            }
+        }
+
+        System.err.println("[ERROR] No matching admin found for token.");
+        return null;
+    }
+
+    private boolean isAdmin(int id) {
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "UPDATE admin SET is_logged_in = 0 WHERE admin_id = ?")) {
-
-            stmt.setInt(1, adminId);
-            stmt.executeUpdate();
+             PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM admin WHERE admin_id = ?")) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            boolean exists = rs.next();
+            return exists;
+        } catch (SQLException e) {
+            return false;
         }
     }
 
-    private void updateAdminLoginStatus(int adminId) throws SQLException {
+    private String getAdminUsernameById(int adminId) {
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "UPDATE admin SET is_logged_in = 1 WHERE admin_id = ?")) {
-
+             PreparedStatement stmt = conn.prepareStatement("SELECT username FROM admin WHERE admin_id = ?")) {
             stmt.setInt(1, adminId);
-            stmt.executeUpdate();
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String username = rs.getString("username");
+                return username;
+            } else {
+                System.err.println("[ERROR] No username found for admin ID: " + adminId);
+            }
+        } catch (SQLException e) {
+            System.err.println("[ERROR] getAdminUsernameById SQL error: " + e.getMessage());
         }
+        return null;
     }
 
-    private String generateSessionToken(int id) {
-        if (sessionTokens.containsKey(id)) {
-            System.out.println("[FORCE LOGOUT] Previous session invalidated for ID=" + id);
-            sessionTokens.remove(id);
-        }
-
-        String token = UUID.randomUUID().toString();
-        sessionTokens.put(id, token);
-
-        System.out.println("[SERVER] [SESSION TOKEN GENERATED] ID=" + id + ", Token=" + token);
-        return token;
-    }
 }

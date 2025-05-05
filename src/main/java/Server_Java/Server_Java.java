@@ -41,7 +41,7 @@ public class Server_Java {
             // 2) Instantiate your core servants
             AuthenticationServiceImpl authService = new AuthenticationServiceImpl();
             GameServiceImpl gameService = new GameServiceImpl();
-            AdminServiceImpl adminService = new AdminServiceImpl();
+            AdminServiceImpl adminService = new AdminServiceImpl(authService);
 
             // 3) Convert servants to CORBA object references
             org.omg.CORBA.Object authRef  = rootPoa.servant_to_reference(authService);
