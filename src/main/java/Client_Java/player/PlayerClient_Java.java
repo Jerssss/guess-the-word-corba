@@ -1,4 +1,3 @@
-// File: Client_Java/player/PlayerClient_Java.java
 package Client_Java.player;
 
 import Client_Java.player.view.ViewNavigator;
@@ -7,12 +6,12 @@ import javafx.stage.Stage;
 
 public class PlayerClient_Java extends Application {
     private static PlayerClient_Model corbaClient;
-    private static Stage              primaryStage;
+    private static Stage primaryStage;
 
     public static void main(String[] args) {
         try {
             corbaClient = new PlayerClient_Model(new String[]{
-                    "-ORBInitialPort", "2000",
+                    "-ORBInitialPort", "1050",
                     "-ORBInitialHost", "localhost"
             });
             corbaClient.startOrb();
@@ -38,6 +37,8 @@ public class PlayerClient_Java extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         primaryStage = stage;
+        ViewNavigator.setPrimaryStage(primaryStage);
+        System.out.println("[DEBUG] Primary stage set in PlayerClient_Java");
         // Kick off the very first scene
         ViewNavigator.goToLogin();
         // Optional: lock window size if you like

@@ -1,4 +1,3 @@
-// File: Client_Java/player/controller/GameRoomController.java
 package Client_Java.player.controller;
 
 import Client_Java.player.PlayerClient_Java;
@@ -54,7 +53,7 @@ public class GameRoomController {
 
     // Prevent overlapping RoundStart popups
     private boolean endPopupShowing = false;
-    private final Map<String,Integer> winCounts = new HashMap<>();
+    private final Map<String, Integer> winCounts = new HashMap<>();
 
     public GameRoomController(
             GameRoomModel model,
@@ -141,7 +140,7 @@ public class GameRoomController {
         blankLabels.clear();
         for (int i = 0; i < secretWord.length(); i++) {
             Pane cell = new Pane();
-            cell.setPrefSize(50,75);
+            cell.setPrefSize(50, 75);
             Label lbl = new Label("_");
             lbl.setStyle("-fx-font-size:36; -fx-font-family:Marykate;");
             lbl.layoutXProperty().bind(cell.widthProperty()
@@ -184,7 +183,7 @@ public class GameRoomController {
     }
 
     private void updateTimerLabel() {
-        int m = secondsRemaining/60, s = secondsRemaining%60;
+        int m = secondsRemaining / 60, s = secondsRemaining % 60;
         view.getTimerLabel().setText(String.format("%02d:%02d", m, s));
     }
 
@@ -224,18 +223,37 @@ public class GameRoomController {
     private void showRoundStartScene(int roundNum) {
         try {
             Stage stage = ViewNavigator.getStage();
+            if (stage == null) {
+                System.err.println("[ERROR] Primary stage is null in showRoundStartScene");
+                handleServerRoundStart(roundNum); // Fallback to round UI without popup
+                return;
+            }
             Scene original = stage.getScene();
 
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/fxml/player/GameRoundPopup.fxml")
             );
-            Parent popupRoot = loader.load();
+            Parent popupRoot;
+            try {
+                popupRoot = loader.load();
+            } catch (IOException e) {
+                System.err.println("[ERROR] Failed to load GameRoundPopup.fxml: " + e.getMessage());
+                e.printStackTrace();
+                handleServerRoundStart(roundNum); // Fallback to round UI
+                return;
+            }
 
             GameRoundPopupView ctrl = loader.getController();
+            if (ctrl == null) {
+                System.err.println("[ERROR] GameRoundPopupView controller is null");
+                handleServerRoundStart(roundNum); // Fallback to round UI
+                return;
+            }
             ctrl.setGameTitle("What’s The Word?");
             ctrl.setRoundNumber(roundNum);
 
             stage.setScene(new Scene(popupRoot));
+            System.out.println("[DEBUG] Showing Round " + roundNum + " popup");
 
             PauseTransition wait = new PauseTransition(
                     Duration.seconds(model.getNextRoundDelay(sessionToken))
@@ -243,12 +261,14 @@ public class GameRoomController {
             wait.setOnFinished(e -> {
                 stage.setScene(original);
                 handleServerRoundStart(roundNum);
+                System.out.println("[DEBUG] Restored original scene for Round " + roundNum);
             });
             wait.play();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.err.println("[ERROR] Unexpected error in showRoundStartScene: " + e.getMessage());
             e.printStackTrace();
-            handleServerRoundStart(roundNum);
+            handleServerRoundStart(roundNum); // Fallback to round UI
         }
     }
 
@@ -262,13 +282,18 @@ public class GameRoomController {
 
         System.out.println("[DEBUG] showRoundEndPopup(winner=" + winnerName + ")");
         if (winnerName != null && !winnerName.trim().isEmpty()) {
-            winCounts.merge(winnerName,1,Integer::sum);
+            winCounts.merge(winnerName, 1, Integer::sum);
         }
         endPopupShowing = true;
 
         Platform.runLater(() -> {
             try {
                 Stage stage = ViewNavigator.getStage();
+                if (stage == null) {
+                    System.err.println("[ERROR] Primary stage is null in showRoundEndPopup");
+                    endPopupShowing = false;
+                    return;
+                }
                 Scene original = stage.getScene();
 
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(
@@ -298,6 +323,7 @@ public class GameRoomController {
                 wait.play();
 
             } catch (IOException e) {
+                System.err.println("[ERROR] Failed to load round end popup FXML: " + e.getMessage());
                 e.printStackTrace();
                 endPopupShowing = false;
             }
@@ -317,7 +343,7 @@ public class GameRoomController {
     public void showGameEndPopup(String ignored) {
         String champion = null;
         int max = 0;
-        for (Map.Entry<String,Integer> ent : winCounts.entrySet()) {
+        for (Map.Entry<String, Integer> ent : winCounts.entrySet()) {
             if (ent.getValue() > max) {
                 max = ent.getValue();
                 champion = ent.getKey();
@@ -328,6 +354,10 @@ public class GameRoomController {
         Platform.runLater(() -> {
             try {
                 Stage stage = ViewNavigator.getStage();
+                if (stage == null) {
+                    System.err.println("[ERROR] Primary stage is null in showGameEndPopup");
+                    return;
+                }
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/fxml/player/GameWinnerPopup.fxml")
                 );
@@ -341,15 +371,22 @@ public class GameRoomController {
 
                 PauseTransition wait = new PauseTransition(Duration.seconds(5));
                 wait.setOnFinished(evt -> {
-                    try { ViewNavigator.goToLobby(); }
-                    catch (Exception ex) { ex.printStackTrace(); }
+                    try {
+                        ViewNavigator.goToLobby();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 });
                 wait.play();
 
             } catch (IOException e) {
+                System.err.println("[ERROR] Failed to load GameWinnerPopup.fxml: " + e.getMessage());
                 e.printStackTrace();
-                try { ViewNavigator.goToLobby(); }
-                catch (Exception ex) { ex.printStackTrace(); }
+                try {
+                    ViewNavigator.goToLobby();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
     }

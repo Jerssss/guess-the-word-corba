@@ -8,6 +8,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 import java.io.InputStream;
@@ -48,7 +49,7 @@ public class GameLobbyView {
     private Text rankLabelLB;
 
     @FXML
-    private Button refreshLeaderboardButton;
+    private VBox leaderboardContainer;
 
     @FXML
     private ImageView potionGlow;
@@ -176,6 +177,10 @@ public class GameLobbyView {
         } else {
             System.out.println(name + " successfully injected");
         }
+    }
+
+    public VBox getLeaderboardContainer() {
+        return leaderboardContainer;
     }
 
     public void setActionAboutButton(EventHandler<ActionEvent> event) {
