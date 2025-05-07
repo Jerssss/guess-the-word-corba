@@ -7,11 +7,11 @@ import Client_Java.player.model.WaitingRoomModel;
 import Client_Java.player.view.WaitingRoomView;
 import Client_Java.player.view.ViewNavigator;
 import Client_Java.player.implementation.WaitingRoomCallbackServiceImpl;
-import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
-import Server_Java.idls.PlayerCallBackIDL.GameCallBackServiceHelper;
-import Server_Java.idls.PlayerCallBackIDL.GameCallBackServicePOA;
-import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackService;
-import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackServiceHelper;
+import PlayerCallBackIDL.GameCallBackService;
+import PlayerCallBackIDL.GameCallBackServiceHelper;
+import PlayerCallBackIDL.GameCallBackServicePOA;
+import PlayerCallBackIDL.WaitingRoomGameCallbackService;
+import PlayerCallBackIDL.WaitingRoomGameCallbackServiceHelper;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 

@@ -8,8 +8,8 @@ import Client_Java.player.model.LoginResult;
 import Client_Java.player.view.LoginPageView;
 import Client_Java.player.view.ViewNavigator;
 import Client_Java.player.implementation.LoginCallBackServiceImpl;
-import Server_Java.idls.PlayerCallBackIDL.LoginCallbackService;
-import Server_Java.idls.PlayerCallBackIDL.LoginCallbackServiceHelper;
+import PlayerCallBackIDL.LoginCallbackService;
+import PlayerCallBackIDL.LoginCallbackServiceHelper;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 

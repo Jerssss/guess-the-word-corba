@@ -1,7 +1,7 @@
 package Server_Java.implementation;
 
 import Server_Java.database.DatabaseConnection;
-import Server_Java.idls.AdminIDL.*;
+import AdminIDL.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,8 +46,7 @@ public class AdminServiceImpl extends AdminServicePOA {
             String formattedTimestamp = timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
             // Print the action details
-            String adminUsername = authService.getAdminUsernameByToken(sessionToken);
-            System.out.println("[" + formattedTimestamp +"] [Admin: " + adminUsername + "] - Action: Player Created  - Details: Player ID: " + player_id +", Username: " + username);
+            System.out.println("[" + formattedTimestamp +"] [Admin: " + adminID + "] - Action: Player Created  - Details: Player ID: " + player_id +", Username: " + username);
         }catch (SQLException e){
             throw new RuntimeException(e);
         }catch (Exception e1){

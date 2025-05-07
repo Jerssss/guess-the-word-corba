@@ -3,7 +3,7 @@ package Client_Java.admin.controller;
 import Client_Java.admin.model.AdminEditConfigurationsPageModel;
 import Client_Java.admin.view.AdminEditConfigurationsPageView;
 
-import Server_Java.idls.AdminIDL.NotLoggedInException;
+import AdminIDL.NotLoggedInException;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 

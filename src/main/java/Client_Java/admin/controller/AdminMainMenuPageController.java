@@ -3,7 +3,7 @@ package Client_Java.admin.controller;
 
 import Client_Java.admin.model.*;
 import Client_Java.admin.view.*;
-import Server_Java.idls.AdminIDL.AdminService;
+import AdminIDL.AdminService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;

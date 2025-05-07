@@ -1,11 +1,11 @@
 package Server_Java.implementation;
 
 import Server_Java.database.DatabaseConnection;
-import Server_Java.idls.AuthenticationIDL.AlreadyLoggedInException;
-import Server_Java.idls.AuthenticationIDL.AuthenticationException;
-import Server_Java.idls.AuthenticationIDL.AuthenticationServicePOA;
-import Server_Java.idls.AuthenticationIDL.NotLoggedInException;
-import Server_Java.idls.PlayerCallBackIDL.LoginCallbackService;
+import AuthenticationIDL.AlreadyLoggedInException;
+import AuthenticationIDL.AuthenticationException;
+import AuthenticationIDL.AuthenticationServicePOA;
+import AuthenticationIDL.NotLoggedInException;
+import PlayerCallBackIDL.LoginCallbackService;
 import org.omg.CORBA.IntHolder;
 
 import java.sql.*;
@@ -166,54 +166,4 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
             throw new NotLoggedInException("Database error: " + e.getMessage());
         }
     }
-
-    public synchronized String getAdminUsernameByToken(String token) {
-        // Search for the token in the map
-        for (Map.Entry<Integer, String> entry : sessionTokens.entrySet()) {
-            int possibleId = entry.getKey();
-            String storedToken = entry.getValue();
-
-            if (storedToken.equals(token)) {
-                if (isAdmin(possibleId)) {
-                    String username = getAdminUsernameById(possibleId);
-                    return username;
-                } else {
-                    System.err.println("[ERROR] ID " + possibleId + " is NOT an admin.");
-                }
-            }
-        }
-
-        System.err.println("[ERROR] No matching admin found for token.");
-        return null;
-    }
-
-    private boolean isAdmin(int id) {
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM admin WHERE admin_id = ?")) {
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            boolean exists = rs.next();
-            return exists;
-        } catch (SQLException e) {
-            return false;
-        }
-    }
-
-    private String getAdminUsernameById(int adminId) {
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT username FROM admin WHERE admin_id = ?")) {
-            stmt.setInt(1, adminId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                String username = rs.getString("username");
-                return username;
-            } else {
-                System.err.println("[ERROR] No username found for admin ID: " + adminId);
-            }
-        } catch (SQLException e) {
-            System.err.println("[ERROR] getAdminUsernameById SQL error: " + e.getMessage());
-        }
-        return null;
-    }
-
 }

@@ -1,8 +1,8 @@
 // File: Client_Java/player/model/LogInPageModel.java
 package Client_Java.player.model;
 
-import Server_Java.idls.AuthenticationIDL.*;
-import Server_Java.idls.PlayerCallBackIDL.LoginCallbackService;
+import AuthenticationIDL.*;
+import PlayerCallBackIDL.LoginCallbackService;
 import org.omg.CORBA.IntHolder;
 import Shared_Files.PlayerAccount;
 

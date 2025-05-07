@@ -8,79 +8,88 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.Priority?>
 
-<StackPane prefHeight="760.0" prefWidth="1018.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminCreateAccountPageView">
+<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminCreateAccountPageView">
    <padding>
-      <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
    <children>
-      <VBox alignment="TOP_CENTER" spacing="5.0">
+      <VBox alignment="TOP_CENTER" spacing="5.0" fillWidth="true">
          <padding>
-            <Insets bottom="20.0" left="60.0" right="60.0" top="20.0" />
+            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
          </padding>
          <children>
-            <Label alignment="CENTER" prefHeight="59.0" prefWidth="327.0" text="ADD PLAYER">
+            <Label alignment="CENTER" text="ADD PLAYER">
                <font>
-                  <Font name="Marykate" size="58.0" />
+                  <Font name="Marykate" size="36.0" />
                </font>
                <VBox.margin>
-                  <Insets bottom="40.0" top="20.0" />
+                  <Insets bottom="20.0" top="10.0" />
                </VBox.margin>
             </Label>
-            <Label prefHeight="32.0" prefWidth="863.0" text="Full Name" textFill="#000000d9">
+
+            <Label text="Full Name" textFill="#000000d9">
                <font>
-                  <Font name="Marykate" size="31.0" />
+                  <Font name="Marykate" size="24.0" />
                </font>
             </Label>
-            <TextField fx:id="fullnameTextField" prefHeight="61.0" prefWidth="877.0" promptText="e.g Juan Tamad" style="-fx-border-color: black; -fx-background-color: WHITE; -fx-background-radius: 10; -fx-border-radius: 10;">
+            <TextField fx:id="fullnameTextField" promptText="e.g Juan Tamad"
+                       style="-fx-border-color: black; -fx-background-color: WHITE; -fx-background-radius: 10; -fx-border-radius: 10;">
+               <font>
+                  <Font name="Amatic SC Bold" size="22.0" />
+               </font>
                <VBox.margin>
-                  <Insets bottom="20.0" />
+                  <Insets bottom="15.0" />
                </VBox.margin>
-               <font>
-                  <Font name="Amatic SC Bold" size="28.0" />
-               </font>
             </TextField>
-            <Label prefHeight="32.0" prefWidth="863.0" text="Username" textFill="#000000d9">
+
+            <Label text="Username" textFill="#000000d9">
                <font>
-                  <Font name="Marykate" size="31.0" />
+                  <Font name="Marykate" size="24.0" />
                </font>
             </Label>
-            <TextField fx:id="usernameTextField" prefHeight="61.0" prefWidth="877.0" promptText="e.g. JuanSisipagNa" style="-fx-border-color: black; -fx-background-color: WHITE; -fx-background-radius: 10; -fx-border-radius: 10;">
+            <TextField fx:id="usernameTextField" promptText="e.g. JuanSisipagNa"
+                       style="-fx-border-color: black; -fx-background-color: WHITE; -fx-background-radius: 10; -fx-border-radius: 10;">
+               <font>
+                  <Font name="Amatic SC Bold" size="22.0" />
+               </font>
                <VBox.margin>
-                  <Insets bottom="20.0" />
+                  <Insets bottom="15.0" />
                </VBox.margin>
-               <font>
-                  <Font name="Amatic SC Bold" size="28.0" />
-               </font>
             </TextField>
-            <Label prefHeight="32.0" prefWidth="863.0" text="Password" textFill="#000000d9">
+
+            <Label text="Password" textFill="#000000d9">
                <font>
-                  <Font name="Marykate" size="31.0" />
+                  <Font name="Marykate" size="24.0" />
                </font>
             </Label>
-            <TextField fx:id="passwordTextField" prefHeight="61.0" prefWidth="877.0" promptText="e.g. secretNiJuan123" style="-fx-border-color: black; -fx-background-color: WHITE; -fx-background-radius: 10; -fx-border-radius: 10;">
+            <TextField fx:id="passwordTextField" promptText="e.g. secretNiJuan123"
+                       style="-fx-border-color: black; -fx-background-color: WHITE; -fx-background-radius: 10; -fx-border-radius: 10;">
+               <font>
+                  <Font name="Amatic SC Bold" size="22.0" />
+               </font>
                <VBox.margin>
-                  <Insets bottom="40.0" />
+                  <Insets bottom="25.0" />
                </VBox.margin>
-               <font>
-                  <Font name="Amatic SC Bold" size="28.0" />
-               </font>
             </TextField>
-            <Label fx:id="noticeLabel" alignment="CENTER" contentDisplay="BOTTOM" layoutX="71.0" layoutY="401.0" prefHeight="32.0" prefWidth="307.0" text="error message here" textFill="#ff0000" visible="false">
+
+            <Label fx:id="noticeLabel" alignment="CENTER" text="error message here" textFill="#ff0000" visible="false">
                <font>
-                  <Font name="Arial Bold" size="15.0" />
+                  <Font name="Arial Bold" size="14.0" />
                </font>
             </Label>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+
+            <HBox alignment="CENTER" spacing="15">
                <children>
-                  <Button fx:id="returnButton" mnemonicParsing="false" prefHeight="70.0" prefWidth="167.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Return" wrapText="true">
+                  <Button fx:id="returnButton" mnemonicParsing="false" text="Return" style="-fx-border-color: transparent; -fx-background-color: transparent;">
                      <font>
-                        <Font name="Marykate" size="43.0" />
+                        <Font name="Marykate" size="30.0" />
                      </font>
                   </Button>
-                  <Button fx:id="saveButton" mnemonicParsing="false" prefHeight="70.0" prefWidth="132.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Save" wrapText="true">
+                  <Button fx:id="saveButton" mnemonicParsing="false" text="Save" style="-fx-border-color: transparent; -fx-background-color: transparent;">
                      <font>
-                        <Font name="Marykate" size="43.0" />
+                        <Font name="Marykate" size="30.0" />
                      </font>
                   </Button>
                </children>

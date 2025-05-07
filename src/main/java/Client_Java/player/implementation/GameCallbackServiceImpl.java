@@ -2,7 +2,7 @@
 package Client_Java.player.implementation;
 
 import Client_Java.player.controller.GameRoomController;
-import Server_Java.idls.PlayerCallBackIDL.GameCallBackServicePOA;
+import PlayerCallBackIDL.GameCallBackServicePOA;
 
 public class GameCallbackServiceImpl extends GameCallBackServicePOA {
     private final GameRoomController controller;

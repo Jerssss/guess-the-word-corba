@@ -1,13 +1,13 @@
 // File: Client_Java/player/PlayerClient_Model.java
 package Client_Java.player;
 
-import Server_Java.idls.AuthenticationIDL.AuthenticationService;
-import Server_Java.idls.AuthenticationIDL.AuthenticationServiceHelper;
-import Server_Java.idls.GameIDL.GameService;
-import Server_Java.idls.GameIDL.GameServiceHelper;
-import Server_Java.idls.PlayerCallBackIDL.GameCallBackServiceHelper;
-import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackServiceHelper;
-import Server_Java.idls.PlayerCallBackIDL.LoginCallbackServiceHelper;
+import AuthenticationIDL.AuthenticationService;
+import AuthenticationIDL.AuthenticationServiceHelper;
+import GameIDL.GameService;
+import GameIDL.GameServiceHelper;
+import PlayerCallBackIDL.GameCallBackServiceHelper;
+import PlayerCallBackIDL.WaitingRoomGameCallbackServiceHelper;
+import PlayerCallBackIDL.LoginCallbackServiceHelper;
 import org.omg.CORBA.ORB;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;

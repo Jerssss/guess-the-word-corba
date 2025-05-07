@@ -1,11 +1,11 @@
 package Server_Java;
 
-import Server_Java.idls.AdminIDL.AdminService;
-import Server_Java.idls.AdminIDL.AdminServiceHelper;
-import Server_Java.idls.AuthenticationIDL.AuthenticationService;
-import Server_Java.idls.AuthenticationIDL.AuthenticationServiceHelper;
-import Server_Java.idls.GameIDL.GameService;
-import Server_Java.idls.GameIDL.GameServiceHelper;
+import AdminIDL.AdminService;
+import AdminIDL.AdminServiceHelper;
+import AuthenticationIDL.AuthenticationService;
+import AuthenticationIDL.AuthenticationServiceHelper;
+import GameIDL.GameService;
+import GameIDL.GameServiceHelper;
 import Server_Java.implementation.AuthenticationServiceImpl;
 import Server_Java.implementation.GameServiceImpl;
 import Server_Java.implementation.AdminServiceImpl;
@@ -29,8 +29,8 @@ public class Server_Java {
     public static void main(String[] args) {
         try {
             // 1) ORB & POA initialization
-            String hostIP = "localhost";
-            String[] orbArgs = {"-ORBInitialPort", "2000", "-ORBInitialHost", hostIP};
+            String hostIP = "127.0.0.1";
+            String[] orbArgs = {"-ORBInitialPort", "1050", "-ORBInitialHost", hostIP};
             ORB orb = ORB.init(orbArgs, null);
 
             POA rootPoa = POAHelper.narrow(
@@ -64,7 +64,7 @@ public class Server_Java {
             // 6) Log status
             System.out.println("\n=============================================");
             System.out.println("What's The Word? Game Server is up!");
-            System.out.println("Host: " + hostIP + ", Port: 2000");
+            System.out.println("Host: " + hostIP + ", Port: 1050");
             InetAddress localhost = InetAddress.getLocalHost();
             System.out.println("Local IP: " + localhost.getHostAddress());
             System.out.println("Published Services: Authentication, Game, Admin");

@@ -2,9 +2,9 @@
 package Client_Java.player.model;
 
 import Client_Java.player.SessionManager;
-import Server_Java.idls.GameIDL.GameService;
-import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
-import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackService;
+import GameIDL.GameService;
+import PlayerCallBackIDL.GameCallBackService;
+import PlayerCallBackIDL.WaitingRoomGameCallbackService;
 import org.omg.CORBA.StringHolder;
 
 /**

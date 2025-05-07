@@ -2,8 +2,8 @@
 package Client_Java.player.implementation;
 
 import Client_Java.player.view.ViewNavigator;
-import Server_Java.idls.PlayerCallBackIDL.LoginCallbackServicePOA;
-import Server_Java.idls.PlayerCallBackIDL.NotLoggedInException;
+import PlayerCallBackIDL.LoginCallbackServicePOA;
+import PlayerCallBackIDL.NotLoggedInException;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 

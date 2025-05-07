@@ -1,9 +1,9 @@
 package Client_Java.admin.model;
 
-import Server_Java.idls.AdminIDL.AdminService;
-import Server_Java.idls.AdminIDL.AdminServiceHelper;
-import Server_Java.idls.AuthenticationIDL.AuthenticationService;
-import Server_Java.idls.AuthenticationIDL.AuthenticationServiceHelper;
+import AdminIDL.AdminService;
+import AdminIDL.AdminServiceHelper;
+import AuthenticationIDL.AuthenticationService;
+import AuthenticationIDL.AuthenticationServiceHelper;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.Object;
 import org.omg.CosNaming.NamingContextExt;

@@ -1,15 +1,15 @@
 package Server_Java.implementation;
 
 import Server_Java.database.DatabaseConnection;
-import Server_Java.idls.GameIDL.AlreadyGuessedLetterException;
-import Server_Java.idls.GameIDL.GameNotFoundException;
-import Server_Java.idls.GameIDL.GameServicePOA;
-import Server_Java.idls.GameIDL.GameTimeOutException;
-import Server_Java.idls.GameIDL.MaxAttemptsReachedException;
-import Server_Java.idls.GameIDL.NotEnoughPlayersException;
-import Server_Java.idls.GameIDL.NotLoggedInException;
-import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
-import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackService;
+import GameIDL.AlreadyGuessedLetterException;
+import GameIDL.GameNotFoundException;
+import GameIDL.GameServicePOA;
+import GameIDL.GameTimeOutException;
+import GameIDL.MaxAttemptsReachedException;
+import GameIDL.NotEnoughPlayersException;
+import GameIDL.NotLoggedInException;
+import PlayerCallBackIDL.GameCallBackService;
+import PlayerCallBackIDL.WaitingRoomGameCallbackService;
 import org.omg.CORBA.StringHolder;
 
 import java.io.IOException;

@@ -1,9 +1,9 @@
 package Client_Java.admin.model;
 
 
-import Server_Java.idls.AdminIDL.AccountExistsException;
-import Server_Java.idls.AdminIDL.AdminService;
-import Server_Java.idls.AdminIDL.NotLoggedInException;
+import AdminIDL.AccountExistsException;
+import AdminIDL.AdminService;
+import AdminIDL.NotLoggedInException;
 
 public class AdminCreateAccountPageModel {
     private final AdminService adminService;

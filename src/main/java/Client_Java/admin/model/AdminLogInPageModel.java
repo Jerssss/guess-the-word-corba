@@ -2,9 +2,9 @@ package Client_Java.admin.model;
 
 import Client_Java.admin.AdminClient_Java;
 
-import Server_Java.idls.AuthenticationIDL.AlreadyLoggedInException;
-import Server_Java.idls.AuthenticationIDL.AuthenticationException;
-import Server_Java.idls.AuthenticationIDL.AuthenticationService;
+import AuthenticationIDL.AlreadyLoggedInException;
+import AuthenticationIDL.AuthenticationException;
+import AuthenticationIDL.AuthenticationService;
 import Shared_Files.AdminAccount;
 import org.omg.CORBA.IntHolder;
 

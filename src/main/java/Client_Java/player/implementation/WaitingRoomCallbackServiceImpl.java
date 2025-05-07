@@ -2,8 +2,8 @@
 package Client_Java.player.implementation;
 
 import Client_Java.player.controller.WaitingRoomController;
-import Server_Java.idls.PlayerCallBackIDL.NotLoggedInException;
-import Server_Java.idls.PlayerCallBackIDL.WaitingRoomGameCallbackServicePOA;
+import PlayerCallBackIDL.NotLoggedInException;
+import PlayerCallBackIDL.WaitingRoomGameCallbackServicePOA;
 import javafx.application.Platform;
 
 /**

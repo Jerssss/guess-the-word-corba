@@ -2,8 +2,8 @@ package Client_Java.admin.controller;
 
 import Client_Java.admin.model.AdminCreateAccountPageModel;
 import Client_Java.admin.view.AdminCreateAccountPageView;
-import Server_Java.idls.AdminIDL.AccountExistsException;
-import Server_Java.idls.AdminIDL.NotLoggedInException;
+import AdminIDL.AccountExistsException;
+import AdminIDL.NotLoggedInException;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 

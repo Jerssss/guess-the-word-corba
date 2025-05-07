@@ -1,6 +1,6 @@
 package Client_Java.admin.model;
 
-import Server_Java.idls.AdminIDL.*;
+import AdminIDL.*;
 
 public class AdminMainMenuPageModel {
 

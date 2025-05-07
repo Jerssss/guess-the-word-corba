@@ -2,9 +2,9 @@
 package Client_Java.player.model;
 
 import Client_Java.player.SessionManager;
-import Server_Java.idls.GameIDL.GameService;
-import Server_Java.idls.GameIDL.NotLoggedInException;
-import Server_Java.idls.PlayerCallBackIDL.GameCallBackService;
+import GameIDL.GameService;
+import GameIDL.NotLoggedInException;
+import PlayerCallBackIDL.GameCallBackService;
 import org.omg.CORBA.StringHolder;
 
 import java.util.ArrayList;

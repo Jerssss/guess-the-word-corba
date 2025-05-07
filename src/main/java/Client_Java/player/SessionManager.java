@@ -1,8 +1,8 @@
 // File: Client_Java/player/SessionManager.java
 package Client_Java.player;
 
-import Server_Java.idls.AuthenticationIDL.AuthenticationService;
-import Server_Java.idls.GameIDL.GameService;
+import AuthenticationIDL.AuthenticationService;
+import GameIDL.GameService;
 import Shared_Files.PlayerAccount;
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.POA;
