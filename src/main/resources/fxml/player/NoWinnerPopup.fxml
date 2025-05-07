@@ -2,26 +2,26 @@
 
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<HBox alignment="CENTER" prefHeight="510.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.modals.NoWinnerPopupView">
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
+      <ImageView fitHeight="414.0" fitWidth="602.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../images/testUI/admin/no_winner_board.png" />
+         </image>
+      </ImageView>
       <Pane prefHeight="510.0" prefWidth="515.0">
          <children>
-            <ImageView fitHeight="385.0" fitWidth="800.0" layoutX="-141.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../images/confetti.png" />
-               </image>
-            </ImageView>
-            <Pane layoutX="27.0" layoutY="84.0" prefHeight="328.0" prefWidth="461.0" style="-fx-background-radius: 20; -fx-border-radius: 20;">
+            <Pane layoutX="182.0" layoutY="163.0" prefHeight="75.0" prefWidth="227.0" style="-fx-background-radius: 20; -fx-border-radius: 20;">
                <children>
-                  <Pane layoutY="208.0" prefHeight="71.0" prefWidth="461.0" />
-                  <Text fx:id="gameTitleLabel" layoutX="-16.0" layoutY="91.0" strokeType="OUTSIDE" strokeWidth="0.0" text="NO WINNER" textAlignment="CENTER" wrappingWidth="492.552001953125">
+                  <Text fx:id="gameTitleLabel" fill="#361d10" layoutX="-44.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="No Winner This Time" textAlignment="CENTER" wrappingWidth="314.552001953125">
                      <font>
-                        <Font name="Marykate" size="90.0" />
+                        <Font name="Marykate" size="49.0" />
                      </font>
                   </Text>
                </children>
@@ -29,4 +29,4 @@
          </children>
       </Pane>
    </children>
-</HBox>
+</StackPane>

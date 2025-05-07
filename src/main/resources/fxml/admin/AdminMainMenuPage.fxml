@@ -1,112 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
-<BorderPane fx:id="pane" prefHeight="760.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminMainMenuPageView">
-   <center>
-      <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1018.0" BorderPane.alignment="CENTER">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="763.0" prefWidth="1146.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView fitHeight="765.0" fitWidth="1148.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../images/testUI/admin/main_menu.png" />
+         </image>
+      </ImageView>
+      <Pane prefHeight="200.0" prefWidth="200.0">
          <children>
-            <Pane fx:id="Borderpane" prefHeight="760.0" prefWidth="1018.0">
+            <Pane layoutX="130.0" layoutY="323.0" prefHeight="236.0" prefWidth="261.0">
                <children>
-                  <Pane layoutX="135.0" layoutY="77.0" prefHeight="592.0" prefWidth="754.0" style="-fx-border-width: 3;">
-                     <children>
-                        <Text layoutX="84.0" layoutY="400.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to What's the Word's server!" textAlignment="CENTER" wrappingWidth="592.4739074707031">
-                           <font>
-                              <Font name="Marykate" size="45.0" />
-                           </font>
-                        </Text>
-                        <Text fill="#000000d9" layoutX="86.0" layoutY="447.0" strokeType="OUTSIDE" strokeWidth="0.0" text="with great power comes great responsibility! that power is now yours." textAlignment="CENTER" wrappingWidth="592.4739074707031">
-                           <font>
-                              <Font name="Amatic SC Bold" size="25.0" />
-                           </font>
-                        </Text>
-                        <Text fill="#000000d9" layoutX="102.0" layoutY="535.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Pick a tab to start." textAlignment="CENTER" wrappingWidth="559.4072570800781">
-                           <font>
-                              <Font name="Amatic SC Bold" size="25.0" />
-                           </font>
-                        </Text>
-                        <ImageView fitHeight="301.0" fitWidth="359.0" layoutX="257.0" layoutY="46.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../../java/Client_Java/admin/res/images/logo.png" />
-                           </image>
-                        </ImageView>
-                     </children>
-                  </Pane>
-               </children>
-            </Pane>
-         </children>
-      </StackPane>
-   </center>
-   <left>
-      <VBox prefHeight="760.0" prefWidth="339.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
-         <children>
-            <VBox alignment="CENTER" prefHeight="629.0" prefWidth="339.0" spacing="10.0">
-               <children>
-                  <ImageView fitHeight="75.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="quillGlow" fitHeight="236.0" fitWidth="230.0" layoutX="51.0" layoutY="-11.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../../java/Client_Java/admin/res/images/logo.png" />
+                        <Image url="@../../images/testUI/admin/pen_and_paper.png" />
                      </image>
                   </ImageView>
-                  <StackPane prefHeight="37.0" prefWidth="153.0">
-                     <children>
-                        <Button fx:id="createAccountButton" mnemonicParsing="false" prefHeight="37.0" prefWidth="206.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Create Account" wrapText="true">
-                           <font>
-                              <Font name="Marykate" size="29.0" />
-                           </font>
-                           <StackPane.margin>
-                              <Insets left="20.0" />
-                           </StackPane.margin>
-                        </Button>
-                     </children>
-                     <VBox.margin>
-                        <Insets top="10.0" />
-                     </VBox.margin>
-                  </StackPane>
-                  <StackPane prefHeight="37.0" prefWidth="153.0">
-                     <children>
-                        <Button fx:id="viewPlayersButton" mnemonicParsing="false" prefHeight="37.0" prefWidth="206.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="View Players" wrapText="true">
-                           <font>
-                              <Font name="Marykate" size="29.0" />
-                           </font>
-                           <StackPane.margin>
-                              <Insets left="20.0" />
-                           </StackPane.margin>
-                        </Button>
-                     </children>
-                  </StackPane>
-                  <StackPane prefHeight="37.0" prefWidth="153.0">
-                     <children>
-                        <Button fx:id="editConfigButton" mnemonicParsing="false" prefHeight="48.0" prefWidth="242.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Edit Configurations" wrapText="true">
-                           <font>
-                              <Font name="Marykate" size="29.0" />
-                           </font>
-                           <StackPane.margin>
-                              <Insets left="20.0" />
-                           </StackPane.margin>
-                        </Button>
-                     </children>
-                  </StackPane>
-               </children>
-            </VBox>
-            <VBox alignment="CENTER" prefHeight="100.0" prefWidth="232.0" spacing="40.0">
-               <children>
-                  <Button fx:id="quitButton" mnemonicParsing="false" prefHeight="48.0" prefWidth="242.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Quit" wrapText="true">
+                  <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="84.0" layoutY="72.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/testUI/admin/create_player.png" />
+                     </image>
+                  </ImageView>
+                  <Button fx:id="createAccountButton" layoutX="66.0" layoutY="-1.0" mnemonicParsing="false" prefHeight="222.0" prefWidth="186.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" textFill="WHITE" wrapText="true">
                      <font>
                         <Font name="Marykate" size="29.0" />
                      </font>
                   </Button>
                </children>
-            </VBox>
+            </Pane>
+            <Pane layoutX="454.0" layoutY="127.0" prefHeight="278.0" prefWidth="200.0">
+               <children>
+                  <ImageView fx:id="mirrorGlow" fitHeight="222.0" fitWidth="192.0" layoutX="9.0" layoutY="53.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/testUI/admin/mirror.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="25.0" layoutY="74.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/testUI/admin/show_players.png" />
+                     </image>
+                  </ImageView>
+                  <Button fx:id="viewPlayersButton" layoutX="27.0" mnemonicParsing="false" prefHeight="278.0" prefWidth="150.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" textFill="WHITE" wrapText="true">
+                     <font>
+                        <Font name="Marykate" size="29.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+            <Pane layoutX="884.0" layoutY="125.0" prefHeight="529.0" prefWidth="200.0">
+               <children>
+                  <ImageView fx:id="doorGlow" fitHeight="515.0" fitWidth="509.0" layoutX="7.0" pickOnBounds="true" preserveRatio="true" translateX="-220.0">
+                     <image>
+                        <Image url="@../../images/testUI/admin/door.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="76.0" fitWidth="68.0" layoutX="112.0" layoutY="231.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/testUI/admin/quit.png" />
+                     </image>
+                  </ImageView>
+                  <Button fx:id="quitButton" layoutY="11.0" mnemonicParsing="false" prefHeight="515.0" prefWidth="200.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" textFill="WHITE" wrapText="true">
+                     <font>
+                        <Font name="Marykate" size="29.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+            <Pane layoutX="652.0" layoutY="146.0" prefHeight="494.0" prefWidth="168.0">
+               <children>
+                  <ImageView fx:id="shelfGlow" fitHeight="515.0" fitWidth="532.0" layoutX="-172.0" layoutY="-9.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/testUI/admin/shelf.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="9.0" layoutY="154.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/testUI/admin/edit_config.png" />
+                     </image>
+                  </ImageView>
+                  <Button fx:id="editConfigButton" layoutX="-37.0" layoutY="229.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="242.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" textFill="WHITE" wrapText="true">
+                     <font>
+                        <Font name="Marykate" size="29.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
          </children>
-      </VBox>
-   </left>
-</BorderPane>
+      </Pane>
+   </children>
+</StackPane>

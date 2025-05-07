@@ -1,63 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.effect.GaussianBlur?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="323.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.modals.CreatePlayerConfirmationPopupView">
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Pane>
+      <ImageView fitHeight="401.0" fitWidth="629.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../images/testUI/admin/create-scroll-cropped.png" />
+         </image>
+      </ImageView>
+      <Pane prefHeight="200.0" prefWidth="200.0">
          <children>
-            <Pane prefHeight="55.0" prefWidth="800.0" style="-fx-background-color: white;">
+            <Pane layoutX="184.0" layoutY="109.0" prefHeight="23.0" prefWidth="232.0">
                <children>
-                  <Label alignment="TOP_LEFT" layoutX="19.0" layoutY="17.0" prefHeight="27.0" prefWidth="446.0" text="Confirm Account Creation">
+                  <Text fx:id="label" layoutX="36.0" layoutY="19.0" rotate="-2.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Create this player?" textAlignment="CENTER" wrappingWidth="168.73672103881836">
                      <font>
-                        <Font name="Marykate" size="31.0" />
+                        <Font name="Quick Pencil Regular" size="32.0" />
                      </font>
-                  </Label>
+                  </Text>
                </children>
             </Pane>
+            <Pane layoutX="214.0" layoutY="179.0" prefHeight="53.0" prefWidth="200.0" rotate="-2.0">
+               <children>
+                  <Text fx:id="playerToCreateLabel" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="playerName" textAlignment="CENTER" wrappingWidth="200.0">
+                     <font>
+                        <Font name="Quick Pencil Regular" size="38.0" />
+                     </font>
+                  </Text>
+               </children>
+            </Pane>
+            <Pane layoutX="185.0" layoutY="232.0" prefHeight="110.0" prefWidth="257.0">
+               <children>
+                  <Button fx:id="noButton" layoutX="55.0" layoutY="25.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="67.0" rotate="-6.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="No" wrapText="true">
+                     <font>
+                        <Font name="Quick Pencil Regular" size="29.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="yesButton" layoutX="139.0" layoutY="14.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="78.0" rotate="-6.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Yes" wrapText="true">
+                     <font>
+                        <Font name="Quick Pencil Regular" size="29.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+            <ImageView fx:id="flame1" fitHeight="92.0" fitWidth="170.0" layoutX="-59.0" layoutY="219.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/testUI/fire-nobg.gif" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="flame2" fitHeight="90.0" fitWidth="164.0" layoutX="494.0" layoutY="276.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/testUI/fire-nobg.gif" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="orb" fitHeight="37.0" fitWidth="32.0" layoutX="504.0" layoutY="144.0" opacity="0.79" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/testUI/admin/energy-ball.gif" />
+               </image>
+               <effect>
+                  <GaussianBlur />
+               </effect>
+            </ImageView>
          </children>
       </Pane>
-      <VBox alignment="CENTER" prefHeight="175.0" prefWidth="800.0">
-         <children>
-            <HBox alignment="CENTER" prefHeight="67.0" prefWidth="800.0">
-               <children>
-                  <Text fx:id="label" strokeType="OUTSIDE" strokeWidth="0.0" text="Create this player?" textAlignment="CENTER" wrappingWidth="411.73672103881836">
-                     <font>
-                        <Font name="Marykate" size="51.0" />
-                     </font>
-                  </Text>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="43.0" prefWidth="800.0">
-               <children>
-                  <Text fx:id="playerToCreateLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="playerName" textAlignment="CENTER" wrappingWidth="411.73672103881836">
-                     <font>
-                        <Font name="Marykate" size="38.0" />
-                     </font>
-                  </Text>
-               </children>
-            </HBox>
-         </children>
-      </VBox>
-      <HBox alignment="CENTER" prefHeight="39.0" prefWidth="800.0">
-         <children>
-            <Button fx:id="yesButton" mnemonicParsing="false" prefHeight="73.0" prefWidth="114.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Yes" wrapText="true">
-               <font>
-                  <Font name="Marykate" size="44.0" />
-               </font>
-            </Button>
-            <Button fx:id="noButton" mnemonicParsing="false" prefHeight="46.0" prefWidth="107.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="No" wrapText="true">
-               <font>
-                  <Font name="Marykate" size="44.0" />
-               </font>
-            </Button>
-         </children>
-      </HBox>
    </children>
-</VBox>
+</StackPane>

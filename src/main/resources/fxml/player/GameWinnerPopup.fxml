@@ -11,64 +11,41 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane fx:controller="Client_Java.player.view.modals.GameWinnerPopupView"
-           maxHeight="-Infinity" maxWidth="-Infinity"
-           minHeight="-Infinity" minWidth="-Infinity"
-           prefHeight="420.0" prefWidth="633.0"
-           xmlns="http://javafx.com/javafx/23.0.1"
-           xmlns:fx="http://javafx.com/fxml/1">
-
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="420.0" prefWidth="633.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <ImageView fitHeight="422.0" fitWidth="807.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../images/testUI/winner.png"/>
+            <Image url="@../../images/testUI/winner.png" />
          </image>
       </ImageView>
-      <Pane prefHeight="186.0" prefWidth="468.0" translateY="40.0"
-            styleClass="glass-card"
-            stylesheets="@../../../../../../temp/resources/css/styles.css">
+      <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="186.0" prefWidth="468.0" styleClass="glass-card" stylesheets="@../../../../../../temp/resources/css/styles.css" translateY="40.0">
          <effect>
-            <GaussianBlur radius="63.0"/>
+            <GaussianBlur radius="63.0" />
          </effect>
       </Pane>
-
-      <HBox alignment="CENTER" prefHeight="420.0" prefWidth="633.0">
+      <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="420.0" prefWidth="633.0">
          <children>
             <Pane prefHeight="510.0" prefWidth="515.0">
                <children>
-                  <ImageView fitHeight="302.0" fitWidth="642.0"
-                             layoutX="-567.0" layoutY="-182.0" translateX="500.0"
-                             pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="302.0" fitWidth="642.0" layoutX="-567.0" layoutY="-182.0" pickOnBounds="true" preserveRatio="true" translateX="500.0">
                      <image>
-                        <Image url="@../../../../../../temp/resources/images/confetti.png"/>
+                        <Image url="@../../../../../../temp/resources/images/confetti.png" />
                      </image>
                   </ImageView>
-
-                  <Pane layoutX="27.0" layoutY="62.0" prefHeight="350.0" prefWidth="461.0"
-                        style="-fx-background-radius:20; -fx-border-radius:20;">
+                  <Pane layoutX="27.0" layoutY="62.0" prefHeight="350.0" prefWidth="461.0" style="-fx-background-radius: 20; -fx-border-radius: 20;">
                      <children>
-                        <Text fx:id="gameTitleLabel1"
-                              layoutX="7.0" layoutY="125.0"
-                              wrappingWidth="446.0"
-                              textAlignment="CENTER"
-                              fill="WHITE"
-                              strokeType="OUTSIDE" strokeWidth="0.0">
+                        <Text fx:id="gameTitleLabel1" fill="WHITE" layoutX="7.0" layoutY="125.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Game Winner!" textAlignment="CENTER" wrappingWidth="446.1519775390625">
                            <font>
-                              <Font name="Marykate" size="90.0"/>
+                              <Font name="Marykate" size="90.0" />
                            </font>
                         </Text>
-
-                        <Text fx:id="winningUsernameLabel"
-                              layoutY="218.0"
-                              wrappingWidth="461.0"
-                              textAlignment="CENTER"
-                              fill="WHITE"
-                              strokeType="OUTSIDE" strokeWidth="0.0">
+                        <Pane layoutY="209.0" prefHeight="70.0" prefWidth="461.0" />
+                        <Text fx:id="winningUsernameLabel" fill="WHITE" layoutY="218.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hanni" textAlignment="CENTER" wrappingWidth="461.0">
                            <font>
-                              <Font name="Amatic SC Bold" size="67.0"/>
+                              <Font name="Amatic SC Bold" size="67.0" />
                            </font>
                            <effect>
-                              <DropShadow/>
+                              <DropShadow />
                            </effect>
                         </Text>
                      </children>
@@ -77,18 +54,11 @@
             </Pane>
          </children>
       </HBox>
-
-      <HBox alignment="CENTER" prefHeight="60.0" prefWidth="633.0" translateY="170.0">
+      <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="633.0" translateY="170.0">
          <children>
-            <Button fx:id="returnButton"
-                    mnemonicParsing="false"
-                    prefHeight="90.0" prefWidth="246.0"
-                    text="return"
-                    textFill="WHITE"
-                    onAction="#onReturn"
-                    style="-fx-background-color: transparent;">
+            <Button fx:id="returnButton" mnemonicParsing="false" prefHeight="90.0" prefWidth="246.0" style="-fx-background-color: transaprent;" text="return" textFill="WHITE">
                <font>
-                  <Font name="Marykate" size="57.0"/>
+                  <Font name="Marykate" size="57.0" />
                </font>
             </Button>
          </children>

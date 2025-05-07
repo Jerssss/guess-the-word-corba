@@ -4,45 +4,66 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1018.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminPlayerListPageView">
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="688.0" prefWidth="1034.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <VBox alignment="TOP_CENTER" layoutX="20.0" layoutY="33.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="695.0" prefWidth="982.0" style="-fx-border-width: 3;">
+      <ImageView fitHeight="691.0" fitWidth="1186.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../images/testUI/admin/mirror-zoomed-cropped.png" />
+         </image>
+      </ImageView>
+      <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="1018.0">
          <children>
-            <HBox prefHeight="73.0" prefWidth="934.0">
+            <VBox alignment="TOP_CENTER" layoutX="20.0" layoutY="33.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="695.0" prefWidth="982.0" style="-fx-border-width: 3;">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="LIST OF PLAYERS" wrappingWidth="602.7009887695312">
-                     <font>
-                        <Font name="Marykate" size="47.0" />
-                     </font>
-                     <HBox.margin>
-                        <Insets left="20.0" top="20.0" />
-                     </HBox.margin>
-                  </Text>
-                  <TextField fx:id="searchTextField" prefHeight="35.0" prefWidth="310.0" promptText="Search" style="-fx-background-color: transparent; -fx-border-color: black; -fx-background-radius: 10; -fx-border-radius: 10;">
-                     <HBox.margin>
-                        <Insets left="10.0" top="20.0" />
-                     </HBox.margin>
-                  </TextField>
+                  <HBox prefHeight="73.0" prefWidth="934.0">
+                     <children>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="LIST OF PLAYERS" wrappingWidth="602.7009887695312">
+                           <font>
+                              <Font name="Marykate" size="47.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="20.0" top="20.0" />
+                           </HBox.margin>
+                           <effect>
+                              <Glow level="1.0" />
+                           </effect>
+                        </Text>
+                        <TextField fx:id="searchTextField" prefHeight="35.0" prefWidth="310.0" promptText="Search" style="-fx-background-color: transparent; -fx-border-color: white; -fx-background-radius: 10; -fx-border-radius: 10;">
+                           <HBox.margin>
+                              <Insets left="10.0" top="20.0" />
+                           </HBox.margin>
+                        </TextField>
+                     </children>
+                  </HBox>
+                  <TableView fx:id="playersTable" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="516.0" prefWidth="950.0" styleClass="frosted-table" stylesheets="@../../css/styles.css">
+                     <columns>
+                        <TableColumn fx:id="usernameColumn" prefWidth="106.4000244140625" text="Username" />
+                        <TableColumn fx:id="passwordColumn" prefWidth="141.0" text="Password" />
+                        <TableColumn fx:id="fullNameColumn" prefWidth="165.0" text="Full Name" />
+                        <TableColumn fx:id="totalGamesColumn" prefWidth="158.0" style="-fx-alignment: CENTER;" text="Total Games Played" />
+                        <TableColumn fx:id="totalPointsColumn" prefWidth="151.0" style="-fx-alignment: CENTER;" text="Total Game Points" />
+                        <TableColumn fx:id="editColumn" prefWidth="94.0" style="-fx-alignment: CENTER;" text="Edit" />
+                        <TableColumn fx:id="deleteColumn" prefWidth="94.0" style="-fx-alignment: CENTER;" text="Delete" />
+                     </columns>
+                     <effect>
+                        <DropShadow blurType="GAUSSIAN" spread="0.36" />
+                     </effect>
+                  </TableView>
                </children>
-            </HBox>
-            <TableView fx:id="playersTable" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="604.0" prefWidth="950.0" style="-fx-background-color: white; -fx-table-header-background: #8BCE39;">
-               <columns>
-                  <TableColumn fx:id="usernameColumn" prefWidth="106.4000244140625" text="USERNAME" />
-                  <TableColumn fx:id="passwordColumn" prefWidth="135.99996948242188" text="PASSWORD" />
-                  <TableColumn fx:id="fullNameColumn" prefWidth="183.199951171875" text="FULL NAME" />
-                  <TableColumn fx:id="totalGamesColumn" prefWidth="185.60009765625" style="-fx-alignment: CENTER;" text="TOTAL GAMES PLAYED" />
-                  <TableColumn fx:id="totalPointsColumn" prefWidth="138.39996337890625" style="-fx-alignment: CENTER;" text="TOTAL GAME POINTS" />
-                  <TableColumn fx:id="editColumn" prefWidth="116.0" style="-fx-alignment: CENTER;" text="EDIT" />
-                  <TableColumn fx:id="deleteColumn" prefWidth="80.79996337890623" style="-fx-alignment: CENTER;" text="DELETE" />
-               </columns>
-            </TableView>
+            </VBox>
          </children>
-      </VBox>
+      </Pane>
    </children>
-</Pane>
+</StackPane>
