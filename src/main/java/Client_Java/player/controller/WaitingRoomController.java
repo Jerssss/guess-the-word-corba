@@ -1,4 +1,3 @@
-// File: Client_Java/player/controller/WaitingRoomController.java
 package Client_Java.player.controller;
 
 import Client_Java.player.PlayerClient_Java;
@@ -76,9 +75,12 @@ public class WaitingRoomController {
             public void notifyGameStart(String gt, String st) {
                 onReadyToStart();
             }
-            @Override public void notifyRoundStart(String gt, int r, String st) {}
-            @Override public void notifyRoundEnd  (String gt, String st, String w) {}
-            @Override public void notifyGameEnd   (String gt, String st, String w) {}
+            @Override
+            public void notifyRoundStart(String gt, int r, String st) {}
+            @Override
+            public void notifyRoundEnd(String gt, String st, String winnerName, String secretWord) {}
+            @Override
+            public void notifyGameEnd(String gt, String st, String w) {}
         };
         org.omg.CORBA.Object cbRef =
                 PlayerClient_Java.getClientModel()

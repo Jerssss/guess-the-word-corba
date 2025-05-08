@@ -277,10 +277,10 @@ public class GameRoomController {
      * If not the last round, restores the game UI after 5 s.
      * If it is the final round, leaves the popup up and waits for GameEnd.
      */
-    public void showRoundEndPopup(String winnerName) {
+    public void showRoundEndPopup(String winnerName, String secretWord) {
         if (endPopupShowing) return;
 
-        System.out.println("[DEBUG] showRoundEndPopup(winner=" + winnerName + ")");
+        System.out.println("[DEBUG] showRoundEndPopup(winner=" + winnerName + ", word=" + secretWord + ")");
         if (winnerName != null && !winnerName.trim().isEmpty()) {
             winCounts.merge(winnerName, 1, Integer::sum);
         }
@@ -306,6 +306,10 @@ public class GameRoomController {
                 if (winnerName != null && !winnerName.trim().isEmpty()) {
                     RoundWinnerPopupView c = loader.getController();
                     c.setWinnerName(winnerName);
+                    c.setWinningWord(secretWord);
+                } else {
+                    NoWinnerPopupView c = loader.getController();
+                    c.setSecretWord(secretWord);
                 }
 
                 stage.setScene(new Scene(popupRoot));
@@ -340,17 +344,7 @@ public class GameRoomController {
     }
 
     /** Invoked by GameCallbackServiceImpl.notifyGameEnd(...) */
-    public void showGameEndPopup(String ignored) {
-        String champion = null;
-        int max = 0;
-        for (Map.Entry<String, Integer> ent : winCounts.entrySet()) {
-            if (ent.getValue() > max) {
-                max = ent.getValue();
-                champion = ent.getKey();
-            }
-        }
-        final String disp = (champion != null ? champion : "Nobody");
-
+    public void showGameEndPopup(String champion) {
         Platform.runLater(() -> {
             try {
                 Stage stage = ViewNavigator.getStage();
@@ -365,7 +359,7 @@ public class GameRoomController {
 
                 GameWinnerPopupView c = loader.getController();
                 c.setGameTitle("Game Over!");
-                c.setWinningUsername(disp);
+                c.setWinningUsername(champion != null ? champion : "Nobody");
 
                 stage.setScene(new Scene(popupRoot));
 
