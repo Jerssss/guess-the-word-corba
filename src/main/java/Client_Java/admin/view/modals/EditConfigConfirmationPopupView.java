@@ -1,31 +1,49 @@
 package Client_Java.admin.view.modals;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.text.Text;
+import javafx.scene.control.Button;
+import javafx.stage.Stage;
+
 public class EditConfigConfirmationPopupView {
 
     @FXML
     private Text label;
 
     @FXML
-    private Button noButton;
-
-    @FXML
     private Button yesButton;
 
-    /** Buttons */
-    public void setActionYesButton(EventHandler<ActionEvent> event) {
+    @FXML
+    private Button noButton;
 
+    private boolean confirmed = false;
+
+    @FXML
+    private void initialize() {
+        yesButton.setOnAction(event -> handleYes());
+        noButton.setOnAction(event -> handleNo());
     }
 
-    public void setActionNoButton(EventHandler<ActionEvent> event) {
-
+    public void setConfirmationMessage(String message) {
+        label.setText(message);
     }
 
-    public void setLabel(Text label) {
-        this.label = label;
+    private void handleYes() {
+        confirmed = true;
+        closeDialog();
+    }
+
+    private void handleNo() {
+        confirmed = false;
+        closeDialog();
+    }
+
+    private void closeDialog() {
+        Stage stage = (Stage) yesButton.getScene().getWindow();
+        stage.close();
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
     }
 }

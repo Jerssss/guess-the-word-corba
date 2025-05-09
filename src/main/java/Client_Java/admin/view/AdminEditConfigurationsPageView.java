@@ -1,12 +1,26 @@
-// File: Client_Java/admin/view/AdminEditConfigurationsPageView.java
 package Client_Java.admin.view;
 
+import Client_Java.admin.AdminClient_Java;
+import Client_Java.admin.controller.AdminMainMenuPageController;
+import Client_Java.admin.model.AdminClientModel;
+import Client_Java.admin.model.AdminMainMenuPageModel;
+import Client_Java.admin.view.modals.EditConfigConfirmationPopupView;
+import Shared_Files.AdminAccount;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 public class AdminEditConfigurationsPageView {
 
@@ -32,42 +46,63 @@ public class AdminEditConfigurationsPageView {
     private TextField waitingTimeLabel;
 
     @FXML
-    private Label noticeLabel;
-
-    @FXML
     private Label roundLengthNoticeLabel;
 
     @FXML
     private Label waitingTimeNoticeLabel;
 
+    @FXML
+    private void initialize() {
+        System.out.println("AdminEditConfigurationsPageView initialized");
+    }
+
     // Round Length Buttons
-    public void setActionDecrementRLwButton(EventHandler<ActionEvent> event) {
-        decrementRLButton.setOnAction(event);
+    public void setActionDecrementRLButton(EventHandler<ActionEvent> event) {
+        if (decrementRLButton != null) {
+            decrementRLButton.setOnAction(event);
+        } else {
+            System.err.println("decrementRLButton is null");
+        }
     }
 
     public void setActionIncrementRLButton(EventHandler<ActionEvent> event) {
-        incrementRLButton.setOnAction(event);
+        if (incrementRLButton != null) {
+            incrementRLButton.setOnAction(event);
+        } else {
+            System.err.println("incrementRLButton is null");
+        }
     }
 
     // Waiting Time Buttons
     public void setActionDecrementWTButton(EventHandler<ActionEvent> event) {
-        decrementWTButton.setOnAction(event);
+        if (decrementWTButton != null) {
+            decrementWTButton.setOnAction(event);
+        } else {
+            System.err.println("decrementWTButton is null");
+        }
     }
 
     public void setActionIncrementWTButton(EventHandler<ActionEvent> event) {
-        incrementWTButton.setOnAction(event);
+        if (incrementWTButton != null) {
+            incrementWTButton.setOnAction(event);
+        } else {
+            System.err.println("incrementWTButton is null");
+        }
     }
 
     // Save Button
     public void setActionSaveButton(EventHandler<ActionEvent> event) {
-        saveButton.setOnAction(event);
+        if (saveButton != null) {
+            saveButton.setOnAction(e -> {
+                System.out.println("Save button clicked in view");
+                event.handle(e);
+            });
+        } else {
+            System.err.println("saveButton is null");
+        }
     }
 
     // Getters
-    public Label getNoticeLabel() {
-        return noticeLabel;
-    }
-
     public Label getRoundLengthNoticeLabel() {
         return roundLengthNoticeLabel;
     }
@@ -101,7 +136,115 @@ public class AdminEditConfigurationsPageView {
         this.waitingTimeNoticeLabel = waitingTimeNoticeLabel;
     }
 
-    public void setNoticeLabel(Label noticeLabel) {
-        this.noticeLabel = noticeLabel;
+    public boolean showConfirmationPopup(String message) {
+        try {
+            String fxmlPath = "/fxml/admin/EditConfigConfirmationPopup.fxml";
+            URL fxmlUrl = getClass().getResource(fxmlPath);
+            if (fxmlUrl == null) {
+                throw new IOException("FXML resource not found: " + fxmlPath);
+            }
+            System.out.println("[DEBUG] Loading FXML: " + fxmlUrl);
+
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setTitle("Confirm Configuration Save");
+            dialogStage.setScene(new Scene(loader.load()));
+
+            EditConfigConfirmationPopupView controller = loader.getController();
+            if (controller == null) {
+                throw new IOException("Controller not initialized for EditConfigConfirmationPopup.fxml");
+            }
+
+            controller.setConfirmationMessage(message);
+
+            dialogStage.showAndWait();
+
+            return controller.isConfirmed();
+        } catch (IOException e) {
+            setNoticeLabelText("Error displaying confirmation popup: " + e.getMessage());
+            setNoticeVisible(true);
+            System.err.println("[ERROR] Failed to load EditConfigConfirmationPopup.fxml: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void showAdminMainMenu(AdminAccount admin) {
+        try {
+            File fxmlFile = new File("src/main/resources/fxml/admin/AdminMainMenuPage.fxml");
+            if (!fxmlFile.exists()) {
+                throw new IOException("FXML file not found: " + fxmlFile.getAbsolutePath());
+            }
+            System.out.println("[DEBUG] Loading FXML: " + fxmlFile.getAbsolutePath());
+
+            FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
+            Scene scene = new Scene(loader.load());
+
+            AdminMainMenuPageView pageView = loader.getController();
+            if (pageView == null) {
+                throw new IOException("AdminMainMenuPageView is NULL after FXML load");
+            }
+            System.out.println("[DEBUG] AdminMainMenuPageView loaded successfully.");
+
+            AdminMainMenuPageModel pageModel = new AdminMainMenuPageModel(
+                    AdminClientModel.adminService,
+                    AdminClient_Java.getSessionToken(),
+                    admin.getAdmin_id()
+            );
+
+            new AdminMainMenuPageController(
+                    pageView,
+                    pageModel,
+                    AdminClientModel.adminService,
+                    AdminClient_Java.getSessionToken(),
+                    admin.getAdmin_id()
+            );
+
+            URL css = getClass().getClassLoader().getResource("css/styles.css");
+            if (css != null) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+
+            Stage stage = AdminClient_Java.getStage();
+            Platform.runLater(() -> {
+                stage.setScene(scene);
+                stage.centerOnScreen();
+                stage.setResizable(false);
+                stage.setTitle("Admin Main Menu");
+                stage.show();
+            });
+
+            System.out.println("[Client] Admin Main Menu GUI loaded successfully.");
+
+        } catch (IOException e) {
+            setNoticeLabelText("Failed to load Admin Main Menu: " + e.getMessage());
+            setNoticeVisible(true);
+            System.err.println("[ERROR] IOException while loading AdminMainMenuPage: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            setNoticeLabelText("Unexpected error loading Admin Main Menu.");
+            setNoticeVisible(true);
+            System.err.println("[ERROR] Unexpected exception: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void setNoticeLabelText(String message) {
+        if (waitingTimeNoticeLabel != null) {
+            waitingTimeNoticeLabel.setText(message);
+        }
+        if (roundLengthNoticeLabel != null) {
+            roundLengthNoticeLabel.setText(message);
+        }
+    }
+
+    private void setNoticeVisible(boolean visible) {
+        if (waitingTimeNoticeLabel != null) {
+            waitingTimeNoticeLabel.setVisible(visible);
+        }
+        if (roundLengthNoticeLabel != null) {
+            roundLengthNoticeLabel.setVisible(visible);
+        }
     }
 }

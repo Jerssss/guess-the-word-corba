@@ -1,11 +1,9 @@
 package Client_Java.admin.view.modals;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
-
+import javafx.stage.Stage;
 
 public class CreatePlayerConfirmationPopupView {
 
@@ -13,29 +11,46 @@ public class CreatePlayerConfirmationPopupView {
     private Text label;
 
     @FXML
-    private Button noButton;
-
-    @FXML
     private Text playerToCreateLabel;
 
     @FXML
     private Button yesButton;
 
-    /** Buttons */
-    public void setActionYesButton (EventHandler <ActionEvent> event){
+    @FXML
+    private Button noButton;
 
+    private boolean confirmed = false;
+
+    public void setConfirmationMessage(String message) {
+        label.setText(message);
     }
 
-    public void setActionNoButton (EventHandler<ActionEvent> event) {
-
+    public void setPlayerName(String playerName) {
+        playerToCreateLabel.setText(playerName);
     }
 
-    /** Setters */
-    public void setLabel(Text label) {
-        this.label = label;
+    @FXML
+    private void initialize() {
+        yesButton.setOnAction(event -> handleYes());
+        noButton.setOnAction(event -> handleNo());
     }
 
-    public void setPlayerToCreateLabel(Text playerToCreateLabel) {
-        this.playerToCreateLabel = playerToCreateLabel;
+    private void handleYes() {
+        confirmed = true;
+        closeDialog();
+    }
+
+    private void handleNo() {
+        confirmed = false;
+        closeDialog();
+    }
+
+    private void closeDialog() {
+        Stage stage = (Stage) yesButton.getScene().getWindow();
+        stage.close();
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
     }
 }

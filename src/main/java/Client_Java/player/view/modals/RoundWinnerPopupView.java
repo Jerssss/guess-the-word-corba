@@ -1,4 +1,3 @@
-// File: Client_Java/player/view/modals/RoundWinnerPopupView.java
 package Client_Java.player.view.modals;
 
 import javafx.fxml.FXML;
@@ -9,7 +8,14 @@ public class RoundWinnerPopupView {
     @FXML
     private Text winningUsernameLabel;
 
+    @FXML
+    private Text winningWordLabel;
+
     public void setWinnerName(String name) {
         winningUsernameLabel.setText(name);
+    }
+
+    public void setWinningWord(String word) {
+        winningWordLabel.setText(word);
     }
 }

@@ -1,4 +1,3 @@
-// File: Client_Java/player/implementation/GameCallbackServiceImpl.java
 package Client_Java.player.implementation;
 
 import Client_Java.player.controller.GameRoomController;
@@ -25,16 +24,16 @@ public class GameCallbackServiceImpl extends GameCallBackServicePOA {
         controller.notifyRoundStartFromCallback(roundNumber);
     }
 
-    @Override
-    public void notifyRoundEnd(String gameToken, String sessionToken, String winnerName) {
+
+    public void notifyRoundEnd(String gameToken, String sessionToken, String winnerName, String secretWord) {
         if (winnerName != null && !winnerName.trim().isEmpty()) {
-            System.out.printf("[CALLBACK][RoundEnd] → gameToken=%s winner=\"%s\" session=%s%n",
-                    gameToken, winnerName, sessionToken);
+            System.out.printf("[CALLBACK][RoundEnd] → gameToken=%s winner=\"%s\" word=\"%s\" session=%s%n",
+                    gameToken, winnerName, secretWord, sessionToken);
         } else {
-            System.out.printf("[CALLBACK][RoundEnd] → gameToken=%s NO WINNER session=%s%n",
-                    gameToken, sessionToken);
+            System.out.printf("[CALLBACK][RoundEnd] → gameToken=%s NO WINNER word=\"%s\" session=%s%n",
+                    gameToken, secretWord, sessionToken);
         }
-        controller.showRoundEndPopup(winnerName);
+        controller.showRoundEndPopup(winnerName, secretWord);
     }
 
     @Override

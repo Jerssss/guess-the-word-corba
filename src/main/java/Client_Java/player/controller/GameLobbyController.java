@@ -35,7 +35,6 @@ public class GameLobbyController {
     }
 
     private void initialize() {
-        System.out.println("[DEBUG] Initializing GameLobbyController");
         view.setActionEnterGameButton(this::handleEnterGame);
         view.setActionQuitButton(this::handleQuitButton);
         view.setActionAboutButton(this::handleAbout);
@@ -52,23 +51,15 @@ public class GameLobbyController {
 
             // Clear existing leaderboard cards
             view.getLeaderboardsFlowPane().getChildren().clear();
-            System.out.println("[DEBUG] Cleared leaderboardsFlowPane");
 
             // Create and add leaderboard cards
             for (LobbyLeaderboardCardModel cardModel : leaderboardModels) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/LobbyLeaderboardCard.fxml"));
-                    System.out.println("[DEBUG] Loading /fxml/player/LobbyLeaderboardCard.fxml for " + cardModel.getUsername());
                     Node cardNode = loader.load();
                     LobbyLeaderboardCardView cardView = loader.getController();
-                    if (cardView == null) {
-                        System.err.println("[ERROR] LobbyLeaderboardCardView controller is null");
-                    } else {
-                        System.out.println("[DEBUG] LobbyLeaderboardCardView controller loaded successfully");
-                    }
                     LobbyLeaderboardCardController cardController = new LobbyLeaderboardCardController(cardModel, cardView);
                     view.getLeaderboardsFlowPane().getChildren().add(cardNode);
-                    System.out.println("[DEBUG] Added leaderboard card for " + cardModel.getUsername());
                 } catch (IOException e) {
                     e.printStackTrace();
                     System.err.println("[ERROR] Failed to load leaderboard card: " + e.getMessage());
@@ -99,7 +90,6 @@ public class GameLobbyController {
             view.getCurrentUserRankLB().setText("# N/A");
             view.getCurrentUserLB().setText(username);
             view.getCurrentUserPointsLB().setText("0");
-            System.out.println("[DEBUG] Current user not in leaderboard, using fallback: " + username);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("[ERROR] Failed to update user info: " + e.getMessage());

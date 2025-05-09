@@ -22,6 +22,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -32,6 +33,8 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,9 +50,11 @@ public class GameRoomController {
     private int roundNumber = 0;
     private String secretWord = "";
     private int remainingLives;
+    private int wrongCount = 0; // Track wrong guesses
     private final List<Label> blankLabels = new ArrayList<>();
     private Timeline roundTimer;
     private int secondsRemaining;
+    private final List<ImageView> catFaceParts; // List of cat face components
 
     // Prevent overlapping RoundStart popups
     private boolean endPopupShowing = false;
@@ -69,12 +74,23 @@ public class GameRoomController {
         this.gameToken = gameToken;
         this.totalRounds = model.getTotalRounds(sessionToken);
 
+        // Initialize cat face parts list in order of reveal (Java 8 compatible)
+        catFaceParts = Collections.unmodifiableList(Arrays.asList(
+                view.getCatTopHead(),
+                view.getCatEyes(),
+                view.getCatSnout(),
+                view.getCatBottomHead(),
+                view.getCatRightWhiskers(),
+                view.getCatLeftWhiskers()
+        ));
+
         // Initial UI
         remainingLives = model.getNumberOfLives(sessionToken);
         view.getLifeCountLabel().setText("Lives: " + remainingLives);
         view.getRoundLabel().setText("Waiting for game to start…");
         view.disableAlphabetButtons();
         view.getWordFlow().getChildren().clear();
+        resetCatFace(); // Ensure cat face parts are hidden initially
 
         // Register CORBA callback
         GameCallbackServiceImpl servantImpl = new GameCallbackServiceImpl(this);
@@ -127,7 +143,9 @@ public class GameRoomController {
         view.getRoundLabel().setText("Round " + roundNum);
         secretWord = model.getRandomWord(gameToken, roundNum, playerId, sessionToken);
         remainingLives = model.getNumberOfLives(sessionToken);
+        wrongCount = 0; // Reset wrong count for new round
         view.getLifeCountLabel().setText("Lives: " + remainingLives);
+        resetCatFace(); // Hide all cat face parts
 
         setupBlanks();
         setupAlphabet();
@@ -164,6 +182,11 @@ public class GameRoomController {
         }
     }
 
+    private void resetCatFace() {
+        catFaceParts.forEach(part -> part.setVisible(false));
+        System.out.println("[DEBUG] Cat face parts reset to hidden");
+    }
+
     private void startCountdown(int durationSeconds) {
         if (roundTimer != null) roundTimer.stop();
         secondsRemaining = durationSeconds;
@@ -197,7 +220,13 @@ public class GameRoomController {
 
         if (hits.isEmpty()) {
             remainingLives--;
+            wrongCount++;
             view.getLifeCountLabel().setText("Lives: " + remainingLives);
+            // Reveal cat face part based on wrongCount
+            if (wrongCount <= catFaceParts.size()) {
+                catFaceParts.get(wrongCount - 1).setVisible(true);
+                System.out.println("[DEBUG] Revealed cat face part " + wrongCount + " for wrong guess");
+            }
             if (remainingLives <= 0) {
                 view.disableAlphabetButtons();
                 System.out.println("[DEBUG] round lost (waiting server callback)");
@@ -277,10 +306,10 @@ public class GameRoomController {
      * If not the last round, restores the game UI after 5 s.
      * If it is the final round, leaves the popup up and waits for GameEnd.
      */
-    public void showRoundEndPopup(String winnerName) {
+    public void showRoundEndPopup(String winnerName, String secretWord) {
         if (endPopupShowing) return;
 
-        System.out.println("[DEBUG] showRoundEndPopup(winner=" + winnerName + ")");
+        System.out.println("[DEBUG] showRoundEndPopup(winner=" + winnerName + ", word=" + secretWord + ")");
         if (winnerName != null && !winnerName.trim().isEmpty()) {
             winCounts.merge(winnerName, 1, Integer::sum);
         }
@@ -306,6 +335,10 @@ public class GameRoomController {
                 if (winnerName != null && !winnerName.trim().isEmpty()) {
                     RoundWinnerPopupView c = loader.getController();
                     c.setWinnerName(winnerName);
+                    c.setWinningWord(secretWord);
+                } else {
+                    NoWinnerPopupView c = loader.getController();
+                    c.setSecretWord(secretWord);
                 }
 
                 stage.setScene(new Scene(popupRoot));
@@ -340,17 +373,7 @@ public class GameRoomController {
     }
 
     /** Invoked by GameCallbackServiceImpl.notifyGameEnd(...) */
-    public void showGameEndPopup(String ignored) {
-        String champion = null;
-        int max = 0;
-        for (Map.Entry<String, Integer> ent : winCounts.entrySet()) {
-            if (ent.getValue() > max) {
-                max = ent.getValue();
-                champion = ent.getKey();
-            }
-        }
-        final String disp = (champion != null ? champion : "Nobody");
-
+    public void showGameEndPopup(String champion) {
         Platform.runLater(() -> {
             try {
                 Stage stage = ViewNavigator.getStage();
@@ -365,7 +388,7 @@ public class GameRoomController {
 
                 GameWinnerPopupView c = loader.getController();
                 c.setGameTitle("Game Over!");
-                c.setWinningUsername(disp);
+                c.setWinningUsername(champion != null ? champion : "Nobody");
 
                 stage.setScene(new Scene(popupRoot));
 

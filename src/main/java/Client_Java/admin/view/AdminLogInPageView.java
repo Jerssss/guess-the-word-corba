@@ -40,8 +40,6 @@ public class AdminLogInPageView {
 
 
     public void initialize() {
-        System.out.println("[DEBUG] Initializing Login View...");
-
         loadCustomFonts();
         applyFonts();
 

@@ -14,7 +14,6 @@ public class GameLobbyModel {
     public GameLobbyModel(PlayerAccount player, GameService gameService) {
         this.player = player;
         this.gameService = gameService;
-        System.out.println("[DEBUG] GameLobbyModel initialized for player: " + (player != null ? player.getUsername() : "null"));
     }
 
     public PlayerAccount getPlayer() {

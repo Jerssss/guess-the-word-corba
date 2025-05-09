@@ -1,4 +1,3 @@
-// File: AdminMainMenuPageController.java
 package Client_Java.admin.controller;
 
 import Client_Java.admin.model.*;
@@ -9,7 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -42,6 +41,9 @@ public class AdminMainMenuPageController {
     private void handleCreateAccount(ActionEvent event) {
         try {
             URL resourceUrl = getClass().getResource("/fxml/admin/AdminCreatePlayerPage.fxml");
+            if (resourceUrl == null) {
+                throw new IOException("FXML file not found: AdminCreatePlayerPage.fxml");
+            }
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent pageView = loader.load();
 
@@ -58,6 +60,9 @@ public class AdminMainMenuPageController {
     private void handleEditConfig(ActionEvent event) {
         try {
             URL resourceUrl = getClass().getResource("/fxml/admin/AdminEditConfigurationsPage.fxml");
+            if (resourceUrl == null) {
+                throw new IOException("FXML file not found: AdminEditConfigurationsPage.fxml");
+            }
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent pageView = loader.load();
 
@@ -74,6 +79,9 @@ public class AdminMainMenuPageController {
     private void handleViewPlayers(ActionEvent event) {
         try {
             URL resourceUrl = getClass().getResource("/fxml/admin/AdminPlayerListPage.fxml");
+            if (resourceUrl == null) {
+                throw new IOException("FXML file not found: AdminPlayerListPage.fxml");
+            }
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent pageView = loader.load();
 
@@ -90,6 +98,9 @@ public class AdminMainMenuPageController {
     private void handleQuit(ActionEvent event) {
         try {
             URL resourceUrl = getClass().getResource("/fxml/admin/AdminLogInPage.fxml");
+            if (resourceUrl == null) {
+                throw new IOException("FXML file not found: AdminLogInPage.fxml");
+            }
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent loginView = loader.load();
 
@@ -106,10 +117,12 @@ public class AdminMainMenuPageController {
     }
 
     private void setCenterPane(Parent loadedView) {
-        if (view.getPane() instanceof BorderPane) {
-            ((BorderPane) view.getPane()).setCenter(loadedView);
+        StackPane pane = view.getPane();
+        if (pane != null) {
+            pane.getChildren().setAll(loadedView); // Replace all children with the new view
+            System.out.println("[DEBUG] Set new view in StackPane");
         } else {
-            System.err.println("[ERROR] Main pane is not a BorderPane. Cannot set center.");
+            System.err.println("[ERROR] StackPane is null. Cannot set new view.");
         }
     }
 

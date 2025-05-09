@@ -70,8 +70,6 @@ public class GameLobbyView {
 
 
     public void initialize() {
-        System.out.println("[DEBUG] Initializing Game Lobby View...");
-
         if (enterGameButton == null) {
             System.err.println("[ERROR] enterGameButton is NULL! Check FXML.");
         }
@@ -162,14 +160,9 @@ public class GameLobbyView {
         if (quitButton == null) {
             System.err.println("[VIEW ERROR] quitButton is NULL!");
         } else {
-            System.out.println("[DEBUG] Quit button bound with event handler.");
             quitButton.setOnAction(event);
         }
     }
-
-//    public void setActionRefreshLeaderboardButton(EventHandler<ActionEvent> event) {
-//        refreshLeaderboardButton.setOnAction(event);
-//    }
 
     private void verifyComponent(String name, Object component) {
         if (component == null) {

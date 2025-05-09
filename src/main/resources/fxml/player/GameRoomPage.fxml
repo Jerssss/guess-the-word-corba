@@ -13,130 +13,6 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<!--<BorderPane prefHeight="760.0" prefWidth="1300.0"-->
-<!--            xmlns="http://javafx.com/javafx/23.0.1"-->
-<!--            xmlns:fx="http://javafx.com/fxml/1"-->
-<!--            fx:controller="Client_Java.player.view.GameRoomView">-->
-<!--   &lt;!&ndash; RIGHT SIDE: round info, cat graphic, lives, timer &ndash;&gt;-->
-<!--   <right>-->
-<!--      <VBox spacing="20" BorderPane.alignment="CENTER">-->
-<!--         <padding>-->
-<!--            <Insets top="20" right="20" bottom="20" left="20"/>-->
-<!--         </padding>-->
-<!--         &lt;!&ndash; Round info &ndash;&gt;-->
-<!--         <HBox spacing="10" alignment="CENTER_LEFT">-->
-<!--            <Text text="">-->
-<!--               <font><Font size="53.0"/></font>-->
-<!--            </Text>-->
-<!--            &lt;!&ndash; Only the number now (blank at startup) &ndash;&gt;-->
-<!--            <Label fx:id="roundLabel" text="">-->
-<!--               <font><Font size="52.0"/></font>-->
-<!--            </Label>-->
-<!--         </HBox>-->
-<!--         &lt;!&ndash; Cat graphic pieces &ndash;&gt;-->
-<!--         <VBox spacing="5" alignment="CENTER">-->
-<!--            <ImageView fx:id="catShadow"-->
-<!--                       pickOnBounds="true" preserveRatio="true"-->
-<!--                       fitWidth="200.0" fitHeight="150.0">-->
-<!--               <image>-->
-<!--                  <Image url="@../../images/cat/cat-outline.png"/>-->
-<!--               </image>-->
-<!--            </ImageView>-->
-<!--            <ImageView fx:id="catTopHead" visible="false"-->
-<!--                       pickOnBounds="true" preserveRatio="true"-->
-<!--                       fitWidth="200.0" fitHeight="60.0">-->
-<!--               <image>-->
-<!--                  <Image url="@../../images/cat/top-head.png"/>-->
-<!--               </image>-->
-<!--            </ImageView>-->
-<!--            <ImageView fx:id="catEyes" visible="false"-->
-<!--                       pickOnBounds="true" preserveRatio="true"-->
-<!--                       fitWidth="150.0" fitHeight="40.0">-->
-<!--               <image>-->
-<!--                  <Image url="@../../images/cat/eyes.png"/>-->
-<!--               </image>-->
-<!--            </ImageView>-->
-<!--            <ImageView fx:id="catSnout" visible="false"-->
-<!--                       pickOnBounds="true" preserveRatio="true"-->
-<!--                       fitWidth="80.0"  fitHeight="50.0">-->
-<!--               <image>-->
-<!--                  <Image url="@../../images/cat/snout.png"/>-->
-<!--               </image>-->
-<!--            </ImageView>-->
-<!--            <ImageView fx:id="catLeftWhiskers" visible="false"-->
-<!--                       pickOnBounds="true" preserveRatio="true"-->
-<!--                       fitWidth="80.0"  fitHeight="80.0">-->
-<!--               <image>-->
-<!--                  <Image url="@../../images/cat/left-whiskers.png"/>-->
-<!--               </image>-->
-<!--            </ImageView>-->
-<!--            <ImageView fx:id="catRightWhiskers" visible="false"-->
-<!--                       pickOnBounds="true" preserveRatio="true"-->
-<!--                       fitWidth="80.0"  fitHeight="80.0">-->
-<!--               <image>-->
-<!--                  <Image url="@../../images/cat/right-whiskers.png"/>-->
-<!--               </image>-->
-<!--            </ImageView>-->
-<!--            <ImageView fx:id="catBottomHead" visible="false"-->
-<!--                       pickOnBounds="true" preserveRatio="true"-->
-<!--                       fitWidth="200.0" fitHeight="60.0">-->
-<!--               <image>-->
-<!--                  <Image url="@../../images/cat/bottom-head.png"/>-->
-<!--               </image>-->
-<!--            </ImageView>-->
-<!--         </VBox>-->
-<!--         &lt;!&ndash; Lives display &ndash;&gt;-->
-<!--         <HBox spacing="5" alignment="CENTER">-->
-<!--            <Text text="">-->
-<!--               <font><Font size="43.0"/></font>-->
-<!--            </Text>-->
-<!--            <Label fx:id="lifeCountLabel" text="5">-->
-<!--               <font><Font size="47.0"/></font>-->
-<!--            </Label>-->
-<!--         </HBox>-->
-<!--         &lt;!&ndash; Timer display &ndash;&gt;-->
-<!--         <HBox spacing="5" alignment="CENTER">-->
-<!--            <Text text="Time:">-->
-<!--               <font><Font size="43.0"/></font>-->
-<!--            </Text>-->
-<!--            <Label fx:id="timerLabel" text="00:00">-->
-<!--               <font><Font size="47.0"/></font>-->
-<!--            </Label>-->
-<!--         </HBox>-->
-<!--      </VBox>-->
-<!--   </right>-->
-<!--   &lt;!&ndash; CENTER: title, blanks, alphabet &ndash;&gt;-->
-<!--   <center>-->
-<!--      <VBox spacing="30" alignment="CENTER" BorderPane.alignment="CENTER">-->
-<!--         <padding>-->
-<!--            <Insets top="20" right="20" bottom="20" left="20"/>-->
-<!--         </padding>-->
-<!--         &lt;!&ndash; Game title &ndash;&gt;-->
-<!--         <Label text="What's the Word?">-->
-<!--            <font><Font name="Marykate" size="60.0"/></font>-->
-<!--         </Label>-->
-<!--         &lt;!&ndash; Dynamically populated blanks &ndash;&gt;-->
-<!--         <FlowPane fx:id="wordFlow"-->
-<!--                   hgap="10" vgap="10"-->
-<!--                   prefWrapLength="700"-->
-<!--                   alignment="CENTER">-->
-<!--            <padding>-->
-<!--               <Insets top="20" right="20" bottom="20" left="20"/>-->
-<!--            </padding>-->
-<!--         </FlowPane>-->
-<!--         &lt;!&ndash; Dynamically populated alphabet keys &ndash;&gt;-->
-<!--         <FlowPane fx:id="alphabetFlow"-->
-<!--                   hgap="5" vgap="5"-->
-<!--                   prefWrapLength="700"-->
-<!--                   alignment="CENTER">-->
-<!--            <padding>-->
-<!--               <Insets top="20" right="20" bottom="20" left="20"/>-->
-<!--            </padding>-->
-<!--         </FlowPane>-->
-<!--      </VBox>-->
-<!--   </center>-->
-<!--</BorderPane>-->
-
 <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1621.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.GameRoomView">
    <children>
       <ImageView fx:id="gameRoomBackgroundImage" fitHeight="1093.0" fitWidth="1621.0" pickOnBounds="true" preserveRatio="true">
@@ -195,32 +71,32 @@
                               <Image url="@../../images/cat/cat-outline.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="catTopHead" fitHeight="77.0" fitWidth="324.0" pickOnBounds="true" preserveRatio="true" translateY="-70.0">
+                        <ImageView fx:id="catTopHead" fitHeight="77.0" fitWidth="324.0" pickOnBounds="true" preserveRatio="true" translateY="-70.0" visible="false">
                            <image>
                               <Image url="@../../images/cat/top-head.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="catEyes" fitHeight="44.0" fitWidth="137.0" pickOnBounds="true" preserveRatio="true" translateX="2.0" translateY="-6.0">
+                        <ImageView fx:id="catEyes" fitHeight="44.0" fitWidth="137.0" pickOnBounds="true" preserveRatio="true" translateX="2.0" translateY="-6.0" visible="false">
                            <image>
                               <Image url="@../../images/cat/eyes.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="catSnout" fitHeight="57.0" fitWidth="76.0" pickOnBounds="true" preserveRatio="true" translateX="-12.0" translateY="40.0">
+                        <ImageView fx:id="catSnout" fitHeight="57.0" fitWidth="76.0" pickOnBounds="true" preserveRatio="true" translateX="-12.0" translateY="40.0" visible="false">
                            <image>
                               <Image url="@../../images/cat/snout.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="catBottomHead" fitHeight="51.0" fitWidth="187.0" pickOnBounds="true" preserveRatio="true" translateX="-16.0" translateY="86.0">
+                        <ImageView fx:id="catBottomHead" fitHeight="51.0" fitWidth="187.0" pickOnBounds="true" preserveRatio="true" translateX="-16.0" translateY="86.0" visible="false">
                            <image>
                               <Image url="@../../images/cat/bottom-head.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="catRightWhiskers" fitHeight="74.0" fitWidth="84.0" pickOnBounds="true" preserveRatio="true" translateX="112.0" translateY="19.0">
+                        <ImageView fx:id="catRightWhiskers" fitHeight="74.0" fitWidth="84.0" pickOnBounds="true" preserveRatio="true" translateX="112.0" translateY="19.0" visible="false">
                            <image>
                               <Image url="@../../images/cat/right-whiskers.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="catLeftWhiskers" fitHeight="88.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" translateX="-115.0" translateY="12.0">
+                        <ImageView fx:id="catLeftWhiskers" fitHeight="88.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" translateX="-115.0" translateY="12.0" visible="false">
                            <image>
                               <Image url="@../../images/cat/left-whiskers.png" />
                            </image>
