@@ -52,6 +52,7 @@ public class AdminCreateAccountPageController {
     }
 
     private void handleCreatePlayer() {
+        String fullname = view.getFullnameTextField().getText().trim();
         String username = view.getUsernameTextField().getText().trim();
         String password = view.getPasswordTextField().getText().trim();
 
@@ -62,7 +63,7 @@ public class AdminCreateAccountPageController {
         }
 
         try {
-            model.createPlayer(username, password);
+            model.createPlayer(fullname, username, password);
             view.setNoticeLabelText("Player account created successfully.");
             view.setNoticeVisible(true);
         } catch (AccountExistsException e) {

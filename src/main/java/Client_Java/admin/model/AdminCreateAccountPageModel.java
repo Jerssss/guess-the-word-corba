@@ -16,7 +16,7 @@ public class AdminCreateAccountPageModel {
         this.adminID = adminID;
     }
 
-    public void createPlayer(String username, String password) throws AccountExistsException, NotLoggedInException {
-        adminService.createPlayer(username, password, sessionToken, adminID);
+    public void createPlayer(String fullname, String username, String password) throws AccountExistsException, NotLoggedInException {
+        adminService.createPlayer(fullname, username, password, sessionToken, adminID);
     }
 }
