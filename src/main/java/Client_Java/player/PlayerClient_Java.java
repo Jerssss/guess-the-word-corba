@@ -38,7 +38,6 @@ public class PlayerClient_Java extends Application {
     public void start(Stage stage) throws Exception {
         primaryStage = stage;
         ViewNavigator.setPrimaryStage(primaryStage);
-        System.out.println("[DEBUG] Primary stage set in PlayerClient_Java");
         // Kick off the very first scene
         ViewNavigator.goToLogin();
         // Optional: lock window size if you like

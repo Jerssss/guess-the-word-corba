@@ -1,6 +1,5 @@
 package Client_Java.player.view;
 
-import AuthenticationIDL.AuthenticationService;
 import Client_Java.player.PlayerClient_Java;
 import Client_Java.player.SessionManager;
 import Client_Java.player.controller.GameLobbyController;
@@ -11,8 +10,7 @@ import Client_Java.player.model.GameLobbyModel;
 import Client_Java.player.model.LogInPageModel;
 import Client_Java.player.model.WaitingRoomModel;
 import Client_Java.player.model.GameRoomModel;
-import GameIDL.GameService;
-import GameIDL.NotLoggedInException;
+
 import Shared_Files.PlayerAccount;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -38,7 +36,6 @@ public class ViewNavigator {
     // Method to set the primary stage (call this during application startup)
     public static void setPrimaryStage(Stage stage) {
         primaryStage = stage;
-        System.out.println("[DEBUG] ViewNavigator.primaryStage set");
     }
 
     private static void switchScene(Parent root, String title) {
@@ -48,21 +45,18 @@ public class ViewNavigator {
         Scene scene = new Scene(root);
         try {
             scene.getStylesheets().add(CSS);
-            System.out.println("[DEBUG] Applied stylesheet: " + CSS);
         } catch (Exception e) {
             System.err.println("[ERROR] Failed to load stylesheet: " + e.getMessage());
         }
         primaryStage.setScene(scene);
         primaryStage.setTitle(title);
         primaryStage.show();
-        System.out.println("[DEBUG] Switched to scene: " + title);
     }
 
     public static void goToLogin() throws Exception {
         FXMLLoader loader = new FXMLLoader(
                 ViewNavigator.class.getResource("/fxml/player/LogInPage.fxml")
         );
-        System.out.println("[DEBUG] Loading /fxml/player/LogInPage.fxml");
         Parent root;
         try {
             root = loader.load();
@@ -86,7 +80,6 @@ public class ViewNavigator {
         FXMLLoader loader = new FXMLLoader(
                 ViewNavigator.class.getResource("/fxml/player/GameLobbyPage.fxml")
         );
-        System.out.println("[DEBUG] Loading /fxml/player/GameLobbyPage.fxml");
         Parent root;
         try {
             root = loader.load();
@@ -109,7 +102,6 @@ public class ViewNavigator {
         FXMLLoader loader = new FXMLLoader(
                 ViewNavigator.class.getResource("/fxml/player/WaitingRoomPage.fxml")
         );
-        System.out.println("[DEBUG] Loading /fxml/player/WaitingRoomPage.fxml");
         Parent root;
         try {
             root = loader.load();
@@ -126,7 +118,6 @@ public class ViewNavigator {
         FXMLLoader loader = new FXMLLoader(
                 ViewNavigator.class.getResource("/fxml/player/GameRoomPage.fxml")
         );
-        System.out.println("[DEBUG] Loading /fxml/player/GameRoomPage.fxml");
         Parent root;
         try {
             root = loader.load();
