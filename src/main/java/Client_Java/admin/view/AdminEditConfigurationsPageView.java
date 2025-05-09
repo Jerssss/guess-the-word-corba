@@ -1,4 +1,3 @@
-// File: Client_Java/admin/view/AdminEditConfigurationsPageView.java
 package Client_Java.admin.view;
 
 import javafx.event.ActionEvent;
@@ -32,42 +31,69 @@ public class AdminEditConfigurationsPageView {
     private TextField waitingTimeLabel;
 
     @FXML
-    private Label noticeLabel;
-
-    @FXML
     private Label roundLengthNoticeLabel;
 
     @FXML
     private Label waitingTimeNoticeLabel;
 
+    @FXML
+    private void initialize() {
+        // Log initialization status for debugging
+        System.out.println("AdminEditConfigurationsPageView initialized: " +
+                "saveButton=" + saveButton +
+                ", roundLengthLabel=" + roundLengthLabel +
+                ", waitingTimeLabel=" + waitingTimeLabel +
+                ", roundLengthNoticeLabel=" + roundLengthNoticeLabel +
+                ", waitingTimeNoticeLabel=" + waitingTimeNoticeLabel);
+    }
+
     // Round Length Buttons
     public void setActionDecrementRLwButton(EventHandler<ActionEvent> event) {
-        decrementRLButton.setOnAction(event);
+        if (decrementRLButton != null) {
+            decrementRLButton.setOnAction(event);
+        } else {
+            System.err.println("decrementRLButton is null");
+        }
     }
 
     public void setActionIncrementRLButton(EventHandler<ActionEvent> event) {
-        incrementRLButton.setOnAction(event);
+        if (incrementRLButton != null) {
+            incrementRLButton.setOnAction(event);
+        } else {
+            System.err.println("incrementRLButton is null");
+        }
     }
 
     // Waiting Time Buttons
     public void setActionDecrementWTButton(EventHandler<ActionEvent> event) {
-        decrementWTButton.setOnAction(event);
+        if (decrementWTButton != null) {
+            decrementWTButton.setOnAction(event);
+        } else {
+            System.err.println("decrementWTButton is null");
+        }
     }
 
     public void setActionIncrementWTButton(EventHandler<ActionEvent> event) {
-        incrementWTButton.setOnAction(event);
+        if (incrementWTButton != null) {
+            incrementWTButton.setOnAction(event);
+        } else {
+            System.err.println("incrementWTButton is null");
+        }
     }
 
     // Save Button
     public void setActionSaveButton(EventHandler<ActionEvent> event) {
-        saveButton.setOnAction(event);
+        if (saveButton != null) {
+            saveButton.setOnAction(e -> {
+                System.out.println("Save button clicked in view");
+                event.handle(e);
+            });
+        } else {
+            System.err.println("saveButton is null");
+        }
     }
 
     // Getters
-    public Label getNoticeLabel() {
-        return noticeLabel;
-    }
-
     public Label getRoundLengthNoticeLabel() {
         return roundLengthNoticeLabel;
     }
@@ -99,9 +125,5 @@ public class AdminEditConfigurationsPageView {
 
     public void setWaitingTimeNoticeLabel(Label waitingTimeNoticeLabel) {
         this.waitingTimeNoticeLabel = waitingTimeNoticeLabel;
-    }
-
-    public void setNoticeLabel(Label noticeLabel) {
-        this.noticeLabel = noticeLabel;
     }
 }
