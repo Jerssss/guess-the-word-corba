@@ -16,7 +16,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="688.0" prefWidth="1034.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="688.0" prefWidth="1034.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminPlayerListPageView">
    <children>
       <ImageView fitHeight="691.0" fitWidth="1186.0" pickOnBounds="true" preserveRatio="true">
          <image>
