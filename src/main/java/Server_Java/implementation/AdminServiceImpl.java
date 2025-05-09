@@ -71,10 +71,11 @@ public class AdminServiceImpl extends AdminServicePOA {
 
     @Override
     public void modifyWaitingTime(int waitTime, String sessionToken, int adminID) throws NotLoggedInException {
-        String query = "UPDATE settings SET waiting_time = ?";
+        String query = "UPDATE settings SET lobby_waiting_time = ?";
         try (Connection con = DatabaseConnection.getConnection()) {
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setInt(1, waitTime);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } catch (Exception e1) {
@@ -88,6 +89,7 @@ public class AdminServiceImpl extends AdminServicePOA {
         try (Connection con = DatabaseConnection.getConnection()) {
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setInt(1, roundTime);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } catch (Exception e1) {
