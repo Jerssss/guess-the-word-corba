@@ -7,8 +7,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
 import javafx.scene.control.Label;
+
+import java.io.InputStream;
 
 
 public class LoginPageView {
@@ -30,12 +34,14 @@ public class LoginPageView {
     private Button quitButton;
     @FXML
     private Button continueButton;
+    @FXML
+    private ImageView backgroundImageView;
 
     private Font amaticSC;
     private Font maryKate;
     private final String AMATICSC_FONT_PATH = "/css/fonts/AmaticSC-Bold.ttf";
     private final String MARYKATE_FONT_PATH = "/css/fonts/bryndan-write.ttf";
-  private final int FIELD_SIZE = 20;
+    private final int FIELD_SIZE = 20;
     private final int BUTTON_FONT_SIZE = 20;
     private final int TITLE_SIZE = 140;
     private final int MISC_SIZE = 43;
@@ -45,6 +51,7 @@ public class LoginPageView {
     public void initialize() {
         System.out.println("[DEBUG] Initializing Login View...");
 
+        loadImage(backgroundImageView, "/images/testUI/shack-with-sign.png");
         loadCustomFonts();
         applyFonts();
 
@@ -53,6 +60,24 @@ public class LoginPageView {
         }
         if (quitButton == null) {
             System.err.println("[ERROR] quitButton is NULL! Check FXML.");
+        }
+    }
+
+    private void loadImage(ImageView imageView, String resourcePath) {
+        try {
+            // Try from resources first
+            InputStream is = getClass().getResourceAsStream(resourcePath);
+            if (is != null) {
+                imageView.setImage(new Image(is));
+                System.out.println("Loaded image: " + resourcePath);
+            } else {
+                // backup
+                String absPath = "file:src/main/resources" + resourcePath;
+                imageView.setImage(new Image(absPath));
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load image: " + resourcePath);
+            e.printStackTrace();
         }
     }
 
