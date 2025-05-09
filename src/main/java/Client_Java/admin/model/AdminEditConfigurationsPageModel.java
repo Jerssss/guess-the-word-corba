@@ -22,4 +22,12 @@ public class AdminEditConfigurationsPageModel {
     public void modifyWaitingTime(int waitTime) throws NotLoggedInException {
         adminService.modifyWaitingTime(waitTime, sessionToken, adminID);
     }
+
+    public int getRoundDuration() throws NotLoggedInException {
+        return adminService.getCurrentRoundDuration(sessionToken, adminID);
+    }
+
+    public int getWaitingTime() throws NotLoggedInException {
+        return adminService.getCurrentWaitingTime(sessionToken, adminID);
+    }
 }

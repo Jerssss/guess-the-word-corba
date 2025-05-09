@@ -1,5 +1,6 @@
 package Client_Java.admin.controller;
 
+import AdminIDL.AccountExistsException;
 import Client_Java.admin.AdminClient_Java;
 import Client_Java.admin.model.AdminClientModel;
 import Client_Java.admin.model.AdminEditConfigurationsPageModel;
@@ -30,6 +31,21 @@ public class AdminEditConfigurationsPageController {
         this.view = view;
         this.model = model;
         attachEventHandlers();
+        attachCurrentGameConfigurations();
+    }
+
+    public void attachCurrentGameConfigurations() {
+        try {
+            TextField waitingTimeField = view.getWaitingTimeLabel();
+            waitingTimeField.setText(String.valueOf(model.getWaitingTime()));
+            TextField roundTimeField = view.getRoundLengthLabel();
+            roundTimeField.setText(String.valueOf(model.getRoundDuration()));
+        } catch (NotLoggedInException e) {
+            System.err.println("Error: You are not logged in.");
+        } catch (Exception e) {
+            System.err.println("Unexpected error occurred.");
+        }
+
     }
 
     private void attachEventHandlers() {

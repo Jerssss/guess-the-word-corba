@@ -39,12 +39,7 @@ public class AdminEditConfigurationsPageView {
     @FXML
     private void initialize() {
         // Log initialization status for debugging
-        System.out.println("AdminEditConfigurationsPageView initialized: " +
-                "saveButton=" + saveButton +
-                ", roundLengthLabel=" + roundLengthLabel +
-                ", waitingTimeLabel=" + waitingTimeLabel +
-                ", roundLengthNoticeLabel=" + roundLengthNoticeLabel +
-                ", waitingTimeNoticeLabel=" + waitingTimeNoticeLabel);
+        System.out.println("AdminEditConfigurationsPageView initialized" );
     }
 
     // Round Length Buttons
