@@ -42,17 +42,6 @@ public class AdminMainMenuPageView {
     public void initialize() {
         System.out.println("[DEBUG] Initializing Admin Main Menu View...");
 
-        // Check for null components
-        verifyComponent("createAccountButton", createAccountButton);
-        verifyComponent("editConfigButton", editConfigButton);
-        verifyComponent("quitButton", quitButton);
-        verifyComponent("viewPlayersButton", viewPlayersButton);
-        verifyComponent("pane", pane);
-        verifyComponent("quillGlow", quillGlow);
-        verifyComponent("mirrorGlow", mirrorGlow);
-        verifyComponent("doorGlow", doorGlow);
-        verifyComponent("shelfGlow", shelfGlow);
-
         // Load glow images (ensure paths match your project structure)
         loadImage(quillGlow, "/images/testUI/admin/pen_and_paper.png");
         quillGlow.setVisible(false);
@@ -104,14 +93,6 @@ public class AdminMainMenuPageView {
         // Edit Config Button hover
         editConfigButton.setOnMouseEntered(e -> shelfGlow.setVisible(true));
         editConfigButton.setOnMouseExited(e -> shelfGlow.setVisible(false));
-    }
-
-    private void verifyComponent(String name, Object component) {
-        if (component == null) {
-            System.err.println("[ERROR] CRITICAL: " + name + " is NULL - FXML injection failed!");
-        } else {
-            System.out.println("[DEBUG] " + name + " successfully injected");
-        }
     }
 
     public Button getQuitButton() {
