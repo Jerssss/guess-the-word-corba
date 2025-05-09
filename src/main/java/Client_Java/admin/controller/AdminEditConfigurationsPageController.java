@@ -1,27 +1,14 @@
 package Client_Java.admin.controller;
 
-import AdminIDL.AccountExistsException;
 import Client_Java.admin.AdminClient_Java;
-import Client_Java.admin.model.AdminClientModel;
 import Client_Java.admin.model.AdminEditConfigurationsPageModel;
-import Client_Java.admin.model.AdminMainMenuPageModel;
-import Client_Java.admin.view.AdminEditConfigurationsPageView;
 import AdminIDL.NotLoggedInException;
-import Client_Java.admin.view.AdminMainMenuPageView;
-import Shared_Files.AdminAccount;
+import Client_Java.admin.view.AdminEditConfigurationsPageView;
 import javafx.animation.PauseTransition;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import javafx.event.ActionEvent;
 
 public class AdminEditConfigurationsPageController {
     private final AdminEditConfigurationsPageView view;
@@ -41,16 +28,25 @@ public class AdminEditConfigurationsPageController {
             TextField roundTimeField = view.getRoundLengthLabel();
             roundTimeField.setText(String.valueOf(model.getRoundDuration()));
         } catch (NotLoggedInException e) {
-            System.err.println("Error: You are not logged in.");
+            view.getWaitingTimeNoticeLabel().setText("Error: You are not logged in.");
+            view.getWaitingTimeNoticeLabel().setStyle("-fx-text-fill: red;");
+            view.getWaitingTimeNoticeLabel().setVisible(true);
+            view.getRoundLengthNoticeLabel().setText("Error: You are not logged in.");
+            view.getRoundLengthNoticeLabel().setStyle("-fx-text-fill: red;");
+            view.getRoundLengthNoticeLabel().setVisible(true);
         } catch (Exception e) {
-            System.err.println("Unexpected error occurred.");
+            view.getWaitingTimeNoticeLabel().setText("Unexpected error occurred.");
+            view.getWaitingTimeNoticeLabel().setStyle("-fx-text-fill: red;");
+            view.getWaitingTimeNoticeLabel().setVisible(true);
+            view.getRoundLengthNoticeLabel().setText("Unexpected error occurred.");
+            view.getRoundLengthNoticeLabel().setStyle("-fx-text-fill: red;");
+            view.getRoundLengthNoticeLabel().setVisible(true);
         }
-
     }
 
     private void attachEventHandlers() {
         view.setActionIncrementRLButton(e -> adjustRoundLength(1));
-        view.setActionDecrementRLwButton(e -> adjustRoundLength(-1));
+        view.setActionDecrementRLButton(e -> adjustRoundLength(-1));
         view.setActionIncrementWTButton(e -> adjustWaitingTime(1));
         view.setActionDecrementWTButton(e -> adjustWaitingTime(-1));
         view.setActionSaveButton(e -> handleSave());
@@ -142,6 +138,18 @@ public class AdminEditConfigurationsPageController {
                 return;
             }
 
+            // Show confirmation popup
+            boolean confirmed = view.showConfirmationPopup("Save this new configuration?");
+            if (!confirmed) {
+                waitingTimeNoticeLabel.setText("Configuration save cancelled.");
+                waitingTimeNoticeLabel.setStyle("-fx-text-fill: red;");
+                waitingTimeNoticeLabel.setVisible(true);
+                roundLengthNoticeLabel.setText("Configuration save cancelled.");
+                roundLengthNoticeLabel.setStyle("-fx-text-fill: red;");
+                roundLengthNoticeLabel.setVisible(true);
+                return;
+            }
+
             model.modifyWaitingTime(waitTime);
             model.modifyRoundDuration(roundTime);
 
@@ -153,9 +161,9 @@ public class AdminEditConfigurationsPageController {
             roundLengthNoticeLabel.setStyle("-fx-text-fill: green;");
             roundLengthNoticeLabel.setVisible(true);
 
-            // Delay for 5 seconds before redirecting
-            PauseTransition delay = new PauseTransition(Duration.seconds(3));
-            delay.setOnFinished(event -> redirectToAdminMainMenu(AdminClient_Java.getLoggidInAdmin()));
+            // Delay for 3 seconds before redirecting
+            PauseTransition delay = new PauseTransition(Duration.seconds(2));
+            delay.setOnFinished(event -> view.showAdminMainMenu(AdminClient_Java.getLoggidInAdmin()));
             delay.play();
 
         } catch (NumberFormatException e) {
@@ -179,61 +187,6 @@ public class AdminEditConfigurationsPageController {
             roundLengthNoticeLabel.setText("Error: " + e.getMessage());
             roundLengthNoticeLabel.setStyle("-fx-text-fill: red;");
             roundLengthNoticeLabel.setVisible(true);
-        }
-    }
-
-
-    private void redirectToAdminMainMenu(AdminAccount admin) {
-        try {
-            File fxmlFile = new File("src/main/resources/fxml/admin/AdminMainMenuPage.fxml");
-            FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
-            Parent root = loader.load();
-
-            AdminMainMenuPageView pageView = loader.getController();
-            if (pageView == null) {
-                System.err.println("[ERROR] AdminMainMenuPageView is NULL after FXML load!");
-                return;
-            } else {
-                System.out.println("[DEBUG] AdminMainMenuPageView loaded successfully.");
-            }
-
-            AdminMainMenuPageModel pageModel = new AdminMainMenuPageModel(
-                    AdminClientModel.adminService,
-                    AdminClient_Java.getSessionToken(),
-                    admin.getAdmin_id()
-            );
-
-            new AdminMainMenuPageController(
-                    pageView,
-                    pageModel,
-                    AdminClientModel.adminService,
-                    AdminClient_Java.getSessionToken(),
-                    admin.getAdmin_id()
-            );
-
-            Scene scene = new Scene(root);
-            URL css = getClass().getClassLoader().getResource("css/styles.css");
-            if (css != null) {
-                scene.getStylesheets().add(css.toExternalForm());
-            }
-
-            Stage stage = AdminClient_Java.getStage();
-            Platform.runLater(() -> {
-                stage.setScene(scene);
-                stage.centerOnScreen();
-                stage.setResizable(false);
-                stage.setTitle("Admin Main Menu");
-                stage.show();
-            });
-
-            System.out.println("[Client] Admin Main Menu GUI loaded successfully.");
-
-        } catch (IOException e) {
-            System.err.println("[ERROR] IOException while loading AdminMainMenuPage: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.err.println("[ERROR] Unexpected exception: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }
