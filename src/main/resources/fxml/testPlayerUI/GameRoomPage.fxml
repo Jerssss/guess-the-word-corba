@@ -5,6 +5,7 @@
 <?import javafx.scene.effect.Glow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
@@ -488,6 +489,391 @@
                   <Button layoutX="576.0" layoutY="156.0" mnemonicParsing="false" prefHeight="61.0" prefWidth="53.0" style="-fx-background-color: transparent;" />
                   <Button layoutX="747.0" layoutY="156.0" mnemonicParsing="false" prefHeight="61.0" prefWidth="53.0" style="-fx-background-color: transparent;" />
                </children></Pane>
+            <Pane layoutX="279.0" layoutY="278.0" prefHeight="200.0" prefWidth="707.0">
+               <children>
+                  <FlowPane fx:id="blanksFlowPane" prefHeight="200.0" prefWidth="707.0">
+                     <children>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank1" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter1" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank11" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter11" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank12" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter12" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank13" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter13" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank14" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter14" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank15" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter15" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank16" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter16" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank17" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter17" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank18" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter18" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank19" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter19" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank110" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter110" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank1101" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter1101" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank1102" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter1102" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank1103" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter1103" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank1104" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter1104" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank1105" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter1105" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank1106" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter1106" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank1107" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter1107" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank1108" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter1108" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank1109" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter1109" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank11010" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter11010" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank11011" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter11011" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank11012" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter11012" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank11013" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter11013" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank11014" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter11014" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank11015" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter11015" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank11016" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter11016" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="68.0" prefWidth="58.0">
+                           <children>
+                              <ImageView fx:id="blank11017" fitHeight="68.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="guessedLetter11017" alignment="CENTER" prefHeight="68.0" prefWidth="58.0" text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Quick Pencil Regular" size="88.0" />
+                                 </font>
+                                 <effect>
+                                    <Glow level="0.56" />
+                                 </effect>
+                              </Label>
+                           </children>
+                        </Pane>
+                     </children>
+                  </FlowPane>
+               </children>
+            </Pane>
          </children>
       </Pane>
    </children>
