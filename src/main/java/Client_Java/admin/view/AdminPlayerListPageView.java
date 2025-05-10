@@ -1,6 +1,7 @@
 package Client_Java.admin.view;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -35,6 +36,11 @@ public class AdminPlayerListPageView {
 
     @FXML
     public TableView<PlayerAccount> playersTable;
+
+    @FXML
+    public Button returnButton;
+
+
 
     public void initializeTableColumns() {
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));

@@ -38,6 +38,8 @@ public class AdminEditConfigurationsPageView {
 
     @FXML
     private Button saveButton;
+    @FXML
+    private Button cancelButton;
 
     @FXML
     private TextField roundLengthLabel;

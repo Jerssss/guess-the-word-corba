@@ -21,6 +21,7 @@ public class GameRoomView {
     @FXML private Label      roundLabel;
     @FXML private Label      lifeCountLabel;
     @FXML private Label      timerLabel;
+    @FXML private Label      playersCountLabel;
 
     @FXML private Button quitButton;
 
