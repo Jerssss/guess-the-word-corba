@@ -36,7 +36,176 @@ public class GameRoomView {
     @FXML private ImageView  catRightWhiskers;
     @FXML private ImageView  catBottomHead;
 
-    @FXML private ImageView  gameRoomBackgroundImage;
+    @FXML
+    private ImageView blank;
+
+    @FXML
+    private FlowPane blanksFlowPane;
+
+    @FXML
+    private ImageView correctGuessA;
+
+    @FXML
+    private ImageView correctGuessB;
+
+    @FXML
+    private ImageView correctGuessC;
+
+    @FXML
+    private ImageView correctGuessD;
+
+    @FXML
+    private ImageView correctGuessE;
+
+    @FXML
+    private ImageView correctGuessF;
+
+    @FXML
+    private ImageView correctGuessG;
+
+    @FXML
+    private ImageView correctGuessH;
+
+    @FXML
+    private ImageView correctGuessI;
+
+    @FXML
+    private ImageView correctGuessJ;
+
+    @FXML
+    private ImageView correctGuessK;
+
+    @FXML
+    private ImageView correctGuessL;
+
+    @FXML
+    private ImageView correctGuessM;
+
+    @FXML
+    private ImageView correctGuessN;
+
+    @FXML
+    private ImageView correctGuessO;
+
+    @FXML
+    private ImageView correctGuessP;
+
+    @FXML
+    private ImageView correctGuessQ;
+
+    @FXML
+    private ImageView correctGuessR;
+
+    @FXML
+    private ImageView correctGuessS;
+
+    @FXML
+    private ImageView correctGuessT;
+
+    @FXML
+    private ImageView correctGuessU;
+
+    @FXML
+    private ImageView correctGuessV;
+
+    @FXML
+    private ImageView correctGuessW;
+
+    @FXML
+    private ImageView correctGuessX;
+
+    @FXML
+    private ImageView correctGuessY;
+
+    @FXML
+    private ImageView correctGuessZ;
+
+    @FXML
+    private ImageView gameRoomBackgroundImage;
+
+    @FXML
+    private Label guessedLetter;
+
+    @FXML
+    private Label lifeCountLabel1;
+
+    @FXML
+    private ImageView wrongGuessA;
+
+    @FXML
+    private ImageView wrongGuessB;
+
+    @FXML
+    private ImageView wrongGuessC;
+
+    @FXML
+    private ImageView wrongGuessD;
+
+    @FXML
+    private ImageView wrongGuessE;
+
+    @FXML
+    private ImageView wrongGuessF;
+
+    @FXML
+    private ImageView wrongGuessG;
+
+    @FXML
+    private ImageView wrongGuessH;
+
+    @FXML
+    private ImageView wrongGuessI;
+
+    @FXML
+    private ImageView wrongGuessJ;
+
+    @FXML
+    private ImageView wrongGuessK;
+
+    @FXML
+    private ImageView wrongGuessM;
+
+    @FXML
+    private ImageView wrongGuessN;
+
+    @FXML
+    private ImageView wrongGuessO;
+
+    @FXML
+    private ImageView wrongGuessP;
+
+    @FXML
+    private ImageView wrongGuessQ;
+
+    @FXML
+    private ImageView wrongGuessR;
+
+    @FXML
+    private ImageView wrongGuessS;
+
+    @FXML
+    private ImageView wrongGuessT;
+
+    @FXML
+    private ImageView wrongGuessU;
+
+    @FXML
+    private ImageView wrongGuessV;
+
+    @FXML
+    private ImageView wrongGuessW;
+
+    @FXML
+    private ImageView wrongGuessX;
+
+    @FXML
+    private ImageView wrongGuessY;
+
+    @FXML
+    private ImageView wrongGuessZ;
+
+    @FXML
+    private ImageView wrongGuessl;
 
     private Font amaticSC;
     private Font pencilant;
