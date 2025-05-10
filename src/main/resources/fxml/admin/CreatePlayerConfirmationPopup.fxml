@@ -55,7 +55,7 @@
                   <Image url="@../../images/testUI/fire-nobg.gif" />
                </image>
             </ImageView>
-            <ImageView fx:id="flameTwo" fitHeight="90.0" fitWidth="164.0" layoutX="494.0" layoutY="276.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="flame2" fitHeight="90.0" fitWidth="164.0" layoutX="494.0" layoutY="276.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../images/testUI/fire-nobg.gif" />
                </image>

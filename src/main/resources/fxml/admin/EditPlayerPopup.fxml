@@ -17,9 +17,9 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="573.0" prefWidth="425.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="573.0" prefWidth="425.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.modals.EditPlayerPopupView">
    <children>
-      <ImageView fitHeight="573.0" fitWidth="464.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="backgroundImageView" fitHeight="573.0" fitWidth="464.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../images/testUI/admin/create-scroll-cropped-2.png" />
          </image>
@@ -32,7 +32,7 @@
                      <children>
                         <Pane prefHeight="50.0" prefWidth="550.0" style="-fx-background-color: transparent;">
                            <children>
-                              <Text layoutX="127.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="EDIT PLAYER" wrappingWidth="174.0">
+                              <Text fx:id="titleLabel" layoutX="127.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="EDIT PLAYER" wrappingWidth="174.0">
                                  <font>
                                     <Font name="Quick Pencil Regular" size="39.0" />
                                  </font>
@@ -55,7 +55,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username:" textAlignment="RIGHT" wrappingWidth="157.59994506835938">
+                              <Text fx:id="usernameLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="Username:" textAlignment="RIGHT" wrappingWidth="157.59994506835938">
                                  <font>
                                     <Font name="Quick Pencil Regular" size="32.0" />
                                  </font>
@@ -63,7 +63,7 @@
                                     <Glow level="0.46" />
                                  </effect>
                               </Text>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Full name:" textAlignment="RIGHT" wrappingWidth="157.5999755859375" GridPane.rowIndex="2">
+                              <Text fx:id="fullNameLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="Full name:" textAlignment="RIGHT" wrappingWidth="157.5999755859375" GridPane.rowIndex="2">
                                  <font>
                                     <Font name="Quick Pencil Regular" size="32.0" />
                                  </font>
@@ -71,7 +71,7 @@
                                     <Glow level="0.46" />
                                  </effect>
                               </Text>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" textAlignment="RIGHT" wrappingWidth="158.39999389648438" GridPane.rowIndex="1">
+                              <Text fx:id="passwordLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" textAlignment="RIGHT" wrappingWidth="158.39999389648438" GridPane.rowIndex="1">
                                  <font>
                                     <Font name="Quick Pencil Regular" size="32.0" />
                                  </font>
@@ -79,7 +79,7 @@
                                     <Glow level="0.46" />
                                  </effect>
                               </Text>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Game Points:" textAlignment="RIGHT" wrappingWidth="159.20001220703125" GridPane.rowIndex="3">
+                              <Text fx:id="gamePtsLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="Game Points:" textAlignment="RIGHT" wrappingWidth="159.20001220703125" GridPane.rowIndex="3">
                                  <font>
                                     <Font name="Quick Pencil Regular" size="32.0" />
                                  </font>
@@ -87,7 +87,7 @@
                                     <Glow level="0.46" />
                                  </effect>
                               </Text>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Games Played:" textAlignment="RIGHT" wrappingWidth="160.80001735687256" GridPane.rowIndex="4">
+                              <Text fx:id="gamesPlayedTitleLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="Games Played:" textAlignment="RIGHT" wrappingWidth="160.80001735687256" GridPane.rowIndex="4">
                                  <font>
                                     <Font name="Quick Pencil Regular" size="32.0" />
                                  </font>
