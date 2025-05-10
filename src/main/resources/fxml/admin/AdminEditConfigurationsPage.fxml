@@ -14,20 +14,20 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="666.0" prefWidth="1019.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminEditConfigurationsPageView">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="763.0" prefWidth="1146.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminEditConfigurationsPageView">
    <children>
-      <ImageView fx:id="backgroundImageView" fitHeight="720.0" fitWidth="1034.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="backgroundImageView" fitHeight="763.0" fitWidth="1146.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../images/testUI/admin/scroll.png" />
          </image>
       </ImageView>
       <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="624.0" prefWidth="992.0">
          <children>
-            <Pane layoutX="134.0" layoutY="42.0" prefHeight="66.0" prefWidth="694.0">
+            <Pane layoutX="134.0" layoutY="21.0" prefHeight="66.0" prefWidth="694.0">
                <children>
                   <Text fx:id="titleLabel" fill="WHITE" layoutX="12.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="GAME CONFIGURATIONS" textAlignment="CENTER" wrappingWidth="669.6032203435898">
                      <font>
-                        <Font name="Marykate" size="43.0" />
+                        <Font name="Marykate" size="60.0" />
                      </font>
                      <effect>
                         <Glow level="0.7" />
@@ -122,7 +122,7 @@
                   </Button>
                </children>
             </Pane>
-            <Button fx:id="saveButton" layoutX="481.0" layoutY="510.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="138.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Save" textFill="#fffccc" wrapText="true">
+            <Button fx:id="saveButton" layoutX="487.0" layoutY="536.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="138.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Save" textFill="#fffccc" wrapText="true">
                <font>
                   <Font name="Marykate" size="45.0" />
                </font>
@@ -130,7 +130,7 @@
                   <Glow level="0.69" />
                </effect>
             </Button>
-            <Button fx:id="cancelButton" layoutX="332.0" layoutY="510.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="164.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Cancel" textFill="#fffccc" wrapText="true">
+            <Button fx:id="cancelButton" layoutX="338.0" layoutY="536.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="164.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Cancel" textFill="#fffccc" wrapText="true">
                <font>
                   <Font name="Marykate" size="45.0" />
                </font>
