@@ -12,29 +12,29 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="956.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminCreateAccountPageView">
+<StackPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="765.0" prefWidth="1148.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminCreateAccountPageView">
    <padding>
       <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
    </padding>
    <children>
-      <ImageView fx:id="backgroundImageView" fitHeight="645.0" fitWidth="960.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="backgroundImageView" fitHeight="765.0" fitWidth="1148.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../images/testUI/admin/create--player-view1.png" />
          </image>
       </ImageView>
-      <Pane prefHeight="200.0" prefWidth="200.0">
+      <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="665.0" prefWidth="972.0">
          <children>
-            <Label fx:id="titleLabel" alignment="CENTER" layoutX="200.0" layoutY="32.0" prefHeight="59.0" prefWidth="327.0" text="ADD PLAYER" textFill="#110808">
+            <Label fx:id="titleLabel" alignment="CENTER" layoutX="257.0" layoutY="40.0" prefHeight="59.0" prefWidth="327.0" text="ADD PLAYER" textFill="#110808">
                <font>
                   <Font name="Pencilant Script" size="31.0" />
                </font>
             </Label>
-            <Label fx:id="fullNameLabel" layoutX="96.0" layoutY="214.0" prefHeight="41.0" prefWidth="499.0" text="Full Name" textFill="#000000d9">
+            <Label fx:id="fullNameLabel" layoutX="100.0" layoutY="207.0" prefHeight="41.0" prefWidth="499.0" text="Full Name" textFill="#000000d9">
                <font>
                   <Font name="Pencilant Script" size="31.0" />
                </font>
             </Label>
-            <TextField fx:id="usernameTextField" layoutX="100.0" layoutY="134.0" prefHeight="61.0" prefWidth="499.0" promptText="e.g Juan Tamad" style="-fx-background-color: transparent; -fx-background-radius: 10; -fx-border-radius: 10;">
+            <TextField fx:id="usernameTextField" layoutX="100.0" layoutY="134.0" prefHeight="61.0" prefWidth="499.0" promptText="e.g Juan Tamad" style="-fx-background-color: transparent; -fx-background-radius: 10; -fx-border-radius: 10; -fx-text-fill: white;">
                <font>
                   <Font name="Pencilant Script" size="29.0" />
                </font>
@@ -47,7 +47,7 @@
                   <Font name="Pencilant Script" size="31.0" />
                </font>
             </Label>
-            <TextField fx:id="fullNameTextField" layoutX="100.0" layoutY="248.0" prefHeight="61.0" prefWidth="484.0" promptText="e.g. JuanSisipagNa" style="-fx-background-color: transparent; -fx-background-radius: 10; -fx-border-radius: 10;">
+            <TextField fx:id="fullNameTextField" layoutX="100.0" layoutY="248.0" prefHeight="61.0" prefWidth="484.0" promptText="e.g. JuanSisipagNa" style="-fx-background-color: transparent; -fx-background-radius: 10; -fx-border-radius: 10; -fx-text-fill: white;">
                <font>
                   <Font name="Pencilant Script" size="29.0" />
                </font>
@@ -60,7 +60,7 @@
                   <Font name="Pencilant Script" size="31.0" />
                </font>
             </Label>
-            <TextField fx:id="passwordTextField" layoutX="95.0" layoutY="350.0" prefHeight="61.0" prefWidth="419.0" promptText="e.g. secretNiJuan123" style="-fx-background-color: transparent; -fx-background-radius: 10; -fx-border-radius: 10;">
+            <TextField fx:id="passwordTextField" layoutX="95.0" layoutY="350.0" prefHeight="61.0" prefWidth="419.0" promptText="e.g. secretNiJuan123" style="-fx-background-color: transparent; -fx-background-radius: 10; -fx-border-radius: 10; -fx-text-fill: white;">
                <font>
                   <Font name="Pencilant Script" size="29.0" />
                </font>
@@ -68,29 +68,35 @@
                   <Glow level="1.0" />
                </effect>
             </TextField>
-            <Label fx:id="noticeLabel" alignment="CENTER" contentDisplay="BOTTOM" prefHeight="32.0" prefWidth="307.0" text="error message here" textFill="#ff0000" visible="false">
+            <Label fx:id="noticeLabel" contentDisplay="BOTTOM" layoutX="107.0" layoutY="430.0" prefHeight="48.0" prefWidth="520.0" text="error message here" textFill="#ff0000" visible="false">
                <font>
-                  <Font name="Arial Bold" size="15.0" />
+                  <Font name="Pencilant Script" size="31.0" />
                </font>
+               <effect>
+                  <Glow level="1.0" />
+               </effect>
             </Label>
-            <Pane layoutX="28.0" layoutY="428.0" prefHeight="79.0" prefWidth="573.0">
+            <Pane layoutX="28.0" layoutY="428.0" prefHeight="79.0" prefWidth="573.0" visible="false" />
+            <HBox alignment="CENTER" layoutX="28.0" layoutY="496.0" prefHeight="74.0" prefWidth="573.0">
                <children>
-                  <HBox alignment="CENTER" prefHeight="74.0" prefWidth="573.0">
-                     <children>
-                        <Button fx:id="returnButton" mnemonicParsing="false" prefHeight="70.0" prefWidth="167.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Return" textFill="#110808" wrapText="true">
-                           <font>
-                              <Font name="Pencilant Script" size="31.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="saveButton" mnemonicParsing="false" prefHeight="70.0" prefWidth="132.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Save" textFill="#110808" wrapText="true">
-                           <font>
-                              <Font name="Pencilant Script" size="31.0" />
-                           </font>
-                        </Button>
-                     </children>
-                  </HBox>
+                  <Button fx:id="returnButton" mnemonicParsing="false" prefHeight="70.0" prefWidth="167.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Return" textFill="#110808" wrapText="true">
+                     <font>
+                        <Font name="Pencilant Script" size="31.0" />
+                     </font>
+                     <effect>
+                        <Glow level="0.38" />
+                     </effect>
+                  </Button>
+                  <Button fx:id="saveButton" mnemonicParsing="false" prefHeight="70.0" prefWidth="132.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Save" textFill="#110808" wrapText="true">
+                     <font>
+                        <Font name="Pencilant Script" size="31.0" />
+                     </font>
+                     <effect>
+                        <Glow level="0.38" />
+                     </effect>
+                  </Button>
                </children>
-            </Pane>
+            </HBox>
          </children>
       </Pane>
    </children>

@@ -16,20 +16,20 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="688.0" prefWidth="1034.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminPlayerListPageView">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="763.0" prefWidth="1146.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminPlayerListPageView">
    <children>
-      <ImageView fx:id="backgroundImageView" fitHeight="691.0" fitWidth="1186.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="backgroundImageView" fitHeight="763.0" fitWidth="1146.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../images/testUI/admin/mirror-zoomed-cropped.png" />
          </image>
       </ImageView>
       <Pane prefHeight="200.0" prefWidth="200.0">
          <children>
-            <Pane layoutX="288.0" layoutY="622.0" prefHeight="66.0" prefWidth="486.0">
+            <Pane layoutX="377.0" layoutY="672.0" prefHeight="73.0" prefWidth="397.0">
                <children>
-                  <Button fx:id="returnButton" layoutX="144.0" mnemonicParsing="false" prefHeight="66.0" prefWidth="199.0" style="-fx-background-color: transaprent;" text="return" textFill="WHITE">
+                  <Button fx:id="returnButton" layoutX="118.0" mnemonicParsing="false" prefHeight="72.0" prefWidth="171.0" style="-fx-background-color: transparent;" text="return" textFill="WHITE">
                      <font>
-                        <Font name="Marykate" size="39.0" />
+                        <Font name="Marykate" size="45.0" />
                      </font>
                      <effect>
                         <Glow />
@@ -56,10 +56,13 @@
                               <Glow level="1.0" />
                            </effect>
                         </Text>
-                        <TextField fx:id="searchTextField" prefHeight="35.0" prefWidth="310.0" promptText="Search" style="-fx-background-color: transparent; -fx-border-color: white; -fx-background-radius: 10; -fx-border-radius: 10;">
+                        <TextField fx:id="searchTextField" prefHeight="35.0" prefWidth="310.0" promptText="Search" style="-fx-background-color: transparent; -fx-border-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-text-fill: white;">
                            <HBox.margin>
                               <Insets left="10.0" top="20.0" />
                            </HBox.margin>
+                           <effect>
+                              <Glow level="1.0" />
+                           </effect>
                         </TextField>
                      </children>
                   </HBox>

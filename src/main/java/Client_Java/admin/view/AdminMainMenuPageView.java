@@ -39,6 +39,18 @@ public class AdminMainMenuPageView {
     @FXML
     private ImageView shelfGlow;
 
+    @FXML
+    private ImageView quitText;
+
+    @FXML
+    private ImageView editConfigText;
+
+    @FXML
+    private ImageView showPlayersText;
+
+    @FXML
+    private ImageView createPlayerText;
+
     public void initialize() {
         System.out.println("[DEBUG] Initializing Admin Main Menu View...");
 
@@ -54,6 +66,19 @@ public class AdminMainMenuPageView {
 
         loadImage(shelfGlow, "/images/testUI/admin/shelf.png");
         shelfGlow.setVisible(false);
+
+        // Load and initialize text images
+        loadImage(quitText, "/images/testUI/admin/quit.png");
+        quitText.setVisible(false);
+
+        loadImage(editConfigText, "/images/testUI/admin/edit_config.png");
+        editConfigText.setVisible(false);
+
+        loadImage(showPlayersText, "/images/testUI/admin/show_players.png");
+        showPlayersText.setVisible(false);
+
+        loadImage(createPlayerText, "/images/testUI/admin/create_player.png");
+        createPlayerText.setVisible(false);
 
         // Setup hover effects for buttons
         setupHoverEffects();
@@ -79,20 +104,44 @@ public class AdminMainMenuPageView {
 
     private void setupHoverEffects() {
         // Create Account Button hover
-        createAccountButton.setOnMouseEntered(e -> quillGlow.setVisible(true));
-        createAccountButton.setOnMouseExited(e -> quillGlow.setVisible(false));
+        createAccountButton.setOnMouseEntered(e -> {
+            quillGlow.setVisible(true);
+            createPlayerText.setVisible(true); // Show text on hover
+        });
+        createAccountButton.setOnMouseExited(e -> {
+            quillGlow.setVisible(false);
+            createPlayerText.setVisible(false); // Hide text when not hovering
+        });
 
         // View Players Button hover
-        viewPlayersButton.setOnMouseEntered(e -> mirrorGlow.setVisible(true));
-        viewPlayersButton.setOnMouseExited(e -> mirrorGlow.setVisible(false));
+        viewPlayersButton.setOnMouseEntered(e -> {
+            mirrorGlow.setVisible(true);
+            showPlayersText.setVisible(true); // Show text on hover
+        });
+        viewPlayersButton.setOnMouseExited(e -> {
+            mirrorGlow.setVisible(false);
+            showPlayersText.setVisible(false); // Hide text when not hovering
+        });
 
         // Quit Button hover
-        quitButton.setOnMouseEntered(e -> doorGlow.setVisible(true));
-        quitButton.setOnMouseExited(e -> doorGlow.setVisible(false));
+        quitButton.setOnMouseEntered(e -> {
+            doorGlow.setVisible(true);
+            quitText.setVisible(true); // Show text on hover
+        });
+        quitButton.setOnMouseExited(e -> {
+            doorGlow.setVisible(false);
+            quitText.setVisible(false); // Hide text when not hovering
+        });
 
         // Edit Config Button hover
-        editConfigButton.setOnMouseEntered(e -> shelfGlow.setVisible(true));
-        editConfigButton.setOnMouseExited(e -> shelfGlow.setVisible(false));
+        editConfigButton.setOnMouseEntered(e -> {
+            shelfGlow.setVisible(true);
+            editConfigText.setVisible(true); // Show text on hover
+        });
+        editConfigButton.setOnMouseExited(e -> {
+            shelfGlow.setVisible(false);
+            editConfigText.setVisible(false); // Hide text when not hovering
+        });
     }
 
     public Button getQuitButton() {
