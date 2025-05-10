@@ -50,7 +50,7 @@ public class LoginPageView {
 
     public void initialize() {
 
-        loadImage(backgroundImageView, "/images/testUI/waiting_room.png");
+        loadImage(backgroundImageView, "/images/testUI/shack-with-sign.png");
 
         loadCustomFonts();
         applyFonts();

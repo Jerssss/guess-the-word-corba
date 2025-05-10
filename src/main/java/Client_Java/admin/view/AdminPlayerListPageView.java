@@ -1,12 +1,14 @@
 package Client_Java.admin.view;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import Shared_Files.PlayerAccount;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.text.Font;
+
+import java.io.InputStream;
 
 public class AdminPlayerListPageView {
 
@@ -40,7 +42,21 @@ public class AdminPlayerListPageView {
     @FXML
     public Button returnButton;
 
+    @FXML
+    private Label titleLabel;
 
+    @FXML
+    private ImageView backgroundImageView;
+
+    private Font maryKate;
+    private final String MARYKATE_FONT_PATH = "/css/fonts/bryndan-write.ttf";
+
+    public void initialize(){
+        loadImage(backgroundImageView, "/images/testUI/admin/mirror-zoomed-cropped.png");
+        loadCustomFonts();
+        applyFonts();
+        initializeTableColumns();
+    }
 
     public void initializeTableColumns() {
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
@@ -49,5 +65,48 @@ public class AdminPlayerListPageView {
         // You can map totalPointsColumn if PlayerAccount has a points field later.
 
         // Edit and delete will require custom cell factories for button actions.
+    }
+
+    private void loadCustomFonts() {
+        try {
+            // Load fonts to Font objects
+            maryKate = Font.loadFont(getClass().getResourceAsStream(MARYKATE_FONT_PATH), 30);
+
+            // Fallbacks when the loading should fail
+
+            if (maryKate == null) {
+                System.err.println("MaryKate font not loaded. Using system font.");
+                maryKate = Font.font("System", 12);
+            }
+
+        } catch (Exception e) {
+            System.err.println("[ERROR] Font loading exception: " + e.getMessage());
+            maryKate = Font.font("System", 12);
+        }
+    }
+
+    private void applyFonts() {
+        // Font application to fields and labels
+        if (titleLabel != null) {
+            titleLabel.setFont(Font.font(maryKate.getFamily(), 29));
+        }
+    }
+
+    private void loadImage(ImageView imageView, String resourcePath) {
+        try {
+            // Try from resources first
+            InputStream is = getClass().getResourceAsStream(resourcePath);
+            if (is != null) {
+                imageView.setImage(new Image(is));
+                System.out.println("Loaded image: " + resourcePath);
+            } else {
+                // backup
+                String absPath = "file:src/main/resources" + resourcePath;
+                imageView.setImage(new Image(absPath));
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load image: " + resourcePath);
+            e.printStackTrace();
+        }
     }
 }
