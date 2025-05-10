@@ -25,7 +25,6 @@ public class LogInPageModel {
         IntHolder idHolder = new IntHolder();
         String token = authService.login(username, password, idHolder, callback);
 
-        // Construct domain object (never store raw password)
         PlayerAccount acct = new PlayerAccount(
                 idHolder.value,
                 username,

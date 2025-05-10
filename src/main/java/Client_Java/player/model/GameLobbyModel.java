@@ -5,6 +5,7 @@ import GameIDL.NotLoggedInException;
 import Shared_Files.PlayerAccount;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GameLobbyModel {
@@ -32,29 +33,76 @@ public class GameLobbyModel {
 
             String[] entries = gameService.getLeaderboards(player.getPlayerId(), sessionToken);
             System.out.println("[DEBUG] Fetched " + entries.length + " leaderboard entries from GameService");
+
+            // Process entries and collect data for the table
             for (int i = 0; i < entries.length; i++) {
-                System.out.println("[DEBUG] Processing entry: " + entries[i]);
-                String[] parts = entries[i].split(":");
+                String entry = entries[i];
+                System.out.println("[DEBUG] Processing entry: " + entry);
+                String[] parts = entry.split(":");
                 if (parts.length == 2) {
                     String username = parts[0];
-                    int gameWins = Integer.parseInt(parts[1]);
-                    leaderboard.add(new LobbyLeaderboardCardModel(i + 1, username, gameWins));
-                    System.out.println("[DEBUG] Added leaderboard entry: rank=" + (i + 1) + ", username=" + username + ", gameWins=" + gameWins);
+                    int points;
+                    try {
+                        points = Integer.parseInt(parts[1]);
+                    } catch (NumberFormatException e) {
+                        System.err.println("[ERROR] Failed to parse points for entry: " + entry);
+                        continue;
+                    }
+                    leaderboard.add(new LobbyLeaderboardCardModel(i + 1, username, points));
                 } else {
-                    System.err.println("[ERROR] Invalid leaderboard entry format: " + entries[i]);
+                    System.err.println("[ERROR] Invalid leaderboard entry format: " + entry);
                 }
             }
+
+            // Print leaderboard as a table
+            if (!leaderboard.isEmpty()) {
+                printLeaderboardTable(leaderboard);
+            } else {
+                System.out.println("[DEBUG] No valid leaderboard entries to display");
+            }
+
         } catch (NotLoggedInException e) {
             System.err.println("[ERROR] NotLoggedInException while fetching leaderboard: " + e.getMessage());
-            // Log the player ID and session token for debugging
             System.err.println("[DEBUG] Player ID: " + (player != null ? player.getPlayerId() : "null") + ", Session Token: " + sessionToken);
-        } catch (NumberFormatException e) {
-            System.err.println("[ERROR] Failed to parse game_wins: " + e.getMessage());
         } catch (Exception e) {
             System.err.println("[ERROR] Unexpected error fetching leaderboard: " + e.getMessage());
         }
 
         System.out.println("[DEBUG] Returning " + leaderboard.size() + " leaderboard entries");
         return leaderboard;
+    }
+
+    private void printLeaderboardTable(List<LobbyLeaderboardCardModel> leaderboard) {
+        // Define column widths
+        int rankWidth = 6; // "Rank" + padding
+        int usernameWidth = 15; // Adjust based on expected username length
+        int pointsWidth = 8; // "Points" + padding
+
+        // Print table header
+        String header = String.format("[DEBUG] Leaderboard:%n" +
+                        "+-%s-+-%s-+-%s-+%n" +
+                        "| %-" + rankWidth + "s | %-" + usernameWidth + "s | %-" + pointsWidth + "s |%n" +
+                        "+-%s-+-%s-+-%s-+%n",
+                String.join("", Collections.nCopies(rankWidth, "-")),
+                String.join("", Collections.nCopies(usernameWidth, "-")),
+                String.join("", Collections.nCopies(pointsWidth, "-")),
+                "Rank", "Username", "Points",
+                String.join("", Collections.nCopies(rankWidth, "-")),
+                String.join("", Collections.nCopies(usernameWidth, "-")),
+                String.join("", Collections.nCopies(pointsWidth, "-")));
+
+        System.out.print(header);
+
+        // Print table rows
+        for (LobbyLeaderboardCardModel entry : leaderboard) {
+            System.out.printf("| %-" + rankWidth + "d | %-" + usernameWidth + "s | %-" + pointsWidth + "d |%n",
+                    entry.getRank(), entry.getUsername(), entry.getPoints());
+        }
+
+        // Print table footer
+        System.out.printf("+-%" + rankWidth + "s-+-%-" + usernameWidth + "s-+-%-" + pointsWidth + "s-+%n",
+                String.join("", Collections.nCopies(rankWidth, "-")),
+                String.join("", Collections.nCopies(usernameWidth, "-")),
+                String.join("", Collections.nCopies(pointsWidth, "-")));
     }
 }

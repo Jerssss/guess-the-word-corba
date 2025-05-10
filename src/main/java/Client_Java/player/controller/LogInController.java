@@ -1,4 +1,3 @@
-// File: Client_Java/player/controller/LogInController.java
 package Client_Java.player.controller;
 
 import Client_Java.player.PlayerClient_Java;
@@ -8,6 +7,8 @@ import Client_Java.player.model.LoginResult;
 import Client_Java.player.view.LoginPageView;
 import Client_Java.player.view.ViewNavigator;
 import Client_Java.player.implementation.LoginCallBackServiceImpl;
+import AuthenticationIDL.AuthenticationException;
+import AuthenticationIDL.AlreadyLoggedInException;
 import PlayerCallBackIDL.LoginCallbackService;
 import PlayerCallBackIDL.LoginCallbackServiceHelper;
 import javafx.application.Platform;
@@ -15,14 +16,14 @@ import javafx.event.ActionEvent;
 
 public class LogInController {
     private final LogInPageModel model;
-    private final LoginPageView  view;
+    private final LoginPageView view;
 
     public LogInController(
             LogInPageModel model,
             LoginPageView view
     ) {
         this.model = model;
-        this.view  = view;
+        this.view = view;
 
         // bind view actions
         view.setActionContinueButton(this::onContinue);
@@ -30,11 +31,11 @@ public class LogInController {
     }
 
     private void onContinue(ActionEvent e) {
-        String user = view.getUsernameField().getText();
-        String pass = view.getPasswordField().getText();
+        String user = view.getUsernameField().getText().trim();
+        String pass = view.getPasswordField().getText().trim();
 
         if (user.isEmpty() || pass.isEmpty()) {
-            view.setPromptLabel("Username/password cannot be empty!");
+            view.setPromptLabel("Username or password cannot be empty!");
             view.setPromptLabelVisible(true);
             return;
         }
@@ -43,7 +44,7 @@ public class LogInController {
             // 1) create & register callback servant (no Stage needed)
             LoginCallBackServiceImpl cbServant = new LoginCallBackServiceImpl();
 
-            // ← use your helper instead of raw POA calls
+            // Use helper to register callback
             org.omg.CORBA.Object cbObjRef =
                     PlayerClient_Java.getClientModel()
                             .registerLoginCallback(cbServant);
@@ -63,10 +64,19 @@ public class LogInController {
             view.setPromptLabelVisible(true);
             ViewNavigator.goToLobby();
 
-        } catch (Exception ex) {
-            view.setPromptLabel("Login failed: " + ex.getMessage());
+        } catch (AuthenticationException ex) {
+            // Handle invalid username or password
+            view.setPromptLabel(ex.message); // e.g., "Invalid username or password"
             view.setPromptLabelVisible(true);
-            ex.printStackTrace();
+        } catch (AlreadyLoggedInException ex) {
+            // Handle already logged-in case
+            view.setPromptLabel("This account is already logged in elsewhere.");
+            view.setPromptLabelVisible(true);
+        } catch (Exception ex) {
+            // Handle unexpected errors (e.g., CORBA or network issues)
+            view.setPromptLabel("An unexpected error occurred. Please try again.");
+            view.setPromptLabelVisible(true);
+            ex.printStackTrace(); // Log for debugging
         }
     }
 }

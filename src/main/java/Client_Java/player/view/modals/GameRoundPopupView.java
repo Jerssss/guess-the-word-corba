@@ -1,4 +1,3 @@
-// File: Client_Java/player/view/modals/GameRoundPopupView.java
 package Client_Java.player.view.modals;
 
 import javafx.fxml.FXML;
