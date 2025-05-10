@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -15,7 +16,6 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
 <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="688.0" prefWidth="1034.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminPlayerListPageView">
    <children>
       <ImageView fitHeight="691.0" fitWidth="1186.0" pickOnBounds="true" preserveRatio="true">
@@ -23,6 +23,22 @@
             <Image url="@../../images/testUI/admin/mirror-zoomed-cropped.png" />
          </image>
       </ImageView>
+      <Pane prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <Pane layoutX="288.0" layoutY="622.0" prefHeight="66.0" prefWidth="486.0">
+               <children>
+                  <Button fx:id="returnButton" layoutX="144.0" mnemonicParsing="false" prefHeight="66.0" prefWidth="199.0" style="-fx-background-color: transaprent;" text="return" textFill="WHITE">
+                     <font>
+                        <Font name="Marykate" size="39.0" />
+                     </font>
+                     <effect>
+                        <Glow />
+                     </effect>
+                  </Button>
+               </children>
+            </Pane>
+         </children>
+      </Pane>
       <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="1018.0">
          <children>
             <VBox alignment="TOP_CENTER" layoutX="20.0" layoutY="33.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="695.0" prefWidth="982.0" style="-fx-border-width: 3;">

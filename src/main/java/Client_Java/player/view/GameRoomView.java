@@ -54,6 +54,8 @@ public class GameRoomView {
         loadImage(catSnout, "/images/cat/snout.png");
         loadImage(catBottomHead, "/images/cat/bottom-head.png");
 
+//        loadImage()
+
         loadCustomFonts();
         applyFonts();
     }

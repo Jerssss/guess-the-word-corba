@@ -150,21 +150,30 @@
                      <font>
                         <Font name="Pencilant Script" size="34.0" />
                      </font>
+                     <effect>
+                        <Glow level="1.0" />
+                     </effect>
                   </Button>
                </children></Pane>
             <Pane layoutX="1006.0" layoutY="378.0" prefHeight="198.0" prefWidth="191.0">
                <children>
-                  <Label fx:id="roundLabel" layoutX="152.0" layoutY="14.0" text="R1" textFill="WHITE">
+                  <Label fx:id="roundLabel" layoutX="152.0" layoutY="140.0" text="R1" textFill="WHITE">
                      <font>
                         <Font name="Pencilant Script" size="34.0" />
                      </font>
+                     <effect>
+                        <Glow level="0.45" />
+                     </effect>
                   </Label>
                   <Label fx:id="timerLabel" layoutX="103.0" layoutY="111.0" rotate="3.4" text="x" textFill="WHITE">
                      <font>
                         <Font name="Pencilant Script" size="38.0" />
                      </font>
+                     <effect>
+                        <Glow level="0.45" />
+                     </effect>
                   </Label>
-                  <Text layoutX="23.0" layoutY="153.0" rotate="3.4" text="Time: ">
+                  <Text fill="#fff3be" layoutX="23.0" layoutY="153.0" rotate="3.4" text="Time: ">
                      <font>
                         <Font name="Pencilant Script" size="38.0" />
                      </font>
@@ -173,8 +182,24 @@
                      <font>
                         <Font name="Pencilant Script" size="54.0" />
                      </font>
+                     <effect>
+                        <Glow level="0.45" />
+                     </effect>
                   </Label>
-                  <Text layoutX="15.0" layoutY="104.0" rotate="3.4" text="Lives:">
+                  <Text fill="#fff3be" layoutX="15.0" layoutY="104.0" rotate="3.4" text="Lives:">
+                     <font>
+                        <Font name="Pencilant Script" size="38.0" />
+                     </font>
+                  </Text>
+                  <Label fx:id="lifeCountLabel1" layoutX="135.0" layoutY="16.0" text="5" textFill="WHITE">
+                     <font>
+                        <Font name="Pencilant Script" size="36.0" />
+                     </font>
+                     <effect>
+                        <Glow level="0.45" />
+                     </effect>
+                  </Label>
+                  <Text fill="#fff3be" layoutX="12.0" layoutY="52.0" text="Players:">
                      <font>
                         <Font name="Pencilant Script" size="38.0" />
                      </font>

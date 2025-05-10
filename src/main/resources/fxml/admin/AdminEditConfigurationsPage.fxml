@@ -14,7 +14,6 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
 <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="666.0" prefWidth="1019.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.admin.view.AdminEditConfigurationsPageView">
    <children>
       <ImageView fitHeight="720.0" fitWidth="1034.0" pickOnBounds="true" preserveRatio="true">
@@ -123,7 +122,15 @@
                   </Button>
                </children>
             </Pane>
-            <Button fx:id="saveButton" layoutX="360.0" layoutY="518.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="242.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Save" textFill="red" wrapText="true">
+            <Button fx:id="saveButton" layoutX="481.0" layoutY="510.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="138.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Save" textFill="#fffccc" wrapText="true">
+               <font>
+                  <Font name="Marykate" size="45.0" />
+               </font>
+               <effect>
+                  <Glow level="0.69" />
+               </effect>
+            </Button>
+            <Button fx:id="cancelButton" layoutX="332.0" layoutY="510.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="164.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Cancel" textFill="#fffccc" wrapText="true">
                <font>
                   <Font name="Marykate" size="45.0" />
                </font>
