@@ -29,7 +29,7 @@ public class Server_Java {
     public static void main(String[] args) {
         try {
             // 1) ORB & POA initialization
-            String hostIP = "127.0.0.1";
+            String hostIP = "localhost";
             String[] orbArgs = {"-ORBInitialPort", "1050", "-ORBInitialHost", hostIP};
             ORB orb = ORB.init(orbArgs, null);
 

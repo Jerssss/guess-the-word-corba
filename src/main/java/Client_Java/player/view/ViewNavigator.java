@@ -36,6 +36,7 @@ public class ViewNavigator {
     // Method to set the primary stage (call this during application startup)
     public static void setPrimaryStage(Stage stage) {
         primaryStage = stage;
+        primaryStage.centerOnScreen(); // Center the primary stage when set
     }
 
     private static void switchScene(Parent root, String title) {
@@ -50,6 +51,7 @@ public class ViewNavigator {
         }
         primaryStage.setScene(scene);
         primaryStage.setTitle(title);
+        primaryStage.centerOnScreen(); // Center the stage after setting new scene
         primaryStage.show();
     }
 

@@ -266,7 +266,7 @@ public class GameRoomController {
             try {
                 popupRoot = loader.load();
             } catch (IOException e) {
-                System.err.println("[ERROR] Failed to load GameRoundPopup.fxml: " + e.getMessage());
+                System.err.println("[ERROR] Failed to load GameRoundPopup.fxmnl: " + e.getMessage());
                 e.printStackTrace();
                 handleServerRoundStart(roundNum); // Fallback to round UI
                 return;
@@ -282,6 +282,7 @@ public class GameRoomController {
             ctrl.setRoundNumber(roundNum);
 
             stage.setScene(new Scene(popupRoot));
+            stage.centerOnScreen(); // Center the popup
             System.out.println("[DEBUG] Showing Round " + roundNum + " popup");
 
             PauseTransition wait = new PauseTransition(
@@ -342,6 +343,7 @@ public class GameRoomController {
                 }
 
                 stage.setScene(new Scene(popupRoot));
+                stage.centerOnScreen(); // Center the popup
 
                 PauseTransition wait = new PauseTransition(Duration.seconds(5));
                 wait.setOnFinished(e -> {
@@ -391,6 +393,7 @@ public class GameRoomController {
                 c.setWinningUsername(champion != null ? champion : "Nobody");
 
                 stage.setScene(new Scene(popupRoot));
+                stage.centerOnScreen(); // Center the popup
 
                 PauseTransition wait = new PauseTransition(Duration.seconds(5));
                 wait.setOnFinished(evt -> {
