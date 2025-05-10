@@ -36,8 +36,8 @@ public class AdminLogInPageView {
 
     private Font amaticSC;
     private Font maryKate;
-    private final String AMATICSC_FONT_PATH = "/Client_Java/player/res/css/fonts/AmaticSC-Bold.ttf";
-    private final String MARYKATE_FONT_PATH = "/Client_Java/player/res/css/fonts/FontsFree-Net-Marykate-Regular.ttf";
+    private final String AMATICSC_FONT_PATH = "/css/fonts/AmaticSC-Bold.ttf";
+    private final String MARYKATE_FONT_PATH = "/css/fonts/FontsFree-Net-Marykate-Regular.ttf";
     private final int FIELD_SIZE = 20;
     private final int BUTTON_FONT_SIZE = 20;
     private final int TITLE_SIZE = 140;

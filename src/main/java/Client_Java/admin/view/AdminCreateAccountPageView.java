@@ -210,6 +210,16 @@ public class AdminCreateAccountPageView {
         if (passwordLabel != null) {
             passwordLabel.setFont(Font.font(pencilant.getFamily(), 31));
         }
+
+        if (noticeLabel != null) {
+            noticeLabel.setFont(Font.font(pencilant.getFamily(), 31));
+        }
+        if (returnButton != null) {
+            returnButton.setFont(Font.font(pencilant.getFamily(), 31));
+        }
+        if (saveButton != null) {
+            saveButton.setFont(Font.font(pencilant.getFamily(), 31));
+        }
     }
 
     private void loadImage(ImageView imageView, String resourcePath) {

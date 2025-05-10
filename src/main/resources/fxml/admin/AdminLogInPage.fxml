@@ -45,7 +45,7 @@
             </Pane>
             <Pane layoutX="283.0" layoutY="243.0" prefHeight="172.0" prefWidth="417.0">
                <children>
-                  <Label fx:id="promptLabel" alignment="CENTER" layoutX="171.0" layoutY="42.0" text="adwdawd" textFill="#ff3b3b" wrapText="true">
+                  <Label fx:id="promptLabel" alignment="CENTER" layoutX="-1.0" layoutY="42.0" prefHeight="17.0" prefWidth="393.0" text="adwdawd" textFill="#ff3b3b" visible="false" wrapText="true">
                      <font>
                         <Font name="Marykate" size="18.0" />
                      </font>
@@ -58,7 +58,7 @@
                         <Font name="Amatic SC Bold" size="43.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="usernameField" layoutY="66.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="393.0" promptText="Username" style="-fx-background-radius: 7; -fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 7;" styleClass="login-field">
+                  <TextField fx:id="usernameField" layoutY="66.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="393.0" promptText="Username" style="-fx-background-radius: 7; -fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 7;" styleClass="login-field" stylesheets="@../../css/styles.css">
                      <font>
                         <Font name="Amatic SC Bold" size="20.0" />
                      </font>
@@ -66,7 +66,7 @@
                         <Glow level="1.0" />
                      </effect>
                   </TextField>
-                  <PasswordField fx:id="passwordField" layoutY="122.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="393.0" promptText="Password" style="-fx-background-color: transparent; -fx-border-color: white; -fx-background-radius: 7; -fx-border-radius: 7;" styleClass="login-field">
+                  <PasswordField fx:id="passwordField" layoutY="122.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="393.0" promptText="Password" style="-fx-background-color: transparent; -fx-border-color: white; -fx-background-radius: 7; -fx-border-radius: 7;" styleClass="login-field" stylesheets="@../../css/styles.css">
                      <font>
                         <Font name="Amatic SC Bold" size="20.0" />
                      </font>

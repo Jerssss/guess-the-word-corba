@@ -7,6 +7,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.io.InputStream;
 
@@ -43,7 +44,7 @@ public class AdminPlayerListPageView {
     public Button returnButton;
 
     @FXML
-    private Label titleLabel;
+    private Text titleLabel;
 
     @FXML
     private ImageView backgroundImageView;

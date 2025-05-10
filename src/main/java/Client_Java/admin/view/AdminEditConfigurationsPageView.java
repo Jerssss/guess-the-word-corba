@@ -18,6 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -58,24 +59,26 @@ public class AdminEditConfigurationsPageView {
     private Label waitingTimeNoticeLabel;
 
     @FXML
-    private Label titleLabel;
+    private Text titleLabel;
 
     @FXML
-    private Label waitingTitleLabel;
+    private Text waitingTitleLabel;
 
     @FXML
-    private Label roundTitleLabel;
+    private Text roundTitleLabel;
 
     @FXML
-    private Label noteLabel;
+    private Text noteLabel;
 
     @FXML
     private ImageView backgroundImageView;
 
-    private Font pencilant;
+    private Font quickPencil;
     private Font maryKate;
-    private final String MARYKATE_FONT_PATH = "/css/fonts/bryndan-write.ttf";
+    private Font pencilant;
     private final String PENCILANT_FONT_PATH = "/css/fonts/Pencilant Script.ttf";
+    private final String MARYKATE_FONT_PATH = "/css/fonts/FontsFree-Net-Marykate-Regular.ttf";
+    private final String QUICKPENCIL_FONT_PATH = "/css/fonts/QuickPencilRegular-0R59.ttf";
 
     @FXML
     private void initialize() {
@@ -88,21 +91,27 @@ public class AdminEditConfigurationsPageView {
     private void loadCustomFonts() {
         try {
             // Load fonts to Font objects
-            pencilant = Font.loadFont(getClass().getResourceAsStream(PENCILANT_FONT_PATH), 10);
+            quickPencil = Font.loadFont(getClass().getResourceAsStream(QUICKPENCIL_FONT_PATH), 10);
             maryKate = Font.loadFont(getClass().getResourceAsStream(MARYKATE_FONT_PATH), 30);
+            pencilant = Font.loadFont(getClass().getResourceAsStream(PENCILANT_FONT_PATH), 30);
 
             // Fallbacks when the loading should fail
+            if (quickPencil == null) {
+                System.err.println("QuickPencil font not loaded. Using system font.");
+                quickPencil = Font.font("System", 12);
+            }
+            if (maryKate == null) {
+                System.err.println("MaryKate font not loaded. Using system font.");
+                maryKate = Font.font("System", 12);
+            }
             if (pencilant == null) {
                 System.err.println("Pencilant font not loaded. Using system font.");
                 pencilant = Font.font("System", 12);
-            }if (maryKate == null) {
-                System.err.println("MaryKate font not loaded. Using system font.");
-                maryKate = Font.font("System", 12);
             }
 
         } catch (Exception e) {
             System.err.println("[ERROR] Font loading exception: " + e.getMessage());
-            pencilant = Font.font("System", 12);
+            quickPencil = Font.font("System", 12);
             maryKate = Font.font("System", 12);
         }
     }
@@ -110,32 +119,36 @@ public class AdminEditConfigurationsPageView {
     private void applyFonts() {
         // Font application to fields and labels
         if (titleLabel != null) {
-            titleLabel.setFont(Font.font(pencilant.getFamily(), 29));
+            titleLabel.setFont(Font.font(maryKate.getFamily(), 60));
         }
         if (waitingTitleLabel != null) {
-            waitingTitleLabel.setFont(Font.font(pencilant.getFamily(), 29));
+            waitingTitleLabel.setFont(Font.font(quickPencil.getFamily(), 48));
         }
         if (roundTitleLabel != null) {
-            roundTitleLabel.setFont(Font.font(pencilant.getFamily(), 29));
+            roundTitleLabel.setFont(Font.font(quickPencil.getFamily(), 48));
         }
-        if (titleLabel != null) {
-            titleLabel.setFont(Font.font(pencilant.getFamily(), 31));
-        }
-
         if (decrementWTButton != null) {
-            decrementWTButton.setFont(Font.font(maryKate.getFamily(), 31));
+            decrementWTButton.setFont(Font.font(maryKate.getFamily(), 30));
         }
         if (incrementWTButton != null) {
-            incrementWTButton.setFont(Font.font(maryKate.getFamily(), 31));
+            incrementWTButton.setFont(Font.font(maryKate.getFamily(), 30));
         }
         if (decrementRLButton != null) {
-            decrementRLButton.setFont(Font.font(maryKate.getFamily(), 31));
+            decrementRLButton.setFont(Font.font(maryKate.getFamily(), 30));
         }
         if (incrementRLButton != null) {
-            incrementRLButton.setFont(Font.font(maryKate.getFamily(), 31));
+            incrementRLButton.setFont(Font.font(maryKate.getFamily(), 30));
         }
         if (noteLabel != null) {
-            noteLabel.setFont(Font.font(pencilant.getFamily(), 31));
+            noteLabel.setFont(Font.font(quickPencil.getFamily(), 22));
+        }
+
+        if (waitingTimeLabel != null) {
+            waitingTimeLabel.setFont(Font.font(pencilant.getFamily(), 35));
+        }
+
+        if (roundLengthLabel != null) {
+            roundLengthLabel.setFont(Font.font(pencilant.getFamily(), 35));
         }
     }
 
