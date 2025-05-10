@@ -15,11 +15,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 public class AdminEditConfigurationsPageView {
@@ -54,8 +58,103 @@ public class AdminEditConfigurationsPageView {
     private Label waitingTimeNoticeLabel;
 
     @FXML
+    private Label titleLabel;
+
+    @FXML
+    private Label waitingTitleLabel;
+
+    @FXML
+    private Label roundTitleLabel;
+
+    @FXML
+    private Label noteLabel;
+
+    @FXML
+    private ImageView backgroundImageView;
+
+    private Font pencilant;
+    private Font maryKate;
+    private final String MARYKATE_FONT_PATH = "/css/fonts/bryndan-write.ttf";
+    private final String PENCILANT_FONT_PATH = "/css/fonts/Pencilant Script.ttf";
+
+    @FXML
     private void initialize() {
+        loadImage(backgroundImageView, "/images/testUI/admin/scroll.png");
+        loadCustomFonts();
+        applyFonts();
         System.out.println("AdminEditConfigurationsPageView initialized");
+    }
+
+    private void loadCustomFonts() {
+        try {
+            // Load fonts to Font objects
+            pencilant = Font.loadFont(getClass().getResourceAsStream(PENCILANT_FONT_PATH), 10);
+            maryKate = Font.loadFont(getClass().getResourceAsStream(MARYKATE_FONT_PATH), 30);
+
+            // Fallbacks when the loading should fail
+            if (pencilant == null) {
+                System.err.println("Pencilant font not loaded. Using system font.");
+                pencilant = Font.font("System", 12);
+            }if (maryKate == null) {
+                System.err.println("MaryKate font not loaded. Using system font.");
+                maryKate = Font.font("System", 12);
+            }
+
+        } catch (Exception e) {
+            System.err.println("[ERROR] Font loading exception: " + e.getMessage());
+            pencilant = Font.font("System", 12);
+            maryKate = Font.font("System", 12);
+        }
+    }
+
+    private void applyFonts() {
+        // Font application to fields and labels
+        if (titleLabel != null) {
+            titleLabel.setFont(Font.font(pencilant.getFamily(), 29));
+        }
+        if (waitingTitleLabel != null) {
+            waitingTitleLabel.setFont(Font.font(pencilant.getFamily(), 29));
+        }
+        if (roundTitleLabel != null) {
+            roundTitleLabel.setFont(Font.font(pencilant.getFamily(), 29));
+        }
+        if (titleLabel != null) {
+            titleLabel.setFont(Font.font(pencilant.getFamily(), 31));
+        }
+
+        if (decrementWTButton != null) {
+            decrementWTButton.setFont(Font.font(maryKate.getFamily(), 31));
+        }
+        if (incrementWTButton != null) {
+            incrementWTButton.setFont(Font.font(maryKate.getFamily(), 31));
+        }
+        if (decrementRLButton != null) {
+            decrementRLButton.setFont(Font.font(maryKate.getFamily(), 31));
+        }
+        if (incrementRLButton != null) {
+            incrementRLButton.setFont(Font.font(maryKate.getFamily(), 31));
+        }
+        if (noteLabel != null) {
+            noteLabel.setFont(Font.font(pencilant.getFamily(), 31));
+        }
+    }
+
+    private void loadImage(ImageView imageView, String resourcePath) {
+        try {
+            // Try from resources first
+            InputStream is = getClass().getResourceAsStream(resourcePath);
+            if (is != null) {
+                imageView.setImage(new Image(is));
+                System.out.println("Loaded image: " + resourcePath);
+            } else {
+                // backup
+                String absPath = "file:src/main/resources" + resourcePath;
+                imageView.setImage(new Image(absPath));
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load image: " + resourcePath);
+            e.printStackTrace();
+        }
     }
 
     // Round Length Buttons

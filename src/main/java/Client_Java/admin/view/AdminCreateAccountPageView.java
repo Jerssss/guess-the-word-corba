@@ -15,63 +15,60 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 public class AdminCreateAccountPageView {
 
     @FXML
-    private TextField fullnameTextField;
-
-    @FXML
-    private Label noticeLabel;
+    private TextField fullNameTextField;
 
     @FXML
     private TextField passwordTextField;
 
     @FXML
     private Button returnButton;
-
     @FXML
     private Button saveButton;
 
     @FXML
     private TextField usernameTextField;
 
-    public void setActionReturnButton(EventHandler<ActionEvent> event) {
-        returnButton.setOnAction(event);
-    }
+    @FXML
+    private Label noticeLabel;
 
-    public void setActionSaveButton(EventHandler<ActionEvent> event) {
-        saveButton.setOnAction(event);
-    }
+    @FXML
+    private Label titleLabel;
 
-    public Label getNoticeLabel() {
-        return noticeLabel;
-    }
+    @FXML
+    private Label usernameLabel;
 
-    public TextField getFullnameTextField() {
-        return fullnameTextField;
-    }
+    @FXML
+    private Label fullNameLabel;
 
-    public TextField getPasswordTextField() {
-        return passwordTextField;
-    }
+    @FXML
+    private Label passwordLabel;
 
-    public TextField getUsernameTextField() {
-        return usernameTextField;
-    }
 
-    public void setNoticeLabelText(String message) {
-        noticeLabel.setText(message);
-    }
+    @FXML private ImageView backgroundImageView;
 
-    public void setNoticeVisible(boolean visible) {
-        noticeLabel.setVisible(visible);
+    private Font pencilant;
+    private final String PENCILANT_FONT_PATH = "/css/fonts/Pencilant Script.ttf";
+
+    public void initialize(){
+        loadImage(backgroundImageView, "/images/testUI/admin/create--player-view1.png");
+
+        loadCustomFonts();
+        applyFonts();
+
     }
 
     public boolean showConfirmationPopup(String message, String playerName) {
@@ -109,6 +106,7 @@ public class AdminCreateAccountPageView {
             return false;
         }
     }
+
 
     public void showAdminMainMenu(AdminAccount admin) {
         try {
@@ -170,4 +168,99 @@ public class AdminCreateAccountPageView {
             e.printStackTrace();
         }
     }
+
+    private void loadCustomFonts() {
+        try {
+            // Load fonts to Font objects
+            pencilant = Font.loadFont(getClass().getResourceAsStream(PENCILANT_FONT_PATH), 10);
+
+            // Fallbacks when the loading should fail
+            if (pencilant == null) {
+                System.err.println("Pencilant font not loaded. Using system font.");
+                pencilant = Font.font("System", 12);
+            }
+
+        } catch (Exception e) {
+            System.err.println("[ERROR] Font loading exception: " + e.getMessage());
+            pencilant = Font.font("System", 12);
+        }
+    }
+
+    private void applyFonts() {
+        // Font application to fields and labels
+        if (fullNameTextField != null) {
+            fullNameTextField.setFont(Font.font(pencilant.getFamily(), 29));
+        }
+        if (usernameTextField != null) {
+            usernameTextField.setFont(Font.font(pencilant.getFamily(), 29));
+        }
+        if (passwordTextField != null) {
+            passwordTextField.setFont(Font.font(pencilant.getFamily(), 29));
+        }
+        if (titleLabel != null) {
+            titleLabel.setFont(Font.font(pencilant.getFamily(), 31));
+        }
+
+        if (usernameLabel != null) {
+            usernameLabel.setFont(Font.font(pencilant.getFamily(), 31));
+        }
+        if (fullNameLabel != null) {
+            fullNameLabel.setFont(Font.font(pencilant.getFamily(), 31));
+        }
+        if (passwordLabel != null) {
+            passwordLabel.setFont(Font.font(pencilant.getFamily(), 31));
+        }
+    }
+
+    private void loadImage(ImageView imageView, String resourcePath) {
+        try {
+            // Try from resources first
+            InputStream is = getClass().getResourceAsStream(resourcePath);
+            if (is != null) {
+                imageView.setImage(new Image(is));
+                System.out.println("Loaded image: " + resourcePath);
+            } else {
+                // backup
+                String absPath = "file:src/main/resources" + resourcePath;
+                imageView.setImage(new Image(absPath));
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load image: " + resourcePath);
+            e.printStackTrace();
+        }
+    }
+
+    public void setActionReturnButton(EventHandler<ActionEvent> event) {
+        returnButton.setOnAction(event);
+    }
+
+    public void setActionSaveButton(EventHandler<ActionEvent> event) {
+        saveButton.setOnAction(event);
+    }
+
+    public Label getNoticeLabel() {
+        return noticeLabel;
+    }
+
+    public TextField getFullnameTextField() {
+        return fullNameTextField;
+    }
+
+    public TextField getPasswordTextField() {
+        return passwordTextField;
+    }
+
+    public TextField getUsernameTextField() {
+        return usernameTextField;
+    }
+
+    public void setNoticeLabelText(String message) {
+        noticeLabel.setText(message);
+    }
+
+    public void setNoticeVisible(boolean visible) {
+        noticeLabel.setVisible(visible);
+    }
+
+
 }
