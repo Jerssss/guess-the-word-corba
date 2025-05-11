@@ -19,8 +19,8 @@ public class AdminPlayerListPageController {
 
     private void initialize() {
         view.initializeTableColumns();
-        setupSearchFilter();
-        view.playersTable.setItems(model.getPlayerList());
+        //setupSearchFilter();
+        view.playersTable.setItems(model.fetchPlayers());
     }
 
     private void setupSearchFilter() {

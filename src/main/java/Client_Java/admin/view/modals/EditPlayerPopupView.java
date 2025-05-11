@@ -1,5 +1,6 @@
 package Client_Java.admin.view.modals;
 
+import Shared_Files.PlayerAccount;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 
@@ -16,54 +17,35 @@ import javafx.scene.text.Text;
 import java.io.InputStream;
 
 public class EditPlayerPopupView {
-
-    @FXML
-    private Button cancelButton;
-
-    @FXML
-    private Text fullNameLabel;
-
-    @FXML
-    private TextField fullNameTextField;
-
-    @FXML
-    private TextField gamePointsTextField;
-
-    @FXML
-    private Text gamePtsLabel;
-
-    @FXML
-    private Label gamesPlayedLabel;
-
-    @FXML
-    private Label gamesPlayedTitleLabel;
-
-    @FXML
-    private GridPane gridPane;
-
-    @FXML
-    private Text passwordLabel;
-
-    @FXML
-    private TextField passwordTextField;
-
-    @FXML
-    private Label promptLabel;
-
-    @FXML
-    private Button saveButton;
-
-    @FXML
-    private Text titleLabel;
-
-    @FXML
-    private Text usernameLabel;
-
     @FXML
     private TextField usernameTextfield;
-
+    @FXML
+    private TextField passwordTextField;
+    @FXML
+    private TextField gamePointsTextField;
+    @FXML
+    private TextField fullNameTextField;
+    @FXML
+    private Text titleLabel;
+    @FXML
+    private Text usernameLabel;
+    @FXML
+    private Text passwordLabel;
+    @FXML
+    private Text fullNameLabel;
+    @FXML
+    private Text gameWinsLabel;
+    @FXML
+    private Label promptLabel;
+    @FXML
+    private GridPane gridPane;
     @FXML
     private ImageView backgroundImageView;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Button cancelButton;
+    private PlayerAccount player;
 
     private Font quickPencil;
     private final String QUICKPENCIL_FONT_PATH  = "/css/fonts/QuickPencilRegular-0R59.ttf";
@@ -72,6 +54,10 @@ public class EditPlayerPopupView {
         loadImage(backgroundImageView, "/images/testUI/admin/create-scroll-cropped-2.png");
         loadCustomFonts();
         applyFonts();
+    }
+
+    public void setPlayer(PlayerAccount player) {
+        this.player = player;
     }
 
     private void loadCustomFonts() {
@@ -103,14 +89,8 @@ public class EditPlayerPopupView {
         if (fullNameLabel != null) {
             fullNameLabel.setFont(Font.font(quickPencil.getFamily(), 32));
         }
-        if (gamePtsLabel != null) {
-            gamePtsLabel.setFont(Font.font(quickPencil.getFamily(), 32));
-        }
-        if (gamesPlayedLabel!= null) {
-            gamesPlayedLabel.setFont(Font.font(quickPencil.getFamily(), 32));
-        }
-        if (gamesPlayedTitleLabel != null) {
-            gamesPlayedTitleLabel.setFont(Font.font(quickPencil.getFamily(), 32));
+        if (gameWinsLabel != null) {
+            gameWinsLabel.setFont(Font.font(quickPencil.getFamily(), 32));
         }
         if (cancelButton != null) {
             cancelButton.setFont(Font.font(quickPencil.getFamily(), 28));
@@ -165,8 +145,8 @@ public class EditPlayerPopupView {
         return gamePointsTextField;
     }
 
-    public void setGamesPlayedLabel(Label gamesPlayedLabel) {
-        this.gamesPlayedLabel = gamesPlayedLabel;
+    public void setGameWinsLabel(Text gameWinsLabel) {
+        this.gameWinsLabel = gameWinsLabel;
     }
 
     public void setPromptLabel(Label promptLabel) {
