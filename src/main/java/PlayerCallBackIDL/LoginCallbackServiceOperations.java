@@ -9,7 +9,7 @@ package PlayerCallBackIDL;
 */
 
 
-// Callback that the server uses to forceâ¬ýlogout a player
+// Callback that the server uses to forcelogout a player
 public interface LoginCallbackServiceOperations 
 {
   void notifyForcedLogout (int playerID, String sessionToken) throws PlayerCallBackIDL.NotLoggedInException;

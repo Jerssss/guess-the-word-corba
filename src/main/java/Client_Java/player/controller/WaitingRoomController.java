@@ -20,40 +20,33 @@ import java.util.concurrent.TimeUnit;
 
 public class WaitingRoomController {
     private final WaitingRoomModel model;
-    private final WaitingRoomView  view;
-
+    private final WaitingRoomView view;
     private final int initialCountdown;
     private final int minimumPlayers;
-    private int       countdown;
-
+    private int countdown;
+    private String gameToken;
     private ScheduledExecutorService scheduler;
 
-    public WaitingRoomController(
-            WaitingRoomModel model,
-            WaitingRoomView view
-    ) {
-        this.model    = model;
-        this.view     = view;
 
+    public WaitingRoomController(WaitingRoomModel model, WaitingRoomView view) {
+        this.model = model;
+        this.view = view;
         this.initialCountdown = model.getSetting("countdown_to_game_start");
-        this.minimumPlayers   = model.getSetting("minimum_players");
-        this.countdown        = initialCountdown;
-
+        this.minimumPlayers = model.getSetting("minimum_players");
+        this.countdown = initialCountdown;
         view.setActionCancelButton(this::onCancel);
         startFlow();
     }
 
     private void startFlow() {
         int playerId = SessionManager.getLoggedInPlayer().getPlayerId();
-        String gameToken = model.joinLobby(playerId);
-        if (gameToken == null) {
+        this.gameToken = model.joinLobby(playerId); // Store gameToken
+        if (this.gameToken == null) {
             System.err.println("[WaitingRoom] joinLobby failed");
             return;
         }
-
         registerWaitingRoomCallback(playerId);
         registerGameStartCallback(playerId);
-
         view.setWaitingPlayersCount(model.getNumberOfPlayersJoined());
         view.setRemainingTime(countdown);
     }
@@ -115,11 +108,11 @@ public class WaitingRoomController {
         Platform.runLater(() -> view.setRemainingTime(countdown));
     }
 
-    /** NOW uses the stored gameToken rather than playerId */
+
     private void onReadyToStart() {
         Platform.runLater(() -> {
             try {
-                ViewNavigator.goToGameRoom();  // <-- no-arg uses SessionManager.getGameToken()
+                ViewNavigator.goToGameRoom(gameToken);
             } catch (Exception e) {
                 e.printStackTrace();
             }

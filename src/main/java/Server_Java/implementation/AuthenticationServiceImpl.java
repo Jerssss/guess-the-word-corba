@@ -81,7 +81,7 @@ public class AuthenticationServiceImpl extends AuthenticationServicePOA {
 
         } catch (SQLException ex) {
             System.err.println("[AuthService] Database error during login: " + ex.getMessage());
-            throw new AuthenticationException("Internal server error.");
+            throw new AuthenticationException("Failed to connect to the Database");
         }
     }
 

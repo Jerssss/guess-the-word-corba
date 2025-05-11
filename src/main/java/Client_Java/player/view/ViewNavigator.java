@@ -22,21 +22,27 @@ import java.io.IOException;
 public class ViewNavigator {
 
     private static final Stage mainStage = PlayerClient_Java.getStage();
-    private static final String CSS = ViewNavigator.class
-            .getClassLoader()
-            .getResource("css/styles.css")
-            .toExternalForm();
+    private static final String CSS;
+
+    static {
+        java.net.URL cssUrl = ViewNavigator.class.getResource("/css/styles.css");
+        if (cssUrl == null) {
+            System.err.println("[ERROR] CSS file /css/styles.css not found on classpath");
+            CSS = null;
+        } else {
+            CSS = cssUrl.toExternalForm();
+        }
+    }
+
     private static Stage primaryStage;
 
-    /** Expose primary Stage for popups */
     public static Stage getStage() {
         return mainStage;
     }
 
-    // Method to set the primary stage (call this during application startup)
     public static void setPrimaryStage(Stage stage) {
         primaryStage = stage;
-        primaryStage.centerOnScreen(); // Center the primary stage when set
+        primaryStage.centerOnScreen();
     }
 
     private static void switchScene(Parent root, String title) {
@@ -44,14 +50,18 @@ public class ViewNavigator {
             throw new IllegalStateException("Primary stage not set. Call setPrimaryStage first.");
         }
         Scene scene = new Scene(root);
-        try {
-            scene.getStylesheets().add(CSS);
-        } catch (Exception e) {
-            System.err.println("[ERROR] Failed to load stylesheet: " + e.getMessage());
+        if (CSS != null) {
+            try {
+                scene.getStylesheets().add(CSS);
+            } catch (Exception e) {
+                System.err.println("[ERROR] Failed to load stylesheet: " + e.getMessage());
+            }
+        } else {
+            System.err.println("[WARNING] CSS stylesheet not applied: /css/styles.css not found");
         }
         primaryStage.setScene(scene);
         primaryStage.setTitle(title);
-        primaryStage.centerOnScreen(); // Center the stage after setting new scene
+        primaryStage.centerOnScreen();
         primaryStage.show();
     }
 
@@ -118,7 +128,7 @@ public class ViewNavigator {
 
     public static void goToGameRoom(String gameToken) throws Exception {
         FXMLLoader loader = new FXMLLoader(
-                ViewNavigator.class.getResource("/fxml/player/GameRoomPage.fxml")
+                ViewNavigator.class.getResource("/fxml/testPlayerUI/GameRoomPage.fxml")
         );
         Parent root;
         try {
@@ -155,7 +165,6 @@ public class ViewNavigator {
             System.err.println("[ERROR] AboutPageView controller is null");
             throw new IllegalStateException("AboutPageView controller is null");
         }
-        // Set return action to navigate back to lobby
         controller.setReturnAction(() -> {
             try {
                 goToLobby();
@@ -165,9 +174,5 @@ public class ViewNavigator {
             }
         });
         switchScene(root, "What's the Word — About");
-    }
-
-    public static void goToGameRoom() throws Exception {
-        goToGameRoom(SessionManager.getGameToken());
     }
 }

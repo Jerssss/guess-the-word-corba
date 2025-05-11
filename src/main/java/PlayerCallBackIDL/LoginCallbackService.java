@@ -9,7 +9,7 @@ package PlayerCallBackIDL;
 */
 
 
-// Callback that the server uses to forceâ¬ýlogout a player
+// Callback that the server uses to force logout a player
 public interface LoginCallbackService extends LoginCallbackServiceOperations, org.omg.CORBA.Object, org.omg.CORBA.portable.IDLEntity 
 {
 } // interface LoginCallbackService
