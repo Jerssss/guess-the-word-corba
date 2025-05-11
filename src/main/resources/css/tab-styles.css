@@ -12,8 +12,6 @@
 
 .tab-pane .tab-header-background {
     -fx-background-color: transparent;
-        -fx-border-color: red;
-        -fx-border-width: 1px;
 }
 
 /* Base tab style */
@@ -24,8 +22,6 @@
     -fx-padding: 0;
     -fx-background-image: none;
     -fx-cursor: hand;
-        -fx-border-color: blue;
-        -fx-border-width: 1px;
 }
 
 /* Remove default text */

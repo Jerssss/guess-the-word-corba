@@ -119,7 +119,7 @@
                         </HBox>
                         <ScrollPane fx:id="leaderboardScrollPane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="136.0" prefWidth="392.0" styleClass="lobby-leaderboard-scrollpane" stylesheets="@../../css/styles.css" translateX="-7.0">
                            <content>
-                              <FlowPane fx:id="leaderboardsFlowPane" orientation="VERTICAL" prefHeight="276.0" prefWidth="378.0" translateX="-7.0" />
+                              <FlowPane fx:id="leaderboardsFlowPane" orientation="VERTICAL" prefHeight="177.0" prefWidth="378.0" translateX="-7.0" />
                            </content>
                         </ScrollPane>
                         <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="78.0" prefWidth="406.0">
