@@ -1,6 +1,8 @@
 // Admin.idl
 module AdminIDL {
 
+    typedef sequence<string> StringList;
+
     exception NotLoggedInException {};
     exception AccountExistsException {};
     exception AccountNotFoundException {};
@@ -12,6 +14,10 @@ module AdminIDL {
         // Create a new player account
         void createPlayer(in string fullname, in string username, in string password, in string sessionToken, in long adminID)
             raises(AccountExistsException, NotLoggedInException);
+
+        // View list of player's account
+        StringList viewPlayers(in string sessionToken, in long adminID)
+            raises(NotLoggedInException);
 
         // Modify existing player's password
         void modifyPlayer(in long playerID, in string newPassword, in string sessionToken, in long adminID)

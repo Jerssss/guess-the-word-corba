@@ -86,7 +86,7 @@ public class AdminMainMenuPageController {
             Parent pageView = loader.load();
 
             AdminPlayerListPageView pageViewController = loader.getController();
-            AdminPlayerListPageModel pageModel = new AdminPlayerListPageModel();
+            AdminPlayerListPageModel pageModel = new AdminPlayerListPageModel(adminService, sessionToken, adminID);
             new AdminPlayerListPageController(pageModel, pageViewController);
 
             setCenterPane(pageView);

@@ -5,6 +5,7 @@ package Shared_Files;
  */
 public class PlayerAccount {
     private final int playerID;
+    private String name;
     private final String username;
     private final String password;
     private int gameWins;
@@ -23,8 +24,20 @@ public class PlayerAccount {
         this.gameWins = gameWins;
     }
 
+    public PlayerAccount(int playerID, String name, String username, String password, int gameWins) {
+        this.playerID = playerID;
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.gameWins = gameWins;
+    }
+
     public int getPlayerId() {
         return playerID;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getUsername() {
