@@ -144,7 +144,6 @@ public class GameRoomController {
             Pane cell = new Pane();
             cell.setPrefSize(58, 68);
             ImageView blankImg = new ImageView();
-            loadImage(blankImg, "/images/testUI/blankk_nobg.gif");
             blankImg.setFitWidth(58);
             blankImg.setFitHeight(68);
             blankImg.setTranslateY(50);

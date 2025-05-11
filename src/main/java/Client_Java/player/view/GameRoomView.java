@@ -210,7 +210,7 @@ public class GameRoomView {
     }
 
     private void setupAlphabet() {
-        // Debug hover image
+        // Debug hover image (kept for reference, but not used in hover style)
         java.net.URL hoverImageUrl = getClass().getResource(LETTER_HOVER_IMAGE_PATH);
         if (hoverImageUrl == null) {
             System.err.println("[ERROR] Hover image not found: " + LETTER_HOVER_IMAGE_PATH);
@@ -233,13 +233,10 @@ public class GameRoomView {
         String[] row2 = {"I", "J", "K", "L", "M", "N", "O", "P", "Q"}; // Next 9 buttons
         String[] row3 = {"R", "S", "T", "U", "V", "W", "X", "Y", "Z"}; // Last 9 buttons
 
-        // Base style for buttons (initially invisible)
+        // Base style for buttons (invisible)
         final String baseStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
-        // Hover style with background image (visible on hover)
-        final String hoverStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-text-fill: white; " +
-                "-fx-background-image: url('" + LETTER_HOVER_IMAGE_PATH + "'); " +
-                "-fx-background-size: cover; " +
-                "-fx-background-position: center center; -fx-opacity: 1.0;";
+        // Hover style (invisible, no background image)
+        final String hoverStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
         // Disabled style (still invisible but greyed out)
         final String disabledStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: grey; -fx-text-fill: white; -fx-opacity: 0.0;";
 
@@ -254,15 +251,16 @@ public class GameRoomView {
                 btn.setText(row1[i]);
                 btn.setStyle(baseStyle);
                 btn.setOnAction(e -> handleLetterGuess(letter));
-                // Add hover effect
+                // Add hover effect (no visual change, just logging for debug)
                 btn.setOnMouseEntered(e -> {
                     if (!btn.isDisable()) {
-                        btn.setStyle(hoverStyle);
+                        System.out.println("[DEBUG] Hovering over letter: " + letter);
+                        btn.setStyle(hoverStyle); // Remains invisible
                     }
                 });
                 btn.setOnMouseExited(e -> {
                     if (!btn.isDisable()) {
-                        btn.setStyle(baseStyle);
+                        btn.setStyle(baseStyle); // Remains invisible
                     }
                 });
                 alphabetButtons.put(letter, btn);
@@ -280,15 +278,16 @@ public class GameRoomView {
                 btn.setText(row2[i]);
                 btn.setStyle(baseStyle);
                 btn.setOnAction(e -> handleLetterGuess(letter));
-                // Add hover effect
+                // Add hover effect (no visual change)
                 btn.setOnMouseEntered(e -> {
                     if (!btn.isDisable()) {
-                        btn.setStyle(hoverStyle);
+                        System.out.println("[DEBUG] Hovering over letter: " + letter);
+                        btn.setStyle(hoverStyle); // Remains invisible
                     }
                 });
                 btn.setOnMouseExited(e -> {
                     if (!btn.isDisable()) {
-                        btn.setStyle(baseStyle);
+                        btn.setStyle(baseStyle); // Remains invisible
                     }
                 });
                 alphabetButtons.put(letter, btn);
@@ -306,15 +305,16 @@ public class GameRoomView {
                 btn.setText(row3[i]);
                 btn.setStyle(baseStyle);
                 btn.setOnAction(e -> handleLetterGuess(letter));
-                // Add hover effect
+                // Add hover effect (no visual change)
                 btn.setOnMouseEntered(e -> {
                     if (!btn.isDisable()) {
-                        btn.setStyle(hoverStyle);
+                        System.out.println("[DEBUG] Hovering over letter: " + letter);
+                        btn.setStyle(hoverStyle); // Remains invisible
                     }
                 });
                 btn.setOnMouseExited(e -> {
                     if (!btn.isDisable()) {
-                        btn.setStyle(baseStyle);
+                        btn.setStyle(baseStyle); // Remains invisible
                     }
                 });
                 alphabetButtons.put(letter, btn);
