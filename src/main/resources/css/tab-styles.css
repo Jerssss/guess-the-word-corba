@@ -1,0 +1,75 @@
+/* Make tab pane and headers transparent */
+.tab-pane {
+    -fx-background-color: transparent;
+    -fx-tab-min-width: 120px;
+    -fx-tab-min-height: 120px;
+}
+
+.tab-pane .tab-header-area {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 0 20px; /* Adjust padding as needed */
+}
+
+.tab-pane .tab-header-background {
+    -fx-background-color: transparent;
+        -fx-border-color: red;
+        -fx-border-width: 1px;
+}
+
+/* Base tab style */
+.tab {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-background-image: none;
+    -fx-cursor: hand;
+        -fx-border-color: blue;
+        -fx-border-width: 1px;
+}
+
+/* Remove default text */
+.tab .tab-label {
+    -fx-text-fill: transparent;
+    -fx-padding: 0;
+}
+
+/* About tab */
+.tab-about {
+    -fx-graphic: url("../../images/testUI/red_about_crystal.png");
+}
+
+.tab-about:selected {
+    -fx-graphic: url("../../images/testUI/red_about_crystal_selected.png");
+}
+
+/* How to Play tab */
+.tab-htp {
+    -fx-graphic: url("../../images/testUI/pink_about_crystal.png");
+}
+
+.tab-htp:selected {
+    -fx-graphic: url("../../images/testUI/pink_about_crystal_selected.png");
+}
+
+/* Rules tab */
+.tab-rules {
+    -fx-graphic: url("../../images/testUI/purple_about_crystal.png");
+}
+
+.tab-rules:selected {
+    -fx-graphic: url("../../images/testUI/purple_about_crystal_selected.png");
+}
+
+/* Scroll pane styling */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .content {
+    -fx-background-color: transparent;
+}

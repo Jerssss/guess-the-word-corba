@@ -139,6 +139,34 @@ public class ViewNavigator {
         switchScene(root, "What's the Word — Game");
     }
 
+    public static void goToAbout() throws Exception {
+        FXMLLoader loader = new FXMLLoader(
+                ViewNavigator.class.getResource("/fxml/player/AboutPage.fxml")
+        );
+        Parent root;
+        try {
+            root = loader.load();
+        } catch (IOException e) {
+            System.err.println("[ERROR] Failed to load AboutPage.fxml: " + e.getMessage());
+            throw e;
+        }
+        AboutPageView controller = loader.getController();
+        if (controller == null) {
+            System.err.println("[ERROR] AboutPageView controller is null");
+            throw new IllegalStateException("AboutPageView controller is null");
+        }
+        // Set return action to navigate back to lobby
+        controller.setReturnAction(() -> {
+            try {
+                goToLobby();
+            } catch (Exception e) {
+                System.err.println("[ERROR] Failed to return to GameLobby: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+        switchScene(root, "What's the Word — About");
+    }
+
     public static void goToGameRoom() throws Exception {
         goToGameRoom(SessionManager.getGameToken());
     }

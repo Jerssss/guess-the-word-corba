@@ -132,7 +132,12 @@ public class GameLobbyController {
     }
 
     private void handleAbout(ActionEvent event) {
-        System.out.println("[DEBUG] About button clicked");
-        // Implement about dialog if needed
+        try {
+            System.out.println("[DEBUG] About button clicked");
+            ViewNavigator.goToAbout(); // Navigate to About page
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("[ERROR] Could not open About page: " + e.getMessage());
+        }
     }
 }

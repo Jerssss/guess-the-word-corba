@@ -23,23 +23,6 @@
             <version>8.0.33</version>
         </dependency>
 
-        <!-- JavaFX Dependencies (for explicit control, if needed) -->
-        <!-- Note: JavaFX 8 is included in JDK 8, but adding for build consistency -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-graphics</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -50,6 +33,7 @@
                     <include>**/*.ttf</include>
                     <include>**/*.fxml</include>
                     <include>**/*.css</include>
+                    <include>**/*.png</include>
                 </includes>
             </resource>
         </resources>
