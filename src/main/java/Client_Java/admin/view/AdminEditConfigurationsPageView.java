@@ -6,6 +6,7 @@ import Client_Java.admin.model.AdminClientModel;
 import Client_Java.admin.model.AdminMainMenuPageModel;
 import Client_Java.admin.view.modals.EditConfigConfirmationPopupView;
 import Shared_Files.AdminAccount;
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -20,6 +21,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -28,6 +30,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,45 +41,32 @@ public class AdminEditConfigurationsPageView {
 
     @FXML
     private Button decrementRLButton;
-
     @FXML
     private Button decrementWTButton;
-
     @FXML
     private Button incrementRLButton;
-
     @FXML
     private Button incrementWTButton;
-
     @FXML
     private Button saveButton;
     @FXML
     private Button cancelButton;
-
     @FXML
     private TextField roundLengthLabel;
-
     @FXML
     private TextField waitingTimeLabel;
-
     @FXML
     private Label roundLengthNoticeLabel;
-
     @FXML
     private Label waitingTimeNoticeLabel;
-
     @FXML
     private Text titleLabel;
-
     @FXML
     private Text waitingTitleLabel;
-
     @FXML
     private Text roundTitleLabel;
-
     @FXML
     private Text noteLabel;
-
     @FXML
     private ImageView backgroundImageView;
 
@@ -92,7 +82,54 @@ public class AdminEditConfigurationsPageView {
         loadImage(backgroundImageView, "/images/testUI/admin/scroll.png");
         loadCustomFonts();
         applyFonts();
+        setupButtonHoverEffects(); // Add this line
         System.out.println("AdminEditConfigurationsPageView initialized");
+    }
+
+    private void setupButtonHoverEffects() {
+        // Setup for decrement buttons
+        if (decrementRLButton != null) {
+            decrementRLButton.setOnMouseEntered(e -> buttonHovered(decrementRLButton));
+            decrementRLButton.setOnMouseExited(e -> buttonExited(decrementRLButton));
+        }
+        if (decrementWTButton != null) {
+            decrementWTButton.setOnMouseEntered(e -> buttonHovered(decrementWTButton));
+            decrementWTButton.setOnMouseExited(e -> buttonExited(decrementWTButton));
+        }
+
+        // Setup for increment buttons
+        if (incrementRLButton != null) {
+            incrementRLButton.setOnMouseEntered(e -> buttonHovered(incrementRLButton));
+            incrementRLButton.setOnMouseExited(e -> buttonExited(incrementRLButton));
+        }
+        if (incrementWTButton != null) {
+            incrementWTButton.setOnMouseEntered(e -> buttonHovered(incrementWTButton));
+            incrementWTButton.setOnMouseExited(e -> buttonExited(incrementWTButton));
+        }
+
+        // Setup for action buttons
+        if (saveButton != null) {
+            saveButton.setOnMouseEntered(e -> buttonHovered(saveButton));
+            saveButton.setOnMouseExited(e -> buttonExited(saveButton));
+        }
+        if (cancelButton != null) {
+            cancelButton.setOnMouseEntered(e -> buttonHovered(cancelButton));
+            cancelButton.setOnMouseExited(e -> buttonExited(cancelButton));
+        }
+    }
+
+    private void buttonHovered(Button button) {
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), button);
+        st.setToX(0.9);
+        st.setToY(0.9);
+        st.play();
+    }
+
+    private void buttonExited(Button button) {
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), button);
+        st.setToX(1.0);
+        st.setToY(1.0);
+        st.play();
     }
 
     private void loadCustomFonts() {
@@ -115,7 +152,6 @@ public class AdminEditConfigurationsPageView {
                 System.err.println("Pencilant font not loaded. Using system font.");
                 pencilant = Font.font("System", 12);
             }
-
         } catch (Exception e) {
             System.err.println("[ERROR] Font loading exception: " + e.getMessage());
             quickPencil = Font.font("System", 12);
@@ -149,11 +185,9 @@ public class AdminEditConfigurationsPageView {
         if (noteLabel != null) {
             noteLabel.setFont(Font.font(quickPencil.getFamily(), 22));
         }
-
         if (waitingTimeLabel != null) {
             waitingTimeLabel.setFont(Font.font(pencilant.getFamily(), 35));
         }
-
         if (roundLengthLabel != null) {
             roundLengthLabel.setFont(Font.font(pencilant.getFamily(), 35));
         }
@@ -220,6 +254,15 @@ public class AdminEditConfigurationsPageView {
             });
         } else {
             System.err.println("saveButton is null");
+        }
+    }
+
+    // Cancel Button
+    public void setActionCancelButton(EventHandler<ActionEvent> event) {
+        if (cancelButton != null) {
+            cancelButton.setOnAction(event);
+        } else {
+            System.err.println("cancelButton is null");
         }
     }
 

@@ -6,20 +6,29 @@ import Client_Java.admin.model.AdminClientModel;
 import Client_Java.admin.model.AdminMainMenuPageModel;
 import Client_Java.admin.view.modals.CreatePlayerConfirmationPopupView;
 import Shared_Files.AdminAccount;
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,27 +74,100 @@ public class AdminCreateAccountPageView {
 
     public void initialize(){
         loadImage(backgroundImageView, "/images/testUI/admin/create--player-view1.png");
-
         loadCustomFonts();
         applyFonts();
+        setupButtonHoverEffects(); // Add this line
+    }
 
+    private void setupButtonHoverEffects() {
+        if (returnButton != null) {
+            returnButton.setOnMouseEntered(e -> returnButtonHovered());
+            returnButton.setOnMouseExited(e -> returnButtonExited());
+        }
+        if (saveButton != null) {
+            saveButton.setOnMouseEntered(e -> saveButtonHovered());
+            saveButton.setOnMouseExited(e -> saveButtonExited());
+        }
+    }
+
+    // Animation methods for returnButton
+    public void returnButtonHovered() {
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), returnButton);
+        st.setToX(0.9);
+        st.setToY(0.9);
+        st.play();
+    }
+
+    public void returnButtonExited() {
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), returnButton);
+        st.setToX(1.0);
+        st.setToY(1.0);
+        st.play();
+    }
+
+    // Animation methods for saveButton
+    public void saveButtonHovered() {
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), saveButton);
+        st.setToX(0.9);
+        st.setToY(0.9);
+        st.play();
+    }
+
+    public void saveButtonExited() {
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), saveButton);
+        st.setToX(1.0);
+        st.setToY(1.0);
+        st.play();
     }
 
     public boolean showConfirmationPopup(String message, String playerName) {
         try {
-            // Debug: Verify FXML path
-            String fxmlPath = "/fxml/admin/CreatePlayerConfirmationPopup.fxml";
-            URL fxmlUrl = getClass().getResource(fxmlPath);
-            if (fxmlUrl == null) {
-                throw new IOException("FXML resource not found: " + fxmlPath);
-            }
-            System.out.println("[DEBUG] Loading FXML: " + fxmlUrl);
+            // Create the overlay
+            Rectangle overlay = new Rectangle();
+            overlay.setFill(Color.rgb(0, 0, 0, 0.5)); // Semi-transparent black
+            overlay.setWidth(1146); // parent interface width
+            overlay.setHeight(763); // parent interface height
 
-            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            // Root node of parent interface
+            StackPane mainRoot = (StackPane) backgroundImageView.getParent();
+
+            // Add overlay to parent interface (temporarily)
+            mainRoot.getChildren().add(overlay);
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin/CreatePlayerConfirmationPopup.fxml"));
+            Parent root = loader.load();
+
+            // Create container with parchment-like styling
+            StackPane container = new StackPane(root);
+            container.setBackground(new Background(new BackgroundFill(
+                    Color.web("#F5F5DC"),
+                    new CornerRadii(12),
+                    Insets.EMPTY)));
+
+            // Remove any conflicting borders from child nodes
+            root.setStyle("-fx-border-width: 0; -fx-background-radius: 12;");
+
+            // Single subtle border
+            container.setBorder(new Border(new BorderStroke(
+                    Color.web("#8B4513", 0.3),  // 30% opacity antique brown
+                    BorderStrokeStyle.SOLID,
+                    new CornerRadii(12),
+                    new BorderWidths(0.75))));   // Ultra-thin border
+
+            // Vintage shadow effect
+            container.setEffect(new DropShadow(8, Color.rgb(0, 0, 0, 0.15)));
+
+            // Padding
+            StackPane.setMargin(root, new Insets(12));
+
+
+            Scene scene = new Scene(container);
+            scene.setFill(Color.TRANSPARENT);
+
             Stage dialogStage = new Stage();
+            dialogStage.initStyle(StageStyle.TRANSPARENT);
             dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.setTitle("Confirm Player Creation");
-            dialogStage.setScene(new Scene(loader.load()));
+            dialogStage.setScene(scene);
 
             CreatePlayerConfirmationPopupView controller = loader.getController();
             if (controller == null) {
@@ -94,6 +176,11 @@ public class AdminCreateAccountPageView {
 
             controller.setConfirmationMessage(message);
             controller.setPlayerName(playerName);
+
+            // Remove overlay when popup is closed
+            dialogStage.setOnHidden(e -> {
+                mainRoot.getChildren().remove(overlay);
+            });
 
             dialogStage.showAndWait();
 

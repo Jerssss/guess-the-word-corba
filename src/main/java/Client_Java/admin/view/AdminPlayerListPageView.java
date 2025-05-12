@@ -21,17 +21,20 @@ import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.StageStyle;
+import javafx.scene.effect.DropShadow;
+import javafx.animation.ScaleTransition;
+import javafx.util.Duration;
+import javafx.scene.input.MouseEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,8 +72,8 @@ public class AdminPlayerListPageView {
     @FXML
     private ImageView backgroundImageView;
     private ObservableList<PlayerAccount> playerData = FXCollections.observableArrayList();
-    private Consumer<PlayerAccount> onEditPlayerCallback; // Callback to notify controller for edit
-    private Consumer<PlayerAccount> onDeletePlayerCallback; // Callback to notify controller for delete
+    private Consumer<PlayerAccount> onEditPlayerCallback;
+    private Consumer<PlayerAccount> onDeletePlayerCallback;
 
     private Font maryKate;
     private final String MARYKATE_FONT_PATH = "/css/fonts/bryndan-write.ttf";
@@ -81,6 +84,28 @@ public class AdminPlayerListPageView {
         applyFonts();
         initializeTableColumns();
         playersTable.setItems(playerData);
+        setupButtonHoverEffects();
+    }
+
+    private void setupButtonHoverEffects() {
+        if (returnButton != null) {
+            returnButton.setOnMouseEntered(e -> returnButtonHovered());
+            returnButton.setOnMouseExited(e -> returnButtonExited());
+        }
+    }
+
+    public void returnButtonHovered() {
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), returnButton);
+        st.setToX(0.9);
+        st.setToY(0.9);
+        st.play();
+    }
+
+    public void returnButtonExited() {
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), returnButton);
+        st.setToX(1.0);
+        st.setToY(1.0);
+        st.play();
     }
 
     public void setActionReturnButton(EventHandler<ActionEvent> event) {
@@ -119,6 +144,21 @@ public class AdminPlayerListPageView {
                                 "-fx-padding: 0;" +
                                 "-fx-cursor: hand;"
                 );
+
+                modifyButton.setOnMouseEntered(e -> {
+                    ScaleTransition st = new ScaleTransition(Duration.millis(200), modifyButton);
+                    st.setToX(1.2);
+                    st.setToY(1.2);
+                    st.play();
+                });
+
+                modifyButton.setOnMouseExited(e -> {
+                    ScaleTransition st = new ScaleTransition(Duration.millis(200), modifyButton);
+                    st.setToX(1.0);
+                    st.setToY(1.0);
+                    st.play();
+                });
+
                 modifyButton.setOnAction(event -> {
                     PlayerAccount player = (PlayerAccount) getTableRow().getItem();
                     if (player != null) {
@@ -137,22 +177,54 @@ public class AdminPlayerListPageView {
 
     public void showModifyPane(PlayerAccount player) {
         try {
+            Rectangle overlay = new Rectangle();
+            overlay.setFill(Color.rgb(0, 0, 0, 0.5));
+            overlay.setWidth(1146);
+            overlay.setHeight(763);
+
+            StackPane mainRoot = (StackPane) backgroundImageView.getParent();
+            mainRoot.getChildren().add(0, overlay);
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin/EditPlayerPopup.fxml"));
             Parent root = loader.load();
+
+            StackPane container = new StackPane(root);
+            container.setBackground(new Background(new BackgroundFill(
+                    Color.web("#F5F5DC"),
+                    new CornerRadii(12),
+                    Insets.EMPTY)));
+
+            root.setStyle("-fx-border-width: 0; -fx-background-radius: 12;");
+
+            container.setBorder(new Border(new BorderStroke(
+                    Color.web("#8B4513", 0.3),
+                    BorderStrokeStyle.SOLID,
+                    new CornerRadii(12),
+                    new BorderWidths(0.75))));
+
+            container.setEffect(new DropShadow(8, Color.rgb(0, 0, 0, 0.15)));
+            StackPane.setMargin(root, new Insets(12));
+
+            Scene scene = new Scene(container);
+            scene.setFill(Color.TRANSPARENT);
+
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
 
             EditPlayerPopupView view = loader.getController();
             view.setPlayer(player);
             view.setOnSaveCallback(updatedPlayer -> {
-                // Notify controller of the updated player
                 if (onEditPlayerCallback != null) {
                     onEditPlayerCallback.accept(updatedPlayer);
                 }
             });
 
-            Stage stage = new Stage();
-            stage.setTitle("Edit Player");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setOnHidden(e -> {
+                mainRoot.getChildren().remove(overlay);
+            });
+
             stage.showAndWait();
 
         } catch (IOException e) {
@@ -176,6 +248,21 @@ public class AdminPlayerListPageView {
                                 "-fx-padding: 0;" +
                                 "-fx-cursor: hand;"
                 );
+
+                deleteButton.setOnMouseEntered(e -> {
+                    ScaleTransition st = new ScaleTransition(Duration.millis(200), deleteButton);
+                    st.setToX(1.2);
+                    st.setToY(1.2);
+                    st.play();
+                });
+
+                deleteButton.setOnMouseExited(e -> {
+                    ScaleTransition st = new ScaleTransition(Duration.millis(200), deleteButton);
+                    st.setToX(1.0);
+                    st.setToY(1.0);
+                    st.play();
+                });
+
                 deleteButton.setOnAction(event -> {
                     PlayerAccount player = (PlayerAccount) getTableRow().getItem();
                     if (player != null) {
@@ -197,52 +284,11 @@ public class AdminPlayerListPageView {
 
     private boolean showDeleteConfirmationPane(PlayerAccount player) {
         try {
-            // Create the overlay
-            Rectangle overlay = new Rectangle();
-            overlay.setFill(Color.rgb(0, 0, 0, 0.5)); // Semi-transparent black
-            overlay.setWidth(1146); // admin player list view fxml width
-            overlay.setHeight(763); // admin player list view fxml height
-
-            // Root node of admin player list view fxml
-            StackPane mainRoot = (StackPane) backgroundImageView.getParent();
-
-            // Add overlay to main UI (temporarily)
-            mainRoot.getChildren().add(overlay);
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin/DeletePlayerConfirmationPopup.fxml"));
-            Parent root = loader.load();
-
-            // Create container with parchment-like styling
-            StackPane container = new StackPane(root);
-            container.setBackground(new Background(new BackgroundFill(
-                    Color.web("#F5F5DC"),
-                    new CornerRadii(12),
-                    Insets.EMPTY)));
-
-            // Remove any conflicting borders from child nodes
-            root.setStyle("-fx-border-width: 0; -fx-background-radius: 12;");
-
-            // Single subtle border
-            container.setBorder(new Border(new BorderStroke(
-                    Color.web("#8B4513", 0.3),  // 30% opacity antique brown
-                    BorderStrokeStyle.SOLID,
-                    new CornerRadii(12),
-                    new BorderWidths(0.75))));   // Ultra-thin border
-
-            // Vintage shadow effect
-            container.setEffect(new DropShadow(8, Color.rgb(0, 0, 0, 0.15)));
-
-            // Padding
-            StackPane.setMargin(root, new Insets(12));
-
-
-            Scene scene = new Scene(container);
-            scene.setFill(Color.TRANSPARENT);
-
             Stage dialogStage = new Stage();
-            dialogStage.initStyle(StageStyle.TRANSPARENT);
             dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.setScene(scene);
+            dialogStage.setTitle("Delete Player");
+            dialogStage.setScene(new Scene(loader.load()));
 
             DeletePlayerConfirmationPopupView controller = loader.getController();
             if (controller == null) {
@@ -250,11 +296,6 @@ public class AdminPlayerListPageView {
             }
 
             controller.setPlayerName(player.getUsername());
-
-            // Remove overlay when popup is closed
-            dialogStage.setOnHidden(e -> {
-                mainRoot.getChildren().remove(overlay);
-            });
 
             dialogStage.showAndWait();
 

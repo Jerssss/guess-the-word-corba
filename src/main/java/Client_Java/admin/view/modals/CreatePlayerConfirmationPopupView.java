@@ -78,10 +78,10 @@ public class CreatePlayerConfirmationPopupView {
             playerToCreateLabel.setFont(Font.font(quickPencil.getFamily(), 38));
         }
         if (yesButton != null) {
-            yesButton.setFont(Font.font(quickPencil.getFamily(), 38));
+            yesButton.setFont(Font.font(quickPencil.getFamily(), 29));
         }
         if (noButton != null) {
-            noButton.setFont(Font.font(quickPencil.getFamily(), 38));
+            noButton.setFont(Font.font(quickPencil.getFamily(), 29));
         }
     }
 

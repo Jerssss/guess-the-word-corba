@@ -10,9 +10,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
 import javafx.scene.control.Label;
+import javafx.animation.ScaleTransition;
+import javafx.util.Duration;
 
 import java.io.InputStream;
-
 
 public class AdminLogInPageView {
     @FXML
@@ -44,7 +45,6 @@ public class AdminLogInPageView {
     private final int MISC_SIZE = 43;
     private final int PROMPT_SIZE = 18;
 
-
     public void initialize() {
         loadImage(backgroundImageView, "/images/testUI/admin/cabin-door.png");
         loadCustomFonts();
@@ -56,6 +56,50 @@ public class AdminLogInPageView {
         if (quitButton == null) {
             System.err.println("[ERROR] quitButton is NULL! Check FXML.");
         }
+
+        // Set up button hover effects
+        setupButtonHoverEffects();
+    }
+
+    private void setupButtonHoverEffects() {
+        if (continueButton != null) {
+            continueButton.setOnMouseEntered(e -> continueButtonHovered());
+            continueButton.setOnMouseExited(e -> continueButtonExited());
+        }
+        if (quitButton != null) {
+            quitButton.setOnMouseEntered(e -> quitButtonHovered());
+            quitButton.setOnMouseExited(e -> quitButtonExited());
+        }
+    }
+
+    // Animation methods for continueButton
+    public void continueButtonExited() {
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), continueButton);
+        st.setToX(1.0);
+        st.setToY(1.0);
+        st.play();
+    }
+
+    public void continueButtonHovered() {
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), continueButton);
+        st.setToX(0.9);
+        st.setToY(0.9);
+        st.play();
+    }
+
+    // Animation methods for quitButton
+    public void quitButtonExited() {
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), quitButton);
+        st.setToX(1.0);
+        st.setToY(1.0);
+        st.play();
+    }
+
+    public void quitButtonHovered() {
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), quitButton);
+        st.setToX(0.9);
+        st.setToY(0.9);
+        st.play();
     }
 
     private void loadCustomFonts() {
@@ -110,6 +154,7 @@ public class AdminLogInPageView {
             promptLabel.setFont(Font.font(maryKate.getFamily(), PROMPT_SIZE));
         }
     }
+
     private void loadImage(ImageView imageView, String resourcePath) {
         try {
             // Try from resources first
@@ -128,7 +173,6 @@ public class AdminLogInPageView {
         }
     }
 
-
     public TextField getUsernameField() {
         return usernameField;
     }
@@ -136,7 +180,6 @@ public class AdminLogInPageView {
     public void setUsernameField(TextField usernameField) {
         this.usernameField = usernameField;
     }
-
 
     public PasswordField getPasswordField() {
         return passwordField;
@@ -166,4 +209,3 @@ public class AdminLogInPageView {
         quitButton.setOnAction(event);
     }
 }
-
