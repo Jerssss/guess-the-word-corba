@@ -90,7 +90,6 @@ public class AdminMainMenuPageView {
             InputStream is = getClass().getResourceAsStream(resourcePath);
             if (is != null) {
                 imageView.setImage(new Image(is));
-                System.out.println("[DEBUG] Loaded image: " + resourcePath);
             } else {
                 // Fallback to absolute path (adjust as needed)
                 String absPath = "file:src/main/resources" + resourcePath;
@@ -157,7 +156,6 @@ public class AdminMainMenuPageView {
             System.err.println("[ERROR] createAccountButton is NULL!");
         } else {
             createAccountButton.setOnAction(event);
-            System.out.println("[DEBUG] Create Account button bound with event handler.");
         }
     }
 
@@ -166,7 +164,6 @@ public class AdminMainMenuPageView {
             System.err.println("[ERROR] editConfigButton is NULL!");
         } else {
             editConfigButton.setOnAction(event);
-            System.out.println("[DEBUG] Edit Config button bound with event handler.");
         }
     }
 
@@ -175,7 +172,6 @@ public class AdminMainMenuPageView {
             System.err.println("[ERROR] viewPlayersButton is NULL!");
         } else {
             viewPlayersButton.setOnAction(event);
-            System.out.println("[DEBUG] View Players button bound with event handler.");
         }
     }
 
@@ -184,7 +180,6 @@ public class AdminMainMenuPageView {
             System.err.println("[ERROR] quitButton is NULL!");
         } else {
             quitButton.setOnAction(event);
-            System.out.println("[DEBUG] Quit button bound with event handler.");
         }
     }
 }

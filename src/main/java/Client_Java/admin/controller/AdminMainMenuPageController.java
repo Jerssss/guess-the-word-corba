@@ -120,7 +120,6 @@ public class AdminMainMenuPageController {
         StackPane pane = view.getPane();
         if (pane != null) {
             pane.getChildren().setAll(loadedView); // Replace all children with the new view
-            System.out.println("[DEBUG] Set new view in StackPane");
         } else {
             System.err.println("[ERROR] StackPane is null. Cannot set new view.");
         }
