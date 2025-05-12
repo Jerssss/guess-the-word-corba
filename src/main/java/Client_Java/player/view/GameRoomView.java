@@ -92,6 +92,8 @@ public class GameRoomView {
 
     private Font amaticSC;
     private Font pencilant;
+    private Font quickPencil;
+    private final String QUICKPENCIL_FONT_PATH = "/css/fonts/QuickPencilRegular-0R59.ttf";
     private final String AMATICSC_FONT_PATH = "/css/fonts/AmaticSC-Bold.ttf";
     private final String PENCILANT_FONT_PATH = "/css/fonts/Pencilant Script.ttf";
     private final String LETTER_HOVER_IMAGE_PATH = "/images/testUI/hovers/letter_hovered.png";

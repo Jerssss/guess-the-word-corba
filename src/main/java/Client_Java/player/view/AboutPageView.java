@@ -1,5 +1,6 @@
 package Client_Java.player.view;
 
+import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Insets;
@@ -17,6 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 import java.io.InputStream;
 
@@ -56,8 +58,27 @@ public class AboutPageView {
         setupButtons();
         setupScrollPanes();
         setupReturnButton();
+        setupReturnButtonHover(); // Add hover effect for return button
         populateContent();
         showAboutPane();
+    }
+
+    private void setupReturnButtonHover() {
+        if (returnButton != null) {
+            returnButton.setOnMouseEntered(e -> {
+                ScaleTransition st = new ScaleTransition(Duration.millis(200), returnButton);
+                st.setToX(0.9);
+                st.setToY(0.9);
+                st.play();
+            });
+
+            returnButton.setOnMouseExited(e -> {
+                ScaleTransition st = new ScaleTransition(Duration.millis(200), returnButton);
+                st.setToX(1.0);
+                st.setToY(1.0);
+                st.play();
+            });
+        }
     }
 
     private void loadCustomFonts() {
