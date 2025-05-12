@@ -11,16 +11,23 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.File;
 import java.io.IOException;
@@ -252,36 +259,77 @@ public class AdminEditConfigurationsPageView {
 
     public boolean showConfirmationPopup(String message) {
         try {
+            // Create the overlay
+            Rectangle overlay = new Rectangle();
+            overlay.setFill(Color.rgb(0, 0, 0, 0.5)); // Semi-transparent black
+            overlay.setWidth(1146); // admin config page fxml width
+            overlay.setHeight(763); // admin config page fxml height
+
+            // Get the root node of admin config page fxml
+            StackPane mainRoot = (StackPane) backgroundImageView.getParent();
+
+            // temporarily overlay to admin config page fxml
+            mainRoot.getChildren().add(overlay);
+
             String fxmlPath = "/fxml/admin/EditConfigConfirmationPopup.fxml";
             URL fxmlUrl = getClass().getResource(fxmlPath);
             if (fxmlUrl == null) {
                 throw new IOException("FXML resource not found: " + fxmlPath);
             }
-            System.out.println("[DEBUG] Loading FXML: " + fxmlUrl);
 
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent root = loader.load();
+
+            // Create container with parchment-like styling
+            StackPane container = new StackPane(root);
+            container.setBackground(new Background(new BackgroundFill(
+                    Color.web("#F5F5DC"),
+                    new CornerRadii(12),
+                    Insets.EMPTY)));
+
+            // Remove any conflicting borders from child nodes
+            root.setStyle("-fx-border-width: 0; -fx-background-radius: 12;");
+
+            // Single subtle border
+            container.setBorder(new Border(new BorderStroke(
+                    Color.web("#8B4513", 0.3),  // 30% opacity antique brown
+                    BorderStrokeStyle.SOLID,
+                    new CornerRadii(12),
+                    new BorderWidths(0.75))));   // Ultra-thin border
+
+            // Vintage shadow effect
+            container.setEffect(new DropShadow(8, Color.rgb(0, 0, 0, 0.15)));
+
+            // Padding to match your scroll-style layout
+            StackPane.setMargin(root, new Insets(12));
+
+            Scene scene = new Scene(container);
+            scene.setFill(Color.TRANSPARENT);
+
             Stage dialogStage = new Stage();
+            dialogStage.initStyle(StageStyle.TRANSPARENT);
             dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.setTitle("Confirm Configuration Save");
-            dialogStage.setScene(new Scene(loader.load()));
+
+            // proper styling for root node
+            root.getStyleClass().add("parchment-container");
+
+            dialogStage.setScene(scene);
 
             EditConfigConfirmationPopupView controller = loader.getController();
-            if (controller == null) {
-                throw new IOException("Controller not initialized for EditConfigConfirmationPopup.fxml");
-            }
-
             controller.setConfirmationMessage(message);
 
-            dialogStage.showAndWait();
+            // Remove overlay when popup is closed
+            dialogStage.setOnHidden(e -> {
+                mainRoot.getChildren().remove(overlay);
+            });
 
+            dialogStage.showAndWait();
             return controller.isConfirmed();
+
         } catch (IOException e) {
-            setNoticeLabelText("Error displaying confirmation popup: " + e.getMessage());
-            setNoticeVisible(true);
-            System.err.println("[ERROR] Failed to load EditConfigConfirmationPopup.fxml: " + e.getMessage());
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     public void showAdminMainMenu(AdminAccount admin) {

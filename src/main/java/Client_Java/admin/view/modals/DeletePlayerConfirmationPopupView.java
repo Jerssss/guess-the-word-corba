@@ -31,19 +31,17 @@ public class DeletePlayerConfirmationPopupView {
     private boolean confirmed = false;
 
     // Font paths
-    private static final String PENCILANT_FONT_PATH = "/css/fonts/PencilAntRegular.ttf";
-    private static final String MARYKATE_FONT_PATH = "/css/fonts/MaryKateDemo.ttf";
+    private final String QUICKPENCIL_FONT_PATH = "/css/fonts/QuickPencilRegular-0R59.ttf";
 
     // Font objects
-    private Font pencilant;
-    private Font maryKate;
+    private Font quickPencil;
 
     /**
      * Called automatically after FXML loading.
      */
     @FXML
     private void initialize() {
-        loadImage(backgroundImageView, "images/testUI/admin/delete_slab_cropped.png");
+        loadImage(backgroundImageView, "/images/testUI/admin/delete_slab_cropped.png");
         loadCustomFonts();
         applyFonts();
 
@@ -56,22 +54,18 @@ public class DeletePlayerConfirmationPopupView {
      */
     private void loadCustomFonts() {
         try {
-            pencilant = Font.loadFont(getClass().getResourceAsStream(PENCILANT_FONT_PATH), 10);
-            maryKate = Font.loadFont(getClass().getResourceAsStream(MARYKATE_FONT_PATH), 30);
+            quickPencil = Font.loadFont(getClass().getResourceAsStream(QUICKPENCIL_FONT_PATH), 10);
+
 
             // Fallback if fonts fail to load
-            if (pencilant == null) {
+            if (quickPencil == null) {
                 System.err.println("Pencilant font not loaded. Using system font.");
-                pencilant = Font.font("System", 12);
+                quickPencil = Font.font("System", 12);
             }
-            if (maryKate == null) {
-                System.err.println("MaryKate font not loaded. Using system font.");
-                maryKate = Font.font("System", 12);
-            }
+
         } catch (Exception e) {
             System.err.println("[ERROR] Font loading exception: " + e.getMessage());
-            pencilant = Font.font("System", 12);
-            maryKate = Font.font("System", 12);
+            quickPencil = Font.font("System", 12);
         }
     }
 
@@ -80,16 +74,16 @@ public class DeletePlayerConfirmationPopupView {
      */
     private void applyFonts() {
         if (label != null) {
-            label.setFont(Font.font(pencilant.getFamily(), 28));
+            label.setFont(Font.font(quickPencil.getFamily(), 28));
         }
         if (playerToDeleteLabel != null) {
-            playerToDeleteLabel.setFont(Font.font(pencilant.getFamily(), 29));
+            playerToDeleteLabel.setFont(Font.font(quickPencil.getFamily(), 29));
         }
         if (yesButton != null) {
-            yesButton.setFont(Font.font(maryKate.getFamily(), 38));
+            yesButton.setFont(Font.font(quickPencil.getFamily(), 38));
         }
         if (noButton != null) {
-            noButton.setFont(Font.font(maryKate.getFamily(), 38));
+            noButton.setFont(Font.font(quickPencil.getFamily(), 38));
         }
     }
 
