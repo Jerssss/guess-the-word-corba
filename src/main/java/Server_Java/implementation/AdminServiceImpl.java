@@ -151,7 +151,31 @@ public class AdminServiceImpl extends AdminServicePOA {
 
     @Override
     public void deletePlayer(int playerID, String sessionToken, int adminID) throws AccountNotFoundException, AccountCurrentlyActiveException, NotLoggedInException {
+        if (sessionToken == null) {
+            System.err.println("[AdminService ERROR] getLeaderboards: Null session token for adminID=" + adminID);
+            throw new AdminIDL.NotLoggedInException();
+        }
+        if (!isValidAdmin(adminID)) {
+            System.err.println("[AdminService ERROR] createPlayer: Invalid adminID=" + adminID);
+            throw new AdminIDL.NotLoggedInException();
+        }
 
+        query = "DELETE FROM players WHERE player_id = ?";
+        try (Connection con = DatabaseConnection.getConnection()) {
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setInt(1, playerID);
+            stmt.executeUpdate();
+            // Get the current timestamp and print the action
+            LocalDateTime timestamp = LocalDateTime.now();
+            String formattedTimestamp = timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            // Print the action details
+            System.out.println("[" + formattedTimestamp +"] [Admin: " + adminID + "] - Action: Deleted Player - Details: Player: " + playerID);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
     }
 
     @Override

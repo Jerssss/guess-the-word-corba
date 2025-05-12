@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.io.InputStream;
 
@@ -27,6 +28,7 @@ public class DeletePlayerConfirmationPopupView {
 
     @FXML
     private ImageView backgroundImageView;
+    private boolean confirmed = false;
 
     // Font paths
     private static final String PENCILANT_FONT_PATH = "/css/fonts/PencilAntRegular.ttf";
@@ -44,6 +46,9 @@ public class DeletePlayerConfirmationPopupView {
         loadImage(backgroundImageView, "images/testUI/admin/delete_slab_cropped.png");
         loadCustomFonts();
         applyFonts();
+
+        yesButton.setOnAction(event -> handleYes());
+        noButton.setOnAction(event -> handleNo());
     }
 
     /**
@@ -108,6 +113,29 @@ public class DeletePlayerConfirmationPopupView {
             System.err.println("Failed to load image: " + resourcePath);
             e.printStackTrace();
         }
+    }
+
+    private void handleYes() {
+        confirmed = true;
+        closeDialog();
+    }
+
+    private void handleNo() {
+        confirmed = false;
+        closeDialog();
+    }
+
+    private void closeDialog() {
+        Stage stage = (Stage) yesButton.getScene().getWindow();
+        stage.close();
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setPlayerName(String playerName) {
+        playerToDeleteLabel.setText(playerName);
     }
 
     // --- Button Action Handlers ---

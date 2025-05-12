@@ -4,6 +4,7 @@ import Client_Java.admin.AdminClient_Java;
 import Client_Java.admin.controller.AdminMainMenuPageController;
 import Client_Java.admin.model.AdminClientModel;
 import Client_Java.admin.model.AdminMainMenuPageModel;
+import Client_Java.admin.view.modals.DeletePlayerConfirmationPopupView;
 import Client_Java.admin.view.modals.EditPlayerPopupView;
 import Shared_Files.AdminAccount;
 import Shared_Files.PlayerAccount;
@@ -62,7 +63,8 @@ public class AdminPlayerListPageView {
     @FXML
     private ImageView backgroundImageView;
     private ObservableList<PlayerAccount> playerData = FXCollections.observableArrayList();
-    private Consumer<PlayerAccount> onEditPlayerCallback; // Callback to notify controller
+    private Consumer<PlayerAccount> onEditPlayerCallback; // Callback to notify controller for edit
+    private Consumer<PlayerAccount> onDeletePlayerCallback; // Callback to notify controller for delete
 
     private Font maryKate;
     private final String MARYKATE_FONT_PATH = "/css/fonts/bryndan-write.ttf";
@@ -83,6 +85,10 @@ public class AdminPlayerListPageView {
         this.onEditPlayerCallback = callback;
     }
 
+    public void setOnDeletePlayerCallback(Consumer<PlayerAccount> callback) {
+        this.onDeletePlayerCallback = callback;
+    }
+
     public void initializeTableColumns() {
         userIdColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getPlayerId()));
         usernameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUsername()));
@@ -90,7 +96,7 @@ public class AdminPlayerListPageView {
         fullNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         gameWinsColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getGameWins()));
         editColumn.setCellFactory(column -> createEditButtonCellFactory());
-        // deleteColumn.setCellFactory(column -> createDeleteButtonCellFactory());
+        deleteColumn.setCellFactory(column -> createDeleteButtonCellFactory());
     }
 
     private TableCell<PlayerAccount, String> createEditButtonCellFactory() {
@@ -150,12 +156,66 @@ public class AdminPlayerListPageView {
     }
 
     private TableCell<PlayerAccount, String> createDeleteButtonCellFactory() {
-        return null; // Implement if needed
+        return new TableCell<PlayerAccount, String>() {
+            private final Button deleteButton = new Button();
+
+            {
+                Image img = new Image(getClass().getResourceAsStream("/images/testUI/admin/delete_icon.png"));
+                ImageView iv = new ImageView(img);
+                iv.setFitWidth(16);
+                iv.setFitHeight(16);
+                deleteButton.setGraphic(iv);
+                deleteButton.setStyle(
+                        "-fx-background-color: transparent;" +
+                                "-fx-padding: 0;" +
+                                "-fx-cursor: hand;"
+                );
+                deleteButton.setOnAction(event -> {
+                    PlayerAccount player = (PlayerAccount) getTableRow().getItem();
+                    if (player != null) {
+                        boolean confirmed = showDeleteConfirmationPane(player);
+                        if (confirmed && onDeletePlayerCallback != null) {
+                            onDeletePlayerCallback.accept(player);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : deleteButton);
+            }
+        };
+    }
+
+    private boolean showDeleteConfirmationPane(PlayerAccount player) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin/DeletePlayerConfirmationPopup.fxml"));
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setTitle("Delete Player");
+            dialogStage.setScene(new Scene(loader.load()));
+
+            DeletePlayerConfirmationPopupView controller = loader.getController();
+            if (controller == null) {
+                throw new IOException("Controller not initialized for DeletePlayerConfirmationPopupView.fxml");
+            }
+
+            controller.setPlayerName(player.getUsername());
+
+            dialogStage.showAndWait();
+
+            return controller.isConfirmed();
+        } catch (IOException e) {
+            System.err.println("[ERROR] Failed to load DeletePlayerConfirmationPopupView: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public void showAdminMainMenu(AdminAccount admin) {
         try {
-            // Load FXML using File, consistent with original implementation
             File fxmlFile = new File("src/main/resources/fxml/admin/AdminMainMenuPage.fxml");
             if (!fxmlFile.exists()) {
                 throw new IOException("FXML file not found: " + fxmlFile.getAbsolutePath());
@@ -244,7 +304,7 @@ public class AdminPlayerListPageView {
                 imageView.setImage(new Image(is));
                 System.out.println("Loaded image: " + resourcePath);
             } else {
-                String absPath = " química file:src/main/resources" + resourcePath;
+                String absPath = "file:src/main/resources" + resourcePath;
                 imageView.setImage(new Image(absPath));
             }
         } catch (Exception e) {

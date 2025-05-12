@@ -38,8 +38,21 @@ public class AdminPlayerListPageModel {
         }
     }
 
-    public void removePlayer(PlayerAccount player) {
-        playerList.remove(player);
+    public boolean removePlayer(int playerID) throws AccountCurrentlyActiveException, AccountNotFoundException, NotLoggedInException {
+        try {
+            adminService.deletePlayer(playerID, sessionToken, adminID);
+            return true;
+        } catch (AdminIDL.NotLoggedInException e) {
+            System.err.println("Error: Not logged in. " + e.getMessage());
+            return false;
+        } catch (AccountNotFoundException e) {
+            System.err.println("Error: Account not found. " + e.getMessage());
+            return false;
+        } catch (AccountCurrentlyActiveException e) {
+            System.err.println("Error: Account currently active. " + e.getMessage());
+            return false;
+        }
+
     }
 
     public void clearPlayers() {

@@ -4,6 +4,9 @@ import Client_Java.admin.AdminClient_Java;
 import Client_Java.admin.model.AdminPlayerListPageModel;
 import Client_Java.admin.view.AdminPlayerListPageView;
 import Shared_Files.PlayerAccount;
+import AdminIDL.AccountCurrentlyActiveException;
+import AdminIDL.AccountNotFoundException;
+import AdminIDL.NotLoggedInException;
 import javafx.application.Platform;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -26,6 +29,7 @@ public class AdminPlayerListPageController {
         loadPlayers();
         setupSearchFilter();
         setupEditPlayerCallback();
+        setupDeletePlayerCallback();
         view.setActionReturnButton(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -64,14 +68,31 @@ public class AdminPlayerListPageController {
 
     private void setupEditPlayerCallback() {
         view.setOnEditPlayerCallback(updatedPlayer -> {
-            // Save the updated player using the model
             boolean success = model.editPlayer(updatedPlayer.getPlayerId(), updatedPlayer.getPassword());
             if (success) {
                 System.out.println("[INFO] Player updated successfully: " + updatedPlayer.getUsername());
-                // Refresh the table
                 loadPlayers();
             } else {
                 System.err.println("[ERROR] Failed to update player: " + updatedPlayer.getUsername());
+            }
+        });
+    }
+
+    private void setupDeletePlayerCallback() {
+        view.setOnDeletePlayerCallback(player -> {
+            try {
+                model.removePlayer(player.getPlayerId());
+                System.out.println("[INFO] Player deleted successfully: " + player.getUsername());
+                loadPlayers();
+            } catch (AccountCurrentlyActiveException e) {
+                System.err.println("[ERROR] Cannot delete player: Account is currently active: " + player.getUsername());
+            } catch (AccountNotFoundException e) {
+                System.err.println("[ERROR] Cannot delete player: Account not found: " + player.getUsername());
+            } catch (NotLoggedInException e) {
+                System.err.println("[ERROR] Cannot delete player: Not logged in: " + player.getUsername());
+            } catch (Exception e) {
+                System.err.println("[ERROR] Unexpected error deleting player: " + player.getUsername());
+                e.printStackTrace();
             }
         });
     }
