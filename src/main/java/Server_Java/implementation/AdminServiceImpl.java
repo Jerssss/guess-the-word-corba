@@ -42,14 +42,10 @@ public class AdminServiceImpl extends AdminServicePOA {
 
     @Override
     public void createPlayer(String fullName, String username, String password, String sessionToken, int adminID) throws AccountExistsException, NotLoggedInException {
-
-        // Check if the player is logged in.
         if (sessionToken == null) {
             System.err.println("[AdminService ERROR] getLeaderboards: Null session token for adminID=" + adminID);
             throw new AdminIDL.NotLoggedInException();
         }
-
-        // Validate playerID
         if (!isValidAdmin(adminID)) {
             System.err.println("[AdminService ERROR] createPlayer: Invalid adminID=" + adminID);
             throw new AdminIDL.NotLoggedInException();
@@ -83,13 +79,11 @@ public class AdminServiceImpl extends AdminServicePOA {
 
     @Override
     public String[] viewPlayers(String sessionToken, int adminID) throws NotLoggedInException {
-        // Check if the player is logged in.
         if (sessionToken == null) {
             System.err.println("[AdminService ERROR] getLeaderboards: Null session token for adminID=" + adminID);
             throw new AdminIDL.NotLoggedInException();
         }
 
-        // Validate playerID
         if (!isValidAdmin(adminID)) {
             System.err.println("[AdminService ERROR] createPlayer: Invalid adminID=" + adminID);
             throw new AdminIDL.NotLoggedInException();
@@ -110,6 +104,12 @@ public class AdminServiceImpl extends AdminServicePOA {
                 String entry = String.join(",", playerID, name, username, password, String.valueOf(gameWins));
                 players.add(entry);
             }
+            // Get the current timestamp and print the action
+            LocalDateTime timestamp = LocalDateTime.now();
+            String formattedTimestamp = timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            // Print the action details
+            System.out.println("[" + formattedTimestamp +"] [Admin: " + adminID + "] - Action: Accessed Player List");
         } catch (SQLException e) {
             System.err.println("[AdminService ERROR] Database connection error: " + e.getMessage());
             return new String[0];
@@ -121,7 +121,32 @@ public class AdminServiceImpl extends AdminServicePOA {
 
     @Override
     public void modifyPlayer(int playerID, String newPassword, String sessionToken, int adminID) throws AccountNotFoundException, ExistingPasswordException, NotLoggedInException {
+        if (sessionToken == null) {
+            System.err.println("[AdminService ERROR] getLeaderboards: Null session token for adminID=" + adminID);
+            throw new AdminIDL.NotLoggedInException();
+        }
+        if (!isValidAdmin(adminID)) {
+            System.err.println("[AdminService ERROR] createPlayer: Invalid adminID=" + adminID);
+            throw new AdminIDL.NotLoggedInException();
+        }
 
+        query = "UPDATE players SET password = ? WHERE player_id = ?";
+        try (Connection con = DatabaseConnection.getConnection()) {
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, newPassword);
+            stmt.setInt(2, playerID);
+            stmt.executeUpdate();
+            // Get the current timestamp and print the action
+            LocalDateTime timestamp = LocalDateTime.now();
+            String formattedTimestamp = timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            // Print the action details
+            System.out.println("[" + formattedTimestamp +"] [Admin: " + adminID + "] - Action: Modified Player - Details: Player: " + playerID + " New Password: " + newPassword);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
     }
 
     @Override
@@ -136,14 +161,10 @@ public class AdminServiceImpl extends AdminServicePOA {
 
     @Override
     public int getCurrentWaitingTime(String sessionToken, int adminID) throws NotLoggedInException{
-
-        // Check if the player is logged in.
         if (sessionToken == null) {
             System.err.println("[AdminService ERROR] getLeaderboards: Null session token for adminID=" + adminID);
             throw new AdminIDL.NotLoggedInException();
         }
-
-        // Validate playerID
         if (!isValidAdmin(adminID)) {
             System.err.println("[AdminService ERROR] createPlayer: Invalid adminID=" + adminID);
             throw new AdminIDL.NotLoggedInException();
@@ -174,14 +195,10 @@ public class AdminServiceImpl extends AdminServicePOA {
 
     @Override
     public int getCurrentRoundDuration(String sessionToken, int adminID) throws NotLoggedInException {
-
-        // Check if the player is logged in.
         if (sessionToken == null) {
             System.err.println("[AdminService ERROR] getLeaderboards: Null session token for adminID=" + adminID);
             throw new AdminIDL.NotLoggedInException();
         }
-
-        // Validate playerID
         if (!isValidAdmin(adminID)) {
             System.err.println("[AdminService ERROR] createPlayer: Invalid adminID=" + adminID);
             throw new AdminIDL.NotLoggedInException();
@@ -214,6 +231,15 @@ public class AdminServiceImpl extends AdminServicePOA {
     //TODO edit the game config to only accept numbers
     @Override
     public void modifyWaitingTime(int waitTime, String sessionToken, int adminID) throws NotLoggedInException {
+        if (sessionToken == null) {
+            System.err.println("[AdminService ERROR] getLeaderboards: Null session token for adminID=" + adminID);
+            throw new AdminIDL.NotLoggedInException();
+        }
+        if (!isValidAdmin(adminID)) {
+            System.err.println("[AdminService ERROR] createPlayer: Invalid adminID=" + adminID);
+            throw new AdminIDL.NotLoggedInException();
+        }
+
         query = "UPDATE settings SET lobby_waiting_time = ?";
         try (Connection con = DatabaseConnection.getConnection()) {
             PreparedStatement stmt = con.prepareStatement(query);
@@ -235,6 +261,15 @@ public class AdminServiceImpl extends AdminServicePOA {
 
     @Override
     public void modifyRoundDuration(int roundTime, String sessionToken, int adminID) throws NotLoggedInException {
+        if (sessionToken == null) {
+            System.err.println("[AdminService ERROR] getLeaderboards: Null session token for adminID=" + adminID);
+            throw new AdminIDL.NotLoggedInException();
+        }
+        if (!isValidAdmin(adminID)) {
+            System.err.println("[AdminService ERROR] createPlayer: Invalid adminID=" + adminID);
+            throw new AdminIDL.NotLoggedInException();
+        }
+
         query = "UPDATE settings SET round_duration = ?";
         try (Connection con = DatabaseConnection.getConnection()) {
             PreparedStatement stmt = con.prepareStatement(query);

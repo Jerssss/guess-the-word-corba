@@ -7,7 +7,7 @@ public class PlayerAccount {
     private final int playerID;
     private String name;
     private final String username;
-    private final String password;
+    private String password;
     private int gameWins;
 
     /**
@@ -50,6 +50,10 @@ public class PlayerAccount {
 
     public int getGameWins() {
         return gameWins;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void setGameWins(int gameWins) {
