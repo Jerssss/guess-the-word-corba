@@ -14,7 +14,7 @@ public class GameCallbackServiceImpl extends GameCallBackServicePOA {
     public void notifyGameStart(String gameToken, String sessionToken) {
         System.out.printf("[CALLBACK][GameStart] gameToken=%s session=%s%n",
                 gameToken, sessionToken);
-        // first round is client‐driven; ignore
+        // First round is client-driven; ignore
     }
 
     @Override
@@ -24,7 +24,7 @@ public class GameCallbackServiceImpl extends GameCallBackServicePOA {
         controller.notifyRoundStartFromCallback(roundNumber);
     }
 
-
+    @Override
     public void notifyRoundEnd(String gameToken, String sessionToken, String winnerName, String secretWord) {
         if (winnerName != null && !winnerName.trim().isEmpty()) {
             System.out.printf("[CALLBACK][RoundEnd] → gameToken=%s winner=\"%s\" word=\"%s\" session=%s%n",
@@ -33,7 +33,7 @@ public class GameCallbackServiceImpl extends GameCallBackServicePOA {
             System.out.printf("[CALLBACK][RoundEnd] → gameToken=%s NO WINNER word=\"%s\" session=%s%n",
                     gameToken, secretWord, sessionToken);
         }
-        controller.showRoundEndPopup(winnerName, secretWord);
+        controller.showRoundEnd(winnerName, secretWord);
     }
 
     @Override
@@ -45,6 +45,6 @@ public class GameCallbackServiceImpl extends GameCallBackServicePOA {
             System.out.printf("[CALLBACK][GameEnd] → gameToken=%s NO WINNER session=%s%n",
                     gameToken, sessionToken);
         }
-        controller.showGameEndPopup(winnerName);
+        controller.showGameEnd(winnerName);
     }
 }
