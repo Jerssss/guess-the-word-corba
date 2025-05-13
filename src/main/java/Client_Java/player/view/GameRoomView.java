@@ -53,6 +53,7 @@ public class GameRoomView {
     @FXML private ImageView catLeftWhiskers;
     @FXML private ImageView catRightWhiskers;
     @FXML private ImageView catBottomHead;
+    @FXML private ImageView heartsImageView;
 
     // Correct guess ImageViews
     @FXML private ImageView correctGuessA;

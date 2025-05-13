@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="845.0" prefWidth="1267.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.GameRoomView">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="845.0" prefWidth="1267.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.GameRoomView">
    <children>
       <ImageView fx:id="gameRoomBackgroundImage" fitHeight="845.0" fitWidth="1374.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -37,7 +42,7 @@
                         <Glow level="0.45" />
                      </effect>
                   </Label>
-                  <Label fx:id="timerLabel" layoutX="103.0" layoutY="111.0" rotate="3.4" text="x" textFill="WHITE">
+                  <Label fx:id="timerLabel" layoutX="95.0" layoutY="1.0" rotate="3.4" text="x" textFill="WHITE">
                      <font>
                         <Font name="Pencilant Script" size="38.0" />
                      </font>
@@ -45,25 +50,12 @@
                         <Glow level="0.45" />
                      </effect>
                   </Label>
-                  <Text fill="#fff3be" layoutX="23.0" layoutY="153.0" rotate="3.4" text="Time: ">
+                  <Text fill="#fff3be" layoutX="15.0" layoutY="43.0" rotate="3.4" text="Time: ">
                      <font>
                         <Font name="Pencilant Script" size="38.0" />
                      </font>
                   </Text>
-                  <Label fx:id="lifeCountLabel" layoutX="99.0" layoutY="52.0" rotate="6.8" text="5" textFill="WHITE">
-                     <font>
-                        <Font name="Pencilant Script" size="54.0" />
-                     </font>
-                     <effect>
-                        <Glow level="0.45" />
-                     </effect>
-                  </Label>
-                  <Text fill="#fff3be" layoutX="15.0" layoutY="104.0" rotate="3.4" text="Lives:">
-                     <font>
-                        <Font name="Pencilant Script" size="38.0" />
-                     </font>
-                  </Text>
-                  <Label fx:id="lifeCountLabel1" layoutX="135.0" layoutY="16.0" text="5" textFill="WHITE">
+                  <Label fx:id="lifeCountLabel1" layoutX="134.0" layoutY="57.0" rotate="3.4" text="5" textFill="WHITE">
                      <font>
                         <Font name="Pencilant Script" size="36.0" />
                      </font>
@@ -71,7 +63,7 @@
                         <Glow level="0.45" />
                      </effect>
                   </Label>
-                  <Text fill="#fff3be" layoutX="12.0" layoutY="52.0" text="Players:">
+                  <Text fill="#fff3be" layoutX="14.0" layoutY="93.0" rotate="3.4" text="Players:">
                      <font>
                         <Font name="Pencilant Script" size="38.0" />
                      </font>
@@ -408,6 +400,11 @@
                   </FlowPane>
                </children>
             </Pane>
+            <ImageView fx:id="heartsImageView" fitHeight="150.0" fitWidth="290.0" layoutX="968.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/hearts/5heart.png" />
+               </image>
+            </ImageView>
          </children>
       </Pane>
    </children>
