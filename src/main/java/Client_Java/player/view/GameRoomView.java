@@ -45,14 +45,6 @@ public class GameRoomView {
     @FXML private Label timerLabel;
     @FXML private Button quitButton;
 
-    // Cat face components (not present in current FXML, kept for compatibility)
-    @FXML private ImageView catShadow;
-    @FXML private ImageView catTopHead;
-    @FXML private ImageView catEyes;
-    @FXML private ImageView catSnout;
-    @FXML private ImageView catLeftWhiskers;
-    @FXML private ImageView catRightWhiskers;
-    @FXML private ImageView catBottomHead;
     @FXML private ImageView heartsImageView;
 
     // Correct guess ImageViews
@@ -407,9 +399,46 @@ public class GameRoomView {
         wrongLetterImages.values().forEach(img -> img.setVisible(false));
     }
 
-    // Moved JavaFX methods
+
     public void updateLifeCount(int lives) {
-        lifeCountLabel.setText(String.valueOf(lives));
+        if (lifeCountLabel1 != null) { // Use lifeCountLabel1 as per FXML
+            lifeCountLabel1.setText(String.valueOf(lives));
+            updateHeartsImage(lives);
+            if (lives == 0 && roundTimer != null) {
+                roundTimer.stop();
+            }
+        } else {
+            System.err.println("[ERROR] lifeCountLabel1 is null in updateLifeCount");
+        }
+    }
+
+    private void updateHeartsImage(int lives) {
+        String imagePath;
+        switch (lives) {
+            case 5:
+                imagePath = "/images/hearts/5heart.png";
+                break;
+            case 4:
+                imagePath = "/images/hearts/4heart.png";
+                break;
+            case 3:
+                imagePath = "/images/hearts/3heart.png";
+                break;
+            case 2:
+                imagePath = "/images/hearts/2heart.png";
+                break;
+            case 1:
+                imagePath = "/images/hearts/1heart.png";
+                break;
+            case 0:
+                imagePath = "/images/hearts/0heart.png";
+                break;
+            default:
+                imagePath = "/images/hearts/0heart.png";
+                System.err.println("[WARNING] Invalid lives count: " + lives + ", defaulting to 0heart.png");
+                break;
+        }
+        loadImage(heartsImageView, imagePath);
     }
 
     public void updateRoundLabel(int roundNum) {
@@ -702,11 +731,4 @@ public class GameRoomView {
     public Label getLifeCountLabel1() { return lifeCountLabel1; }
     public Label getTimerLabel() { return timerLabel; }
     public Button getQuitButton() { return quitButton; }
-    public ImageView getCatShadow() { return catShadow; }
-    public ImageView getCatTopHead() { return catTopHead; }
-    public ImageView getCatEyes() { return catEyes; }
-    public ImageView getCatSnout() { return catSnout; }
-    public ImageView getCatLeftWhiskers() { return catLeftWhiskers; }
-    public ImageView getCatRightWhiskers() { return catRightWhiskers; }
-    public ImageView getCatBottomHead() { return catBottomHead; }
 }
