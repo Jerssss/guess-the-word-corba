@@ -16,17 +16,29 @@ import PlayerCallBackIDL.GameCallBackServicePOA;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
+import javafx.util.Duration;
+import javafx.animation.PauseTransition;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.omg.CORBA.Object;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
@@ -237,25 +249,64 @@ public class GameRoomController {
 
     private void showRoundStartScene(int roundNum) {
         try {
-            Stage stage = ViewNavigator.getStage();
-            if (stage == null) {
+            Stage mainStage = ViewNavigator.getStage();
+            if (mainStage == null) {
                 handleServerRoundStart(roundNum);
                 return;
             }
-            Scene original = stage.getScene();
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/GameRoundPopup.fxml"));
             Parent popupRoot = loader.load();
             GameRoundPopupView ctrl = loader.getController();
-            ctrl.setGameTitle("What’s The Word?");
+            ctrl.setGameTitle("What's The Word?");
             ctrl.setRoundNumber(roundNum);
 
-            stage.setScene(new Scene(popupRoot));
-            stage.centerOnScreen();
+            // Create styled container
+            StackPane container = new StackPane(popupRoot);
+            container.setBackground(new Background(new BackgroundFill(
+                    Color.web("#F5F5DC"),
+                    new CornerRadii(12),
+                    Insets.EMPTY)));
+            container.setBorder(new Border(new BorderStroke(
+                    Color.web("#8B4513", 0.3),
+                    BorderStrokeStyle.SOLID,
+                    new CornerRadii(12),
+                    new BorderWidths(0.75))));
+            container.setEffect(new DropShadow(8, Color.rgb(0, 0, 0, 0.15)));
+            StackPane.setMargin(popupRoot, new Insets(12));
+
+            // Create undecorated popup stage
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.initOwner(mainStage);
+            popupStage.initStyle(StageStyle.TRANSPARENT);
+
+            Scene popupScene = new Scene(container);
+            popupScene.setFill(Color.TRANSPARENT);
+            popupStage.setScene(popupScene);
+
+            // Calculate center position relative to main window
+            container.layout(); // Force layout pass to get proper dimensions
+            popupStage.sizeToScene(); // Size stage to content
+
+            // Get main window position and size
+            double mainX = mainStage.getX();
+            double mainY = mainStage.getY();
+            double mainWidth = mainStage.getWidth();
+            double mainHeight = mainStage.getHeight();
+
+            // Calculate center position
+            double popupWidth = container.getBoundsInLocal().getWidth();
+            double popupHeight = container.getBoundsInLocal().getHeight();
+
+            popupStage.setX(mainX + (mainWidth - popupWidth) / 2);
+            popupStage.setY(mainY + (mainHeight - popupHeight) / 2);
+
+            popupStage.show();
 
             PauseTransition wait = new PauseTransition(Duration.seconds(model.getNextRoundDelay(sessionToken)));
             wait.setOnFinished(e -> {
-                stage.setScene(original);
+                popupStage.close();
                 handleServerRoundStart(roundNum);
             });
             wait.play();
@@ -271,43 +322,140 @@ public class GameRoomController {
 
         Platform.runLater(() -> {
             try {
-                Stage stage = ViewNavigator.getStage();
-                if (stage == null) {
+                Stage mainStage = ViewNavigator.getStage();
+                if (mainStage == null) {
                     endPopupShowing = false;
                     return;
                 }
-                Scene original = stage.getScene();
 
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                        (winnerName != null && !winnerName.trim().isEmpty())
-                                ? "/fxml/player/RoundWinnerPopup.fxml"
-                                : "/fxml/player/NoWinnerPopup.fxml"
-                ));
+                // 1. Create overlay
+                StackPane mainRoot = (StackPane) mainStage.getScene().getRoot();
+                Rectangle overlay = new Rectangle();
+                overlay.setFill(Color.rgb(0, 0, 0, 0.5));
+                overlay.widthProperty().bind(mainRoot.widthProperty());
+                overlay.heightProperty().bind(mainRoot.heightProperty());
+                mainRoot.getChildren().add(overlay);
+
+                // 2. Load FXML
+                String fxmlPath = (winnerName != null && !winnerName.trim().isEmpty())
+                        ? "/fxml/player/RoundWinnerPopup.fxml"
+                        : "/fxml/player/NoWinnerPopup.fxml";
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
                 Parent popupRoot = loader.load();
 
+                // 3. Create container with guaranteed border solution
+                StackPane container = new StackPane();
+
                 if (winnerName != null && !winnerName.trim().isEmpty()) {
-                    RoundWinnerPopupView c = loader.getController();
-                    c.setWinnerName(winnerName);
-                    c.setWinningWord(secretWord);
-                } else {
-                    NoWinnerPopupView c = loader.getController();
-                    c.setSecretWord(secretWord);
+                    // BULLETPROOF SOLUTION FOR ROUND WINNER POPUP
+
+                    // 1. Create the border decoration
+                    StackPane borderPane = new StackPane();
+                    borderPane.setBackground(new Background(new BackgroundFill(
+                            Color.web("#F5F5DC"),
+                            new CornerRadii(12),
+                            Insets.EMPTY)));
+                    borderPane.setBorder(new Border(new BorderStroke(
+                            Color.web("#8B4513", 0.3),
+                            BorderStrokeStyle.SOLID,
+                            new CornerRadii(12),
+                            new BorderWidths(2.0)))); // Increased to 2.0 for consistency
+                    borderPane.setEffect(new DropShadow(8, Color.rgb(0, 0, 0, 0.15)));
+                    borderPane.setMinSize(816, 554); // Enforce minimum size
+                    borderPane.setPrefSize(816, 554); // Explicit preferred size
+                    borderPane.setMaxSize(816, 554); // Enforce maximum size
+                    borderPane.setStyle("-fx-snap-to-pixel: true;"); // Ensure crisp rendering
+
+                    // 2. Create a clipping mask for rounded corners
+                    Rectangle clip = new Rectangle(800, 530);
+                    clip.setArcWidth(12); // Match border CornerRadii
+                    clip.setArcHeight(12); // Match border CornerRadii
+
+                    // 3. Prepare the content
+                    StackPane contentPane = new StackPane(popupRoot);
+                    contentPane.setClip(clip);
+                    contentPane.setPrefSize(800, 530); // Match clip size exactly
+
+                    // 4. Build the container
+                    container.getChildren().addAll(borderPane, contentPane);
+                    StackPane.setAlignment(contentPane, Pos.CENTER); // Ensure content is centered
+                    StackPane.setMargin(contentPane, new Insets(8, 8, 8, 8)); // Increased to 8px for clearance
+
+                    // 5. Adjust the ImageView
+                    ImageView imageView = (ImageView) popupRoot.lookup("#backgroundImageView");
+                    if (imageView != null) {
+                        imageView.setFitWidth(800);
+                        imageView.setFitHeight(530);
+                        imageView.setPreserveRatio(false); // Ensure exact size
+                        imageView.setClip(new Rectangle(800, 530)); // Additional clip
+                        StackPane.setMargin(imageView, new Insets(0)); // Reset FXML margins
+                    }
+
+                    // 6. Debug bounds and layout
+                    container.applyCss();
+                    container.layout();
+                    System.out.println("borderPane bounds: " + borderPane.getBoundsInParent());
+                    System.out.println("contentPane bounds: " + contentPane.getBoundsInParent());
+                    System.out.println("imageView bounds: " + imageView.getBoundsInParent());
+                }else {
+                    // Normal handling for NoWinnerPopup
+                    container.getChildren().add(popupRoot);
+                    container.setBackground(new Background(new BackgroundFill(
+                            Color.web("#F5F5DC"),
+                            new CornerRadii(12),
+                            Insets.EMPTY)));
+                    container.setBorder(new Border(new BorderStroke(
+                            Color.web("#8B4513", 0.3),
+                            BorderStrokeStyle.SOLID,
+                            new CornerRadii(12),
+                            new BorderWidths(0.75))));
+                    container.setEffect(new DropShadow(8, Color.rgb(0, 0, 0, 0.15)));
+                    StackPane.setMargin(popupRoot, new Insets(12));
                 }
 
-                stage.setScene(new Scene(popupRoot));
-                stage.centerOnScreen();
+                // 4. Set up controller
+                if (winnerName != null && !winnerName.trim().isEmpty()) {
+                    RoundWinnerPopupView controller = loader.getController();
+                    controller.setWinnerName(winnerName);
+                    controller.setWinningWord(secretWord);
+                } else {
+                    NoWinnerPopupView controller = loader.getController();
+                    controller.setSecretWord(secretWord);
+                }
 
-                PauseTransition wait = new PauseTransition(Duration.seconds(5));
-                wait.setOnFinished(e -> {
-                    if (roundNumber < totalRounds) {
-                        stage.setScene(original);
-                    }
+                // 5. Create and show stage
+                Stage popupStage = new Stage();
+                popupStage.initOwner(mainStage);
+                popupStage.initStyle(StageStyle.UNDECORATED);
+
+                Scene popupScene = new Scene(container);
+                popupScene.setFill(Color.TRANSPARENT);
+                popupStage.setScene(popupScene);
+
+                // 6. Perfect centering
+                popupStage.addEventHandler(WindowEvent.WINDOW_SHOWN, (event) -> {
+                    container.applyCss();
+                    container.layout();
+                    double centerX = mainStage.getX() + (mainStage.getWidth() - container.getWidth())/2;
+                    double centerY = mainStage.getY() + (mainStage.getHeight() - container.getHeight())/2;
+                    popupStage.setX(centerX);
+                    popupStage.setY(centerY);
+                });
+
+                popupStage.show();
+
+                // 7. Auto-close
+                PauseTransition pause = new PauseTransition(Duration.seconds(5));
+                pause.setOnFinished(e -> {
+                    popupStage.close();
+                    mainRoot.getChildren().remove(overlay);
                     endPopupShowing = false;
                 });
-                wait.play();
-            } catch (IOException e) {
-                System.err.println("[ERROR] Failed to show round end popup: " + e.getMessage());
+                pause.play();
+
+            } catch (Exception e) {
                 endPopupShowing = false;
+                e.printStackTrace();
             }
         });
     }

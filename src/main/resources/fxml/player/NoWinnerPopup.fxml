@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="490.0" prefWidth="686.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.modals.NoWinnerPopupView">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="456.0" prefWidth="686.0" style="-fx-border-radius: 12; -fx-background-radius: 12;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client_Java.player.view.modals.NoWinnerPopupView">
    <children>
       <ImageView fitHeight="501.0" fitWidth="686.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -15,7 +19,7 @@
          <children>
             <Pane prefHeight="489.0" prefWidth="515.0">
                <children>
-                  <Pane layoutX="27.0" layoutY="84.0" prefHeight="328.0" prefWidth="461.0" style="-fx-background-radius: 20; -fx-border-radius: 20;">
+                  <Pane layoutX="20.0" layoutY="130.0" prefHeight="264.0" prefWidth="461.0" style="-fx-background-radius: 20; -fx-border-radius: 20;">
                      <children>
                         <Text fill="WHITE" layoutX="14.0" layoutY="84.0" strokeType="OUTSIDE" strokeWidth="0.0" text="NO WINNER" textAlignment="CENTER" wrappingWidth="446.1519775390625">
                            <font>

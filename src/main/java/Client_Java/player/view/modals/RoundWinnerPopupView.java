@@ -18,4 +18,5 @@ public class RoundWinnerPopupView {
     public void setWinningWord(String word) {
         winningWordLabel.setText(word);
     }
+
 }
