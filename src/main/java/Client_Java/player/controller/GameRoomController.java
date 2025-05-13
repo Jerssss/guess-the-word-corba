@@ -3,40 +3,16 @@ package Client_Java.player.controller;
 import Client_Java.player.PlayerClient_Java;
 import Client_Java.player.model.GameRoomModel;
 import Client_Java.player.view.GameRoomView;
-import Client_Java.player.view.ViewNavigator;
-import Client_Java.player.view.modals.GameRoundPopupView;
-import Client_Java.player.view.modals.GameWinnerPopupView;
-import Client_Java.player.view.modals.NoWinnerPopupView;
-import Client_Java.player.view.modals.RoundWinnerPopupView;
 import Client_Java.player.implementation.GameCallbackServiceImpl;
 import GameIDL.NotLoggedInException;
 import PlayerCallBackIDL.GameCallBackService;
 import PlayerCallBackIDL.GameCallBackServiceHelper;
 import PlayerCallBackIDL.GameCallBackServicePOA;
-import javafx.animation.PauseTransition;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.omg.CORBA.Object;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,10 +29,7 @@ public class GameRoomController {
     private String secretWord = "";
     private int remainingLives;
     private int wrongCount = 0;
-    private final List<Label> blankLabels = new ArrayList<>();
-    private Timeline roundTimer;
-    private int secondsRemaining;
-    private final List<ImageView> catFaceParts;
+    private final List<String> blankLabels = new ArrayList<>(); // Track blank label states as strings
     private boolean endPopupShowing = false;
     private final Map<String, Integer> winCounts = new HashMap<>();
 
@@ -77,29 +50,15 @@ public class GameRoomController {
         // Register controller with view
         view.setController(this);
 
-        // Cat face components (commented out since not in current FXML)
-        catFaceParts = Collections.unmodifiableList(Arrays.asList(
-                view.getCatTopHead(),
-                view.getCatEyes(),
-                view.getCatSnout(),
-                view.getCatBottomHead(),
-                view.getCatRightWhiskers(),
-                view.getCatLeftWhiskers()
-        ));
-
         remainingLives = model.getNumberOfLives(sessionToken);
-        view.getLifeCountLabel().setText(String.valueOf(remainingLives));
-        view.getRoundLabel().setText("R" + roundNumber);
-        view.disableAlphabetButtons();
-        view.getBlanksFlowPane().getChildren().clear();
+        view.updateLifeCount(remainingLives);
+        view.updateRoundLabel(roundNumber);
 
         GameCallbackServiceImpl servantImpl = new GameCallbackServiceImpl(this);
         GameCallBackServicePOA poaServant = servantImpl;
         Object cbRef = PlayerClient_Java.getClientModel().registerGameCallback(poaServant);
         GameCallBackService cbStub = GameCallBackServiceHelper.narrow(cbRef);
         model.registerCallback(cbStub);
-
-        view.getQuitButton().setOnAction(this::handleQuitButton);
 
         handleGameStart();
     }
@@ -111,116 +70,54 @@ public class GameRoomController {
 
     public void notifyRoundStartFromCallback(int newRound) {
         if (endPopupShowing) {
-            PauseTransition retry = new PauseTransition(Duration.seconds(1));
-            retry.setOnFinished(e -> notifyRoundStartFromCallback(newRound));
-            retry.play();
+            view.scheduleRetryRoundStart(newRound, 1); // Delegate retry to view
             return;
         }
         if (newRound <= roundNumber) return;
 
         roundNumber = newRound;
-        Platform.runLater(() -> showRoundStartScene(newRound));
+        view.showRoundStartScene(newRound);
     }
 
     public void handleServerRoundStart(int roundNum) {
         System.out.println("[DEBUG] handleServerRoundStart for round " + roundNum);
-        view.getRoundLabel().setText("R" + roundNum);
         secretWord = model.getRandomWord(gameToken, roundNum, playerId, sessionToken);
         remainingLives = model.getNumberOfLives(sessionToken);
         wrongCount = 0;
-        view.getLifeCountLabel().setText(String.valueOf(remainingLives));
-
+        view.updateLifeCount(remainingLives);
+        view.updateRoundLabel(roundNum);
         view.resetAlphabetButtons();
-        view.enableAlphabetButtons(); // Enable buttons for the new round
+        view.enableAlphabetButtons();
         setupBlanks();
-        startCountdown(model.getRoundDuration(sessionToken));
+        view.startCountdown(model.getRoundDuration(sessionToken));
     }
 
     private void setupBlanks() {
-        FlowPane bf = view.getBlanksFlowPane();
-        bf.getChildren().clear();
         blankLabels.clear();
         for (int i = 0; i < secretWord.length(); i++) {
-            Pane cell = new Pane();
-            cell.setPrefSize(58, 68);
-            ImageView blankImg = new ImageView();
-            blankImg.setFitWidth(58);
-            blankImg.setFitHeight(68);
-            blankImg.setTranslateY(50);
-
-            Label lbl = new Label("_");
-            lbl.setStyle("-fx-font-size:88; -fx-font-family:'Quick Pencil Regular'; -fx-text-fill:#61ff82;");
-            lbl.setPrefSize(58, 68);
-            lbl.setAlignment(javafx.geometry.Pos.CENTER);
-            cell.getChildren().addAll(blankImg, lbl);
-            bf.getChildren().add(cell);
-            blankLabels.add(lbl);
+            blankLabels.add("_");
         }
-    }
-
-    private void loadImage(ImageView imageView, String resourcePath) {
-        try {
-            System.out.println("[DEBUG] Attempting to load resource: " + resourcePath);
-            InputStream is = getClass().getResourceAsStream(resourcePath);
-            if (is != null) {
-                imageView.setImage(new Image(is));
-                System.out.println("[DEBUG] Successfully loaded resource: " + resourcePath);
-            } else {
-                System.err.println("[ERROR] Image resource not found: " + resourcePath);
-                System.err.println("[DEBUG] Class loader: " + getClass().getClassLoader());
-                System.err.println("[DEBUG] Resource URL: " + getClass().getResource(resourcePath));
-            }
-        } catch (Exception e) {
-            System.err.println("[ERROR] Failed to load image: " + resourcePath);
-            e.printStackTrace();
-        }
-    }
-    private void startCountdown(int durationSeconds) {
-        if (roundTimer != null) roundTimer.stop();
-        secondsRemaining = durationSeconds;
-        updateTimerLabel();
-
-        roundTimer = new Timeline(new javafx.animation.KeyFrame(
-                Duration.seconds(1), evt -> {
-            secondsRemaining--;
-            updateTimerLabel();
-            if (secondsRemaining <= 0) {
-                roundTimer.stop();
-                onRoundTimeExpired();
-            }
-        }));
-        roundTimer.setCycleCount(durationSeconds);
-        roundTimer.play();
-    }
-
-    private void updateTimerLabel() {
-        int m = secondsRemaining / 60, s = secondsRemaining % 60;
-        view.getTimerLabel().setText(String.format("%02d:%02d", m, s));
+        view.setupBlanks(secretWord.length());
     }
 
     public void handleGuess(char letter) {
-        System.out.println("[DEBUG] handleGuess called for letter: " + letter);
         try {
             view.disableLetterButton(letter);
             List<Integer> hits = model.guessLetter(gameToken, playerId, sessionToken, letter);
-            System.out.println("[DEBUG] Guess result for letter " + letter + ": hits=" + hits);
 
             if (hits.isEmpty()) {
                 remainingLives--;
                 wrongCount++;
-                view.getLifeCountLabel().setText(String.valueOf(remainingLives));
+                view.updateLifeCount(remainingLives);
                 view.showWrongLetter(letter);
-                // Comment out cat face parts since not in FXML
-                // if (wrongCount <= catFaceParts.size()) {
-                //     catFaceParts.get(wrongCount - 1).setVisible(true);
-                // }
                 if (remainingLives <= 0) {
                     view.disableAlphabetButtons();
                 }
             } else {
-                hits.forEach(idx -> blankLabels.get(idx).setText(String.valueOf(letter)));
+                hits.forEach(idx -> blankLabels.set(idx, String.valueOf(letter)));
+                view.updateBlanks(blankLabels);
                 view.showCorrectLetter(letter);
-                boolean won = blankLabels.stream().noneMatch(l -> "_".equals(l.getText()));
+                boolean won = blankLabels.stream().noneMatch(l -> "_".equals(l));
                 if (won) {
                     view.disableAlphabetButtons();
                 }
@@ -235,129 +132,21 @@ public class GameRoomController {
         view.disableAlphabetButtons();
     }
 
-    private void showRoundStartScene(int roundNum) {
-        try {
-            Stage stage = ViewNavigator.getStage();
-            if (stage == null) {
-                handleServerRoundStart(roundNum);
-                return;
-            }
-            Scene original = stage.getScene();
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/GameRoundPopup.fxml"));
-            Parent popupRoot = loader.load();
-            GameRoundPopupView ctrl = loader.getController();
-            ctrl.setGameTitle("What’s The Word?");
-            ctrl.setRoundNumber(roundNum);
-
-            stage.setScene(new Scene(popupRoot));
-            stage.centerOnScreen();
-
-            PauseTransition wait = new PauseTransition(Duration.seconds(model.getNextRoundDelay(sessionToken)));
-            wait.setOnFinished(e -> {
-                stage.setScene(original);
-                handleServerRoundStart(roundNum);
-            });
-            wait.play();
-        } catch (Exception e) {
-            System.err.println("[ERROR] Failed to show round start popup: " + e.getMessage());
-            handleServerRoundStart(roundNum);
-        }
-    }
-
-    public void showRoundEndPopup(String winnerName, String secretWord) {
+    public void showRoundEnd(String winnerName, String secretWord) {
         if (endPopupShowing) return;
         endPopupShowing = true;
-
-        Platform.runLater(() -> {
-            try {
-                Stage stage = ViewNavigator.getStage();
-                if (stage == null) {
-                    endPopupShowing = false;
-                    return;
-                }
-                Scene original = stage.getScene();
-
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                        (winnerName != null && !winnerName.trim().isEmpty())
-                                ? "/fxml/player/RoundWinnerPopup.fxml"
-                                : "/fxml/player/NoWinnerPopup.fxml"
-                ));
-                Parent popupRoot = loader.load();
-
-                if (winnerName != null && !winnerName.trim().isEmpty()) {
-                    RoundWinnerPopupView c = loader.getController();
-                    c.setWinnerName(winnerName);
-                    c.setWinningWord(secretWord);
-                } else {
-                    NoWinnerPopupView c = loader.getController();
-                    c.setSecretWord(secretWord);
-                }
-
-                stage.setScene(new Scene(popupRoot));
-                stage.centerOnScreen();
-
-                PauseTransition wait = new PauseTransition(Duration.seconds(5));
-                wait.setOnFinished(e -> {
-                    if (roundNumber < totalRounds) {
-                        stage.setScene(original);
-                    }
-                    endPopupShowing = false;
-                });
-                wait.play();
-            } catch (IOException e) {
-                System.err.println("[ERROR] Failed to show round end popup: " + e.getMessage());
-                endPopupShowing = false;
-            }
-        });
+        view.showRoundEndPopup(winnerName, secretWord, roundNumber < totalRounds);
     }
 
-    private void handleQuitButton(ActionEvent e) {
-        if (roundTimer != null) roundTimer.stop();
-        try {
-            ViewNavigator.goToLobby();
-        } catch (Exception ex) {
-            System.err.println("[ERROR] Failed to return to lobby: " + ex.getMessage());
-            ex.printStackTrace();
-        }
+    public void showGameEnd(String champion) {
+        view.showGameEndPopup(champion);
     }
 
-    public void showGameEndPopup(String champion) {
-        Platform.runLater(() -> {
-            try {
-                Stage stage = ViewNavigator.getStage();
-                if (stage == null) {
-                    return;
-                }
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/GameWinnerPopup.fxml"));
-                Parent popupRoot = loader.load();
+    public void onEndPopupClosed() {
+        endPopupShowing = false;
+    }
 
-                GameWinnerPopupView c = loader.getController();
-                c.setGameTitle("Game Over!");
-                c.setWinningUsername(champion != null ? champion : "Nobody");
-
-                stage.setScene(new Scene(popupRoot));
-                stage.centerOnScreen();
-
-                PauseTransition wait = new PauseTransition(Duration.seconds(5));
-                wait.setOnFinished(evt -> {
-                    try {
-                        ViewNavigator.goToLobby();
-                    } catch (Exception ex) {
-                        System.err.println("[ERROR] Failed to return to lobby: " + ex.getMessage());
-                        ex.printStackTrace();
-                    }
-                });
-                wait.play();
-            } catch (IOException e) {
-                System.err.println("[ERROR] Failed to show game end popup: " + e.getMessage());
-                try {
-                    ViewNavigator.goToLobby();
-                } catch (Exception ex) {
-                    System.err.println("[ERROR] Failed to return to lobby: " + ex.getMessage());
-                    ex.printStackTrace();
-                }
-            }
-        });
+    public void onRoundTimeExpiredFromView() {
+        onRoundTimeExpired();
     }
 }

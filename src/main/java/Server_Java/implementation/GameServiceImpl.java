@@ -596,7 +596,6 @@ public class GameServiceImpl extends GameServicePOA {
             // If this was the last round, end the game.
             System.out.println("[GameService DEBUG] Final round completed for game: " + gameToken);
 
-
             // Update the database with game completion details.
             try (Connection conn = DatabaseConnection.getConnection()) {
                 conn.setAutoCommit(false); // Start transaction
@@ -1131,6 +1130,12 @@ public class GameServiceImpl extends GameServicePOA {
             System.err.println("[GameService ERROR] getLeaderboards: Invalid playerID=" + playerID);
             throw new NotLoggedInException();
         }
+
+        // Add logging to trace the caller
+        System.out.println("[GameService TRACE] getLeaderboards called for playerID=" + playerID +
+                ", sessionToken=" + sessionToken +
+                ", thread=" + Thread.currentThread().getId() +
+                ", timestamp=" + System.currentTimeMillis());
 
         List<String> leaderboardEntries = new ArrayList<>();
         List<Map<String, Object>> tableData = new ArrayList<>();

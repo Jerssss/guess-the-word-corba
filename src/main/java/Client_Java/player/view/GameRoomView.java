@@ -1,9 +1,19 @@
 package Client_Java.player.view;
 
 import Client_Java.player.controller.GameRoomController;
+import Client_Java.player.view.modals.GameRoundPopupView;
+import Client_Java.player.view.modals.GameWinnerPopupView;
+import Client_Java.player.view.modals.NoWinnerPopupView;
+import Client_Java.player.view.modals.RoundWinnerPopupView;
+import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -11,9 +21,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GameRoomView {
@@ -105,6 +119,9 @@ public class GameRoomView {
 
     // Reference to controller
     private GameRoomController controller;
+    private Timeline roundTimer;
+    private int secondsRemaining;
+    private final List<Label> blankLabels = new java.util.ArrayList<>();
 
     @FXML
     private void initialize() {
@@ -112,6 +129,7 @@ public class GameRoomView {
         loadImage(gameRoomBackgroundImage, "/images/testUI/game_room.png");
         setupLetterImages();
         Platform.runLater(this::setupAlphabet);
+        quitButton.setOnAction(this::handleQuitButton);
     }
 
     // Allow controller to register itself
@@ -124,6 +142,7 @@ public class GameRoomView {
             InputStream is = getClass().getResourceAsStream(resourcePath);
             if (is != null) {
                 imageView.setImage(new Image(is));
+                System.out.println("[DEBUG] Successfully loaded resource: " + resourcePath);
             } else {
                 System.err.println("[ERROR] Image resource not found: " + resourcePath);
             }
@@ -212,7 +231,6 @@ public class GameRoomView {
     }
 
     private void setupAlphabet() {
-        // Debug hover image (kept for reference, but not used in hover style)
         java.net.URL hoverImageUrl = getClass().getResource(LETTER_HOVER_IMAGE_PATH);
         if (hoverImageUrl == null) {
             System.err.println("[ERROR] Hover image not found: " + LETTER_HOVER_IMAGE_PATH);
@@ -230,20 +248,15 @@ public class GameRoomView {
             return;
         }
 
-        // Define the letters for each row based on the 26 buttons in FXML order
-        String[] row1 = {"A", "B", "C", "D", "E", "F", "G", "H"}; // First 8 buttons
-        String[] row2 = {"I", "J", "K", "L", "M", "N", "O", "P", "Q"}; // Next 9 buttons
-        String[] row3 = {"R", "S", "T", "U", "V", "W", "X", "Y", "Z"}; // Last 9 buttons
+        String[] row1 = {"A", "B", "C", "D", "E", "F", "G", "H"};
+        String[] row2 = {"I", "J", "K", "L", "M", "N", "O", "P", "Q"};
+        String[] row3 = {"R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
-        // Base style for buttons (invisible)
         final String baseStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
-        // Hover style (invisible, no background image)
         final String hoverStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
-        // Disabled style (still invisible but greyed out)
         final String disabledStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: grey; -fx-text-fill: white; -fx-opacity: 0.0;";
 
         int buttonIndex = 0;
-        // First row (A to H) - first 8 buttons
         for (int i = 0; i < row1.length && buttonIndex < alphabetPane.getChildren().size(); i++) {
             Node node = alphabetPane.getChildren().get(buttonIndex);
             if (node instanceof Button) {
@@ -253,16 +266,14 @@ public class GameRoomView {
                 btn.setText(row1[i]);
                 btn.setStyle(baseStyle);
                 btn.setOnAction(e -> handleLetterGuess(letter));
-                // Add hover effect (no visual change, just logging for debug)
                 btn.setOnMouseEntered(e -> {
                     if (!btn.isDisable()) {
-                        System.out.println("[DEBUG] Hovering over letter: " + letter);
-                        btn.setStyle(hoverStyle); // Remains invisible
+                        btn.setStyle(hoverStyle);
                     }
                 });
                 btn.setOnMouseExited(e -> {
                     if (!btn.isDisable()) {
-                        btn.setStyle(baseStyle); // Remains invisible
+                        btn.setStyle(baseStyle);
                     }
                 });
                 alphabetButtons.put(letter, btn);
@@ -270,7 +281,6 @@ public class GameRoomView {
             }
         }
 
-        // Second row (I to Q) - next 9 buttons
         for (int i = 0; i < row2.length && buttonIndex < alphabetPane.getChildren().size(); i++) {
             Node node = alphabetPane.getChildren().get(buttonIndex);
             if (node instanceof Button) {
@@ -280,16 +290,14 @@ public class GameRoomView {
                 btn.setText(row2[i]);
                 btn.setStyle(baseStyle);
                 btn.setOnAction(e -> handleLetterGuess(letter));
-                // Add hover effect (no visual change)
                 btn.setOnMouseEntered(e -> {
                     if (!btn.isDisable()) {
-                        System.out.println("[DEBUG] Hovering over letter: " + letter);
-                        btn.setStyle(hoverStyle); // Remains invisible
+                        btn.setStyle(hoverStyle);
                     }
                 });
                 btn.setOnMouseExited(e -> {
                     if (!btn.isDisable()) {
-                        btn.setStyle(baseStyle); // Remains invisible
+                        btn.setStyle(baseStyle);
                     }
                 });
                 alphabetButtons.put(letter, btn);
@@ -297,7 +305,6 @@ public class GameRoomView {
             }
         }
 
-        // Third row (R to Z) - last 9 buttons
         for (int i = 0; i < row3.length && buttonIndex < alphabetPane.getChildren().size(); i++) {
             Node node = alphabetPane.getChildren().get(buttonIndex);
             if (node instanceof Button) {
@@ -307,16 +314,14 @@ public class GameRoomView {
                 btn.setText(row3[i]);
                 btn.setStyle(baseStyle);
                 btn.setOnAction(e -> handleLetterGuess(letter));
-                // Add hover effect (no visual change)
                 btn.setOnMouseEntered(e -> {
                     if (!btn.isDisable()) {
-                        System.out.println("[DEBUG] Hovering over letter: " + letter);
-                        btn.setStyle(hoverStyle); // Remains invisible
+                        btn.setStyle(hoverStyle);
                     }
                 });
                 btn.setOnMouseExited(e -> {
                     if (!btn.isDisable()) {
-                        btn.setStyle(baseStyle); // Remains invisible
+                        btn.setStyle(baseStyle);
                     }
                 });
                 alphabetButtons.put(letter, btn);
@@ -330,7 +335,6 @@ public class GameRoomView {
     }
 
     private void handleLetterGuess(char letter) {
-        System.out.println("[DEBUG] Letter pressed: " + letter);
         if (controller != null) {
             try {
                 controller.handleGuess(letter);
@@ -394,6 +398,187 @@ public class GameRoomView {
         });
         correctLetterImages.values().forEach(img -> img.setVisible(false));
         wrongLetterImages.values().forEach(img -> img.setVisible(false));
+    }
+
+    // Moved JavaFX methods
+    public void updateLifeCount(int lives) {
+        lifeCountLabel.setText(String.valueOf(lives));
+    }
+
+    public void updateRoundLabel(int roundNum) {
+        roundLabel.setText("R" + roundNum);
+    }
+
+    public void setupBlanks(int wordLength) {
+        blanksFlowPane.getChildren().clear();
+        blankLabels.clear();
+        for (int i = 0; i < wordLength; i++) {
+            Pane cell = new Pane();
+            cell.setPrefSize(58, 68);
+            ImageView blankImg = new ImageView();
+            blankImg.setFitWidth(58);
+            blankImg.setFitHeight(68);
+            blankImg.setTranslateY(50);
+
+            Label lbl = new Label("_");
+            lbl.setStyle("-fx-font-size:88; -fx-font-family:'Quick Pencil Regular'; -fx-text-fill:#61ff82;");
+            lbl.setPrefSize(58, 68);
+            lbl.setAlignment(javafx.geometry.Pos.CENTER);
+            cell.getChildren().addAll(blankImg, lbl);
+            blanksFlowPane.getChildren().add(cell);
+            blankLabels.add(lbl);
+        }
+    }
+
+    public void updateBlanks(List<String> labels) {
+        for (int i = 0; i < labels.size(); i++) {
+            blankLabels.get(i).setText(labels.get(i));
+        }
+    }
+
+    public void startCountdown(int durationSeconds) {
+        if (roundTimer != null) roundTimer.stop();
+        secondsRemaining = durationSeconds;
+        updateTimerLabel();
+
+        roundTimer = new Timeline(new javafx.animation.KeyFrame(
+                Duration.seconds(1), evt -> {
+            secondsRemaining--;
+            updateTimerLabel();
+            if (secondsRemaining <= 0) {
+                roundTimer.stop();
+                controller.onRoundTimeExpiredFromView();
+            }
+        }));
+        roundTimer.setCycleCount(durationSeconds);
+        roundTimer.play();
+    }
+
+    private void updateTimerLabel() {
+        int m = secondsRemaining / 60, s = secondsRemaining % 60;
+        timerLabel.setText(String.format("%02d:%02d", m, s));
+    }
+
+    public void scheduleRetryRoundStart(int newRound, int seconds) {
+        PauseTransition retry = new PauseTransition(Duration.seconds(seconds));
+        retry.setOnFinished(e -> controller.notifyRoundStartFromCallback(newRound));
+        retry.play();
+    }
+
+    public void showRoundStartScene(int roundNum) {
+        try {
+            Stage stage = ViewNavigator.getStage();
+            if (stage == null) {
+                controller.handleServerRoundStart(roundNum);
+                return;
+            }
+            Scene original = stage.getScene();
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/GameRoundPopup.fxml"));
+            Parent popupRoot = loader.load();
+            GameRoundPopupView ctrl = loader.getController();
+            ctrl.setGameTitle("What’s The Word?");
+            ctrl.setRoundNumber(roundNum);
+
+            stage.setScene(new Scene(popupRoot));
+            stage.centerOnScreen();
+
+            PauseTransition wait = new PauseTransition(Duration.seconds(3)); // Adjust delay as needed
+            wait.setOnFinished(e -> {
+                stage.setScene(original);
+                controller.handleServerRoundStart(roundNum);
+            });
+            wait.play();
+        } catch (Exception e) {
+            System.err.println("[ERROR] Failed to show round start popup: " + e.getMessage());
+            controller.handleServerRoundStart(roundNum);
+        }
+    }
+
+    public void showRoundEndPopup(String winnerName, String secretWord, boolean hasMoreRounds) {
+        Platform.runLater(() -> {
+            try {
+                Stage stage = ViewNavigator.getStage();
+                if (stage == null) {
+                    controller.onEndPopupClosed();
+                    return;
+                }
+                Scene original = stage.getScene();
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                        (winnerName != null && !winnerName.trim().isEmpty())
+                                ? "/fxml/player/RoundWinnerPopup.fxml"
+                                : "/fxml/player/NoWinnerPopup.fxml"
+                ));
+                Parent popupRoot = loader.load();
+
+                if (winnerName != null && !winnerName.trim().isEmpty()) {
+                    RoundWinnerPopupView c = loader.getController();
+                    c.setWinnerName(winnerName);
+                    c.setWinningWord(secretWord);
+                } else {
+                    NoWinnerPopupView c = loader.getController();
+                    c.setSecretWord(secretWord);
+                }
+
+                stage.setScene(new Scene(popupRoot));
+                stage.centerOnScreen();
+
+                PauseTransition wait = new PauseTransition(Duration.seconds(5));
+                wait.setOnFinished(e -> {
+                    if (hasMoreRounds) {
+                        stage.setScene(original);
+                    }
+                    controller.onEndPopupClosed();
+                });
+                wait.play();
+            } catch (IOException e) {
+                System.err.println("[ERROR] Failed to show round end popup: " + e.getMessage());
+                controller.onEndPopupClosed();
+            }
+        });
+    }
+
+    public void showGameEndPopup(String champion) {
+        Platform.runLater(() -> {
+            try {
+                Stage stage = ViewNavigator.getStage();
+                if (stage == null) {
+                    navigateToLobby();
+                    return;
+                }
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/GameWinnerPopup.fxml"));
+                Parent popupRoot = loader.load();
+
+                GameWinnerPopupView c = loader.getController();
+                c.setGameTitle("Game Over!");
+                c.setWinningUsername(champion != null ? champion : "Nobody");
+
+                stage.setScene(new Scene(popupRoot));
+                stage.centerOnScreen();
+
+                PauseTransition wait = new PauseTransition(Duration.seconds(5));
+                wait.setOnFinished(evt -> navigateToLobby());
+                wait.play();
+            } catch (IOException e) {
+                System.err.println("[ERROR] Failed to show game end popup: " + e.getMessage());
+                navigateToLobby();
+            }
+        });
+    }
+
+    private void handleQuitButton(ActionEvent e) {
+        if (roundTimer != null) roundTimer.stop();
+        navigateToLobby();
+    }
+
+    private void navigateToLobby() {
+        try {
+            ViewNavigator.goToLobby();
+        } catch (Exception ex) {
+            System.err.println("[ERROR] Failed to return to lobby: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
     // Getters
