@@ -1,6 +1,7 @@
 package Client_Java.player.controller;
 
 import Client_Java.player.PlayerClient_Java;
+import Client_Java.player.view.ViewNavigator;
 import Client_Java.player.model.GameRoomModel;
 import Client_Java.player.view.GameRoomView;
 import Client_Java.player.implementation.GameCallbackServiceImpl;
@@ -23,15 +24,14 @@ public class GameRoomController {
     private final int playerId;
     private final String sessionToken;
     private final String gameToken;
-    private final int totalRounds;
 
     private int roundNumber = 0;
     private String secretWord = "";
     private int remainingLives;
     private int wrongCount = 0;
-    private final List<String> blankLabels = new ArrayList<>(); // Track blank label states as strings
+    private final List<String> blankLabels = new ArrayList<>();
     private boolean endPopupShowing = false;
-    private boolean isRoundInitialized = false; // Flag to ensure round is set up before guesses
+    private boolean isRoundInitialized = false;
     private final Map<String, Integer> winCounts = new HashMap<>();
 
     public GameRoomController(
@@ -46,9 +46,7 @@ public class GameRoomController {
         this.playerId = playerId;
         this.sessionToken = sessionToken;
         this.gameToken = gameToken;
-        this.totalRounds = model.getTotalRounds(sessionToken);
 
-        // Register controller with view
         view.setController(this);
 
         remainingLives = model.getNumberOfLives(sessionToken);
@@ -71,7 +69,7 @@ public class GameRoomController {
 
     public void notifyRoundStartFromCallback(int newRound) {
         if (endPopupShowing) {
-            view.scheduleRetryRoundStart(newRound, 1); // Delegate retry to view
+            view.scheduleRetryRoundStart(newRound, 1);
             return;
         }
         if (newRound <= roundNumber) return;
@@ -85,7 +83,7 @@ public class GameRoomController {
         secretWord = model.getRandomWord(gameToken, roundNum, playerId, sessionToken);
         if (secretWord == null || secretWord.isEmpty()) {
             System.err.println("[ERROR] secretWord is null or empty, skipping round setup");
-            view.showRoundEndPopup(null, "Error: No word available", roundNumber < totalRounds);
+            view.showRoundEndPopup(null, "Error: No word available", true);
             return;
         }
         System.out.println("[DEBUG] secretWord: " + secretWord);
@@ -95,7 +93,7 @@ public class GameRoomController {
         view.updateRoundLabel(roundNum);
         view.resetAlphabetButtons();
         setupBlanks();
-        isRoundInitialized = true; // Mark round as initialized
+        isRoundInitialized = true;
         view.enableAlphabetButtons();
         view.startCountdown(model.getRoundDuration(sessionToken));
     }
@@ -165,16 +163,22 @@ public class GameRoomController {
     public void showRoundEnd(String winnerName, String secretWord) {
         if (endPopupShowing) return;
         endPopupShowing = true;
-        view.showRoundEndPopup(winnerName, secretWord, roundNumber < totalRounds);
+        view.showRoundEndPopup(winnerName, secretWord, true);
     }
 
     public void showGameEnd(String champion) {
         view.showGameEndPopup(champion);
+        try {
+            ViewNavigator.goToLobby(); // Navigate back to lobby after game ends
+        } catch (Exception e) {
+            System.err.println("[ERROR] Failed to navigate to lobby: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void onEndPopupClosed() {
         endPopupShowing = false;
-        isRoundInitialized = false; // Reset for next round
+        isRoundInitialized = false;
     }
 
     public void onRoundTimeExpiredFromView() {
