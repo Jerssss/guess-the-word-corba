@@ -32,6 +32,7 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,14 +121,17 @@ public class GameRoomView {
     private GameRoomController controller;
     private Timeline roundTimer;
     private int secondsRemaining;
-    private final List<Label> blankLabels = new java.util.ArrayList<>();
+    private final List<Label> blankLabels = new ArrayList<>();
 
     @FXML
     private void initialize() {
         loadCustomFonts();
         loadImage(gameRoomBackgroundImage, "/images/testUI/game_room.png");
         setupLetterImages();
-        Platform.runLater(this::setupAlphabet);
+        Platform.runLater(() -> {
+            setupAlphabet();
+            disableAlphabetButtons(); // Disable buttons initially
+        });
         quitButton.setOnAction(this::handleQuitButton);
     }
 
@@ -334,6 +338,7 @@ public class GameRoomView {
     }
 
     private void handleLetterGuess(char letter) {
+        System.out.println("[DEBUG] handleLetterGuess called for letter: " + letter);
         if (controller != null) {
             try {
                 controller.handleGuess(letter);
@@ -375,6 +380,7 @@ public class GameRoomView {
     }
 
     public void disableAlphabetButtons() {
+        System.out.println("[DEBUG] Disabling alphabet buttons");
         alphabetButtons.values().forEach(btn -> {
             btn.setDisable(true);
             btn.setStyle("-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: grey; -fx-text-fill: white; -fx-opacity: 0.0;");
@@ -383,6 +389,7 @@ public class GameRoomView {
 
     public void enableAlphabetButtons() {
         final String baseStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
+        System.out.println("[DEBUG] Enabling alphabet buttons");
         alphabetButtons.values().forEach(btn -> {
             btn.setDisable(false);
             btn.setStyle(baseStyle);
@@ -398,7 +405,6 @@ public class GameRoomView {
         correctLetterImages.values().forEach(img -> img.setVisible(false));
         wrongLetterImages.values().forEach(img -> img.setVisible(false));
     }
-
 
     public void updateLifeCount(int lives) {
         if (lifeCountLabel1 != null) { // Use lifeCountLabel1 as per FXML
@@ -464,6 +470,7 @@ public class GameRoomView {
             blanksFlowPane.getChildren().add(cell);
             blankLabels.add(lbl);
         }
+        System.out.println("[DEBUG] setupBlanks completed, blankLabels size: " + blankLabels.size());
     }
 
     public void updateBlanks(List<String> labels) {
@@ -640,35 +647,33 @@ public class GameRoomView {
                 }
 
                 // 5. Create and show stage
-                Stage popupStage = new Stage();
-                popupStage.initOwner(mainStage);
-                popupStage.initStyle(StageStyle.TRANSPARENT);
+                Stage poppyStage = new Stage();
+                poppyStage.initOwner(mainStage);
+                poppyStage.initStyle(StageStyle.TRANSPARENT);
 
                 Scene popupScene = new Scene(container);
                 popupScene.setFill(Color.TRANSPARENT);
-                popupStage.setScene(popupScene);
+                poppyStage.setScene(popupScene);
 
                 // 6. Perfect centering
-                popupStage.addEventHandler(WindowEvent.WINDOW_SHOWN, (event) -> {
+                poppyStage.addEventHandler(WindowEvent.WINDOW_SHOWN, (event) -> {
                     container.applyCss();
                     container.layout();
                     double centerX = mainStage.getX() + (mainStage.getWidth() - container.getWidth())/2;
                     double centerY = mainStage.getY() + (mainStage.getHeight() - container.getHeight())/2;
-                    popupStage.setX(centerX);
-                    popupStage.setY(centerY);
+                    poppyStage.setX(centerX);
+                    poppyStage.setY(centerY);
                 });
 
-                popupStage.show();
+                poppyStage.show();
 
                 // 7. Auto-close
                 PauseTransition pause = new PauseTransition(Duration.seconds(5));
                 pause.setOnFinished(e -> {
-                    popupStage.close();
+                    poppyStage.close();
                     mainRoot.getChildren().remove(overlay);
                     if (hasMoreRounds) {
                         controller.onEndPopupClosed();
-                    } else {
-                        // Handle game end if needed
                     }
                 });
                 pause.play();

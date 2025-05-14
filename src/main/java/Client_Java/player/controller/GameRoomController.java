@@ -31,6 +31,7 @@ public class GameRoomController {
     private int wrongCount = 0;
     private final List<String> blankLabels = new ArrayList<>(); // Track blank label states as strings
     private boolean endPopupShowing = false;
+    private boolean isRoundInitialized = false; // Flag to ensure round is set up before guesses
     private final Map<String, Integer> winCounts = new HashMap<>();
 
     public GameRoomController(
@@ -82,28 +83,47 @@ public class GameRoomController {
     public void handleServerRoundStart(int roundNum) {
         System.out.println("[DEBUG] handleServerRoundStart for round " + roundNum);
         secretWord = model.getRandomWord(gameToken, roundNum, playerId, sessionToken);
+        if (secretWord == null || secretWord.isEmpty()) {
+            System.err.println("[ERROR] secretWord is null or empty, skipping round setup");
+            view.showRoundEndPopup(null, "Error: No word available", roundNumber < totalRounds);
+            return;
+        }
+        System.out.println("[DEBUG] secretWord: " + secretWord);
         remainingLives = model.getNumberOfLives(sessionToken);
         wrongCount = 0;
         view.updateLifeCount(remainingLives);
         view.updateRoundLabel(roundNum);
         view.resetAlphabetButtons();
-        view.enableAlphabetButtons();
         setupBlanks();
+        isRoundInitialized = true; // Mark round as initialized
+        view.enableAlphabetButtons();
         view.startCountdown(model.getRoundDuration(sessionToken));
     }
 
     private void setupBlanks() {
         blankLabels.clear();
+        System.out.println("[DEBUG] Setting up blanks for secretWord: " + secretWord);
         for (int i = 0; i < secretWord.length(); i++) {
             blankLabels.add("_");
         }
+        System.out.println("[DEBUG] blankLabels after setup: " + blankLabels);
         view.setupBlanks(secretWord.length());
     }
 
     public void handleGuess(char letter) {
+        if (!isRoundInitialized) {
+            System.err.println("[ERROR] Round not initialized, ignoring guess for letter " + letter);
+            return;
+        }
         try {
+            System.out.println("[DEBUG] Processing guess for letter: " + letter);
             view.disableLetterButton(letter);
             List<Integer> hits = model.guessLetter(gameToken, playerId, sessionToken, letter);
+
+            if (blankLabels.isEmpty()) {
+                System.err.println("[ERROR] blankLabels is empty, cannot process guess");
+                return;
+            }
 
             if (hits.isEmpty()) {
                 remainingLives--;
@@ -114,12 +134,22 @@ public class GameRoomController {
                     view.disableAlphabetButtons();
                 }
             } else {
-                hits.forEach(idx -> blankLabels.set(idx, String.valueOf(letter)));
-                view.updateBlanks(blankLabels);
-                view.showCorrectLetter(letter);
-                boolean won = blankLabels.stream().noneMatch(l -> "_".equals(l));
-                if (won) {
-                    view.disableAlphabetButtons();
+                boolean updated = false;
+                for (Integer idx : hits) {
+                    if (idx >= 0 && idx < blankLabels.size()) {
+                        blankLabels.set(idx, String.valueOf(letter));
+                        updated = true;
+                    } else {
+                        System.err.println("[ERROR] Invalid index " + idx + " for blankLabels size " + blankLabels.size());
+                    }
+                }
+                if (updated) {
+                    view.updateBlanks(blankLabels);
+                    view.showCorrectLetter(letter);
+                    boolean won = blankLabels.stream().noneMatch(l -> "_".equals(l));
+                    if (won) {
+                        view.disableAlphabetButtons();
+                    }
                 }
             }
         } catch (Exception e) {
@@ -144,6 +174,7 @@ public class GameRoomController {
 
     public void onEndPopupClosed() {
         endPopupShowing = false;
+        isRoundInitialized = false; // Reset for next round
     }
 
     public void onRoundTimeExpiredFromView() {
