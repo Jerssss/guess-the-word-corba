@@ -143,18 +143,18 @@ public class GameRoomView {
                             Button button = alphabetButtons.get(letter);
                             if (button != null && !button.isDisabled() && controller != null) {
                                 try {
-                                    // Check if round is initialized (via reflection or public method if added)
-                                    java.lang.reflect.Field field = GameRoomController.class.getDeclaredField("isRoundInitialized");
+                                    // Check if round is active
+                                    java.lang.reflect.Field field = GameRoomController.class.getDeclaredField("isRoundActive");
                                     field.setAccessible(true);
-                                    boolean isRoundInitialized = (boolean) field.get(controller);
-                                    if (isRoundInitialized) {
+                                    boolean isRoundActive = (boolean) field.get(controller);
+                                    if (isRoundActive) {
                                         System.out.println("[DEBUG] Keyboard input: Letter " + letter);
                                         handleLetterGuess(letter);
                                     } else {
-                                        System.out.println("[DEBUG] Ignoring keyboard input for " + letter + ": Round not initialized");
+                                        System.out.println("[DEBUG] Ignoring keyboard input for " + letter + ": Round not active");
                                     }
                                 } catch (Exception e) {
-                                    System.err.println("[ERROR] Failed to check round initialization: " + e.getMessage());
+                                    System.err.println("[ERROR] Failed to check round active state: " + e.getMessage());
                                 }
                             }
                         }

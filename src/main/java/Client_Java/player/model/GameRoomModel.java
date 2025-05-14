@@ -1,14 +1,13 @@
-// File: Client_Java/player/model/GameRoomModel.java
 package Client_Java.player.model;
 
 import Client_Java.player.SessionManager;
-import GameIDL.GameService;
-import GameIDL.NotLoggedInException;
+import GameIDL.*;
 import PlayerCallBackIDL.GameCallBackService;
 import org.omg.CORBA.StringHolder;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GameRoomModel {
     private final GameService gameService;
@@ -18,8 +17,8 @@ public class GameRoomModel {
     }
 
     public void registerCallback(GameCallBackService callback) throws NotLoggedInException {
-        int    playerId     = SessionManager.getLoggedInPlayer().getPlayerId();
-        String gameToken    = SessionManager.getGameToken();
+        int playerId = SessionManager.getLoggedInPlayer().getPlayerId();
+        String gameToken = SessionManager.getGameToken();
         String sessionToken = SessionManager.getSessionToken();
 
         System.out.println("[DEBUG][GameRoomModel] registerCallback() → "
@@ -28,14 +27,13 @@ public class GameRoomModel {
                 + ", sessionToken=" + sessionToken
         );
 
-        // IDL order: (playerID, gameToken, sessionToken, callback)
         gameService.registerCallBack(playerId, gameToken, sessionToken, callback);
     }
 
     public int startRound(String gameToken, int roundNumber, int playerId, String sessionToken) {
         try {
             return gameService.startRound(gameToken, roundNumber, playerId, sessionToken);
-        } catch (Exception e) {
+        } catch (GameNotFoundException | NotLoggedInException e) {
             System.err.println("[GameRoomModel] startRound failed: " + e.getMessage());
             return 0;
         }
@@ -55,7 +53,7 @@ public class GameRoomModel {
     public String getRandomWord(String gameToken, int roundNumber, int playerId, String sessionToken) {
         try {
             return gameService.getRandomWord(gameToken, roundNumber, playerId, sessionToken);
-        } catch (Exception e) {
+        } catch (GameNotFoundException | NotLoggedInException e) {
             System.err.println("[GameRoomModel] getRandomWord failed: " + e.getMessage());
             return "";
         }
@@ -72,20 +70,20 @@ public class GameRoomModel {
         }
     }
 
-    public List<Integer> guessLetter(String gameToken,
-                                     int playerId,
-                                     String sessionToken,
-                                     char letter) {
+    public List<Integer> guessLetter(String gameToken, int playerId, String sessionToken, char letter, long guessTime) {
         try {
-            int[] positions = gameService.guessLetter(gameToken, playerId, sessionToken, letter);
-            List<Integer> result = new ArrayList<>();
-            for (long p : positions) {
-                result.add((int)p);
+            if (guessTime > Integer.MAX_VALUE || guessTime < Integer.MIN_VALUE) {
+                System.err.println("[GameRoomModel] guessTime out of range: " + guessTime);
+                guessTime = Integer.MAX_VALUE; // Fallback to max int
             }
-            return result;
-        } catch (Exception e) {
+            int[] positions = gameService.guessLetter(gameToken, playerId, sessionToken, letter, (int) guessTime);
+            return Arrays.stream(positions).boxed().collect(Collectors.toList());
+        } catch (MaxAttemptsReachedException e) {
+            System.out.println("[DEBUG][GameRoomModel] guessLetter: Max attempts reached for letter " + letter);
+            throw new RuntimeException(e);
+        } catch (GameNotFoundException | AlreadyGuessedLetterException | NotLoggedInException e) {
             System.err.println("[GameRoomModel] guessLetter failed: " + e.getMessage());
-            return new ArrayList<>();
+            throw new RuntimeException(e);
         }
     }
 
@@ -103,7 +101,7 @@ public class GameRoomModel {
     public String getRoundWinner(String gameToken, int playerId, String sessionToken) {
         try {
             return gameService.getRoundWinner(gameToken, playerId, sessionToken);
-        } catch (Exception e) {
+        } catch (NotLoggedInException e) {
             System.err.println("[GameRoomModel] getRoundWinner failed: " + e.getMessage());
             return "Unknown";
         }
@@ -112,7 +110,7 @@ public class GameRoomModel {
     public String getPlayerDisplayName(int playerId, String sessionToken) {
         try {
             return gameService.getDisplayName(playerId, sessionToken);
-        } catch (Exception e) {
+        } catch (NotLoggedInException e) {
             System.err.println("[GameRoomModel] getPlayerDisplayName failed: " + e.getMessage());
             return "";
         }

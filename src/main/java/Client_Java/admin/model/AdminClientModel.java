@@ -16,7 +16,7 @@ public class AdminClientModel {
     public void init() {
         try {
             // Initialize ORB
-            String[] orbArgs = {"-ORBInitialPort", "1050", "-ORBInitialHost", "localhost"};
+            String[] orbArgs = {"-ORBInitialPort", "1050", "-ORBInitialHost", "192.168.100.105"};
             ORB orb = ORB.init(orbArgs, null);
 
             // Obtain Naming Service reference

@@ -5,7 +5,7 @@ import Client_Java.player.view.ViewNavigator;
 import Client_Java.player.model.GameRoomModel;
 import Client_Java.player.view.GameRoomView;
 import Client_Java.player.implementation.GameCallbackServiceImpl;
-import GameIDL.NotLoggedInException;
+import GameIDL.*;
 import PlayerCallBackIDL.GameCallBackService;
 import PlayerCallBackIDL.GameCallBackServiceHelper;
 import PlayerCallBackIDL.GameCallBackServicePOA;
@@ -33,7 +33,9 @@ public class GameRoomController {
     private final List<String> blankLabels = new ArrayList<>();
     private boolean endPopupShowing = false;
     private boolean isRoundInitialized = false;
+    private boolean isRoundActive = false; // Track if round is active
     private final Map<String, Integer> winCounts = new HashMap<>();
+    private long roundStartTime;
 
     public GameRoomController(
             GameRoomModel model,
@@ -81,6 +83,7 @@ public class GameRoomController {
 
     public void handleServerRoundStart(int roundNum) {
         System.out.println("[DEBUG] handleServerRoundStart for round " + roundNum);
+        roundStartTime = System.currentTimeMillis();
         secretWord = model.getRandomWord(gameToken, roundNum, playerId, sessionToken);
         if (secretWord == null || secretWord.isEmpty()) {
             System.err.println("[ERROR] secretWord is null or empty, skipping round setup");
@@ -95,6 +98,7 @@ public class GameRoomController {
         view.resetAlphabetButtons();
         setupBlanks();
         isRoundInitialized = true;
+        isRoundActive = true;
         view.enableAlphabetButtons();
         view.startCountdown(model.getRoundDuration(sessionToken));
     }
@@ -110,14 +114,18 @@ public class GameRoomController {
     }
 
     public void handleGuess(char letter) {
-        if (!isRoundInitialized) {
-            System.err.println("[ERROR] Round not initialized, ignoring guess for letter " + letter);
+        if (!isRoundInitialized || !isRoundActive) {
+            System.err.println("[ERROR] Round not initialized or ended, ignoring guess for letter " + letter);
             return;
         }
         try {
             System.out.println("[DEBUG] Processing guess for letter: " + letter);
             view.disableLetterButton(letter);
-            List<Integer> hits = model.guessLetter(gameToken, playerId, sessionToken, letter);
+            long guessTimeLong = System.currentTimeMillis() - roundStartTime;
+            int guessTime = guessTimeLong > Integer.MAX_VALUE || guessTimeLong < Integer.MIN_VALUE
+                    ? Integer.MAX_VALUE
+                    : (int) guessTimeLong;
+            List<Integer> hits = model.guessLetter(gameToken, playerId, sessionToken, letter, guessTime);
 
             if (blankLabels.isEmpty()) {
                 System.err.println("[ERROR] blankLabels is empty, cannot process guess");
@@ -131,6 +139,7 @@ public class GameRoomController {
                 view.showWrongLetter(letter);
                 if (remainingLives <= 0) {
                     view.disableAlphabetButtons();
+                    isRoundActive = false;
                 }
             } else {
                 boolean updated = false;
@@ -148,35 +157,39 @@ public class GameRoomController {
                     boolean won = blankLabels.stream().noneMatch(l -> "_".equals(l));
                     if (won) {
                         view.disableAlphabetButtons();
+                        isRoundActive = false;
                     }
                 }
             }
         } catch (Exception e) {
-            System.err.println("[ERROR] Error processing guess for letter " + letter + ": " + e.getMessage());
+            System.err.println("[ERROR] Unexpected error processing guess for letter " + letter + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     private void onRoundTimeExpired() {
+        isRoundActive = false;
         view.disableAlphabetButtons();
     }
 
     public void showRoundEnd(String winnerName, String secretWord) {
         if (endPopupShowing) return;
         endPopupShowing = true;
-        Platform.runLater(() -> view.showRoundEndPopup(winnerName, secretWord, true));
+        isRoundActive = false;
+        view.disableAlphabetButtons();
+        view.showRoundEndPopup(winnerName, secretWord, true);
     }
 
     public void showGameEnd(String champion) {
-        Platform.runLater(() -> {
-            view.showGameEndPopup(champion);
-            try {
-                ViewNavigator.goToLobby();
-            } catch (Exception e) {
-                System.err.println("[ERROR] Failed to navigate to lobby: " + e.getMessage());
-                e.printStackTrace();
-            }
-        });
+        isRoundActive = false;
+        view.disableAlphabetButtons();
+        view.showGameEndPopup(champion);
+        try {
+            ViewNavigator.goToLobby();
+        } catch (Exception e) {
+            System.err.println("[ERROR] Failed to navigate to lobby: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void onEndPopupClosed() {
