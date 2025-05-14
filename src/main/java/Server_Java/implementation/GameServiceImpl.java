@@ -609,6 +609,7 @@ public class GameServiceImpl extends GameServicePOA {
         return new String(mask);
     }
 
+
     @Override
     public synchronized int[] guessLetter(
             String gameToken,
@@ -671,31 +672,6 @@ public class GameServiceImpl extends GameServicePOA {
         if (hits.isEmpty()) {
             rs.wrongCount++;
             if (rs.wrongCount >= lobby.numberOfLives) {
-                boolean allLost = perPlayer.values().stream()
-                        .allMatch(s -> s.wrongCount >= lobby.numberOfLives || s.completionTime < Long.MAX_VALUE);
-                if (allLost) {
-                    for (Map.Entry<String, GameCallBackService> entry : lobby.callbacks.entrySet()) {
-                        String callbackSessionToken = entry.getKey();
-                        GameCallBackService cb = entry.getValue();
-                        try {
-                            cb.notifyRoundEnd(gameToken, callbackSessionToken, "", word);
-                            System.out.println("[GameService DEBUG] Sent notifyRoundEnd (all lost) for round=" + roundNum + ", session=" + callbackSessionToken);
-                        } catch (Exception e) {
-                            System.err.println("[GameService ERROR] Failed to notify round end for session=" + callbackSessionToken + ": " + e.getMessage());
-                        }
-                    }
-                    try (Connection conn = DatabaseConnection.getConnection();
-                         PreparedStatement stmt = conn.prepareStatement(
-                                 "UPDATE rounds SET end_time = NOW() WHERE game_id = ? AND round_number = ?")) {
-                        stmt.setInt(1, lobby.gameId);
-                        stmt.setInt(2, roundNum);
-                        stmt.executeUpdate();
-                    } catch (SQLException e) {
-                        System.err.println("[GameService ERROR] Error updating round end time: " + e.getMessage());
-                    }
-                    roundStartTimes.remove(roundKey);
-                    checkAndScheduleNextRoundOrEndGame(gameToken, roundNum);
-                }
                 throw new MaxAttemptsReachedException();
             }
         }
@@ -707,47 +683,46 @@ public class GameServiceImpl extends GameServicePOA {
             rs.completionTime = guessTime;
             System.out.println("[GameService DEBUG] PlayerID=" + playerID + " completed word in " + guessTime + "ms");
 
-            boolean allDone = perPlayer.values().stream()
-                    .allMatch(s -> s.completionTime < Long.MAX_VALUE || s.wrongCount >= lobby.numberOfLives);
-            if (allDone) {
-                Map.Entry<Integer, RoundState> fastest = perPlayer.entrySet().stream()
-                        .filter(e -> e.getValue().completionTime < Long.MAX_VALUE)
-                        .min(Comparator.comparingLong(e -> e.getValue().completionTime))
-                        .orElse(null);
-                String winnerUsername = fastest != null ? lookupUsername(fastest.getKey()) : "";
-                roundWinners.put(roundKey, winnerUsername);
+            // End the round immediately since this player won
+            String winnerUsername = lookupUsername(playerID);
+            roundWinners.put(roundKey, winnerUsername);
 
-                if (!winnerUsername.isEmpty()) {
-                    Map<String, Integer> winCounts = gameWinCounts.get(gameToken);
-                    winCounts.put(winnerUsername, winCounts.getOrDefault(winnerUsername, 0) + 1);
-                    System.out.println("[GameService DEBUG] Round winner: " + winnerUsername + ", total wins=" + winCounts.get(winnerUsername));
-                    updateRoundWinnerInDB(gameToken, roundNum, winnerUsername);
-                }
+            Map<String, Integer> winCounts = gameWinCounts.get(gameToken);
+            winCounts.put(winnerUsername, winCounts.getOrDefault(winnerUsername, 0) + 1);
+            System.out.println("[GameService DEBUG] Round winner: " + winnerUsername + ", total wins=" + winCounts.get(winnerUsername));
+            updateRoundWinnerInDB(gameToken, roundNum, winnerUsername);
 
-                for (Map.Entry<String, GameCallBackService> entry : lobby.callbacks.entrySet()) {
-                    String callbackSessionToken = entry.getKey();
-                    GameCallBackService cb = entry.getValue();
-                    try {
-                        cb.notifyRoundEnd(gameToken, callbackSessionToken, winnerUsername, word);
-                        System.out.println("[GameService DEBUG] Sent notifyRoundEnd with winner=" + winnerUsername + " for round=" + roundNum + ", session=" + callbackSessionToken);
-                    } catch (Exception e) {
-                        System.err.println("[GameService ERROR] Failed to notify round end for session=" + callbackSessionToken + ": " + e.getMessage());
-                    }
-                }
-
-                try (Connection conn = DatabaseConnection.getConnection();
-                     PreparedStatement stmt = conn.prepareStatement(
-                             "UPDATE rounds SET end_time = NOW() WHERE game_id = ? AND round_number = ?")) {
-                    stmt.setInt(1, lobby.gameId);
-                    stmt.setInt(2, roundNum);
-                    stmt.executeUpdate();
-                } catch (SQLException e) {
-                    System.err.println("[GameService ERROR] Error updating round end time: " + e.getMessage());
-                }
-
-                roundStartTimes.remove(roundKey);
-                checkAndScheduleNextRoundOrEndGame(gameToken, roundNum);
+            // Cancel the round timeout task
+            Future<?> timeoutTask = roundTimeoutTasks.get(gameToken);
+            if (timeoutTask != null) {
+                timeoutTask.cancel(true);
+                roundTimeoutTasks.remove(gameToken);
             }
+
+            // Notify all players of round end
+            for (Map.Entry<String, GameCallBackService> entry : lobby.callbacks.entrySet()) {
+                String callbackSessionToken = entry.getKey();
+                GameCallBackService cb = entry.getValue();
+                try {
+                    cb.notifyRoundEnd(gameToken, callbackSessionToken, winnerUsername, word);
+                    System.out.println("[GameService DEBUG] Sent notifyRoundEnd with winner=" + winnerUsername + " for round=" + roundNum + ", session=" + callbackSessionToken);
+                } catch (Exception e) {
+                    System.err.println("[GameService ERROR] Failed to notify round end for session=" + callbackSessionToken + ": " + e.getMessage());
+                }
+            }
+
+            try (Connection conn = DatabaseConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(
+                         "UPDATE rounds SET end_time = NOW() WHERE game_id = ? AND round_number = ?")) {
+                stmt.setInt(1, lobby.gameId);
+                stmt.setInt(2, roundNum);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                System.err.println("[GameService ERROR] Error updating round end time: " + e.getMessage());
+            }
+
+            roundStartTimes.remove(roundKey);
+            checkAndScheduleNextRoundOrEndGame(gameToken, roundNum);
         }
 
         System.out.println("[GameService DEBUG] guessLetter: playerID=" + playerID + ", letter=" + letter + ", hits=" + hits);
@@ -828,7 +803,6 @@ public class GameServiceImpl extends GameServicePOA {
             }, lobby.nextRoundDelay, TimeUnit.SECONDS);
         }
     }
-
     private void cleanupGame(String gameToken) {
         lobbies.remove(gameToken);
         sessionToGame.values().removeIf(t -> t.equals(gameToken));
