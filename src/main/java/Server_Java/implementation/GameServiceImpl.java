@@ -32,10 +32,11 @@ public class GameServiceImpl extends GameServicePOA {
     private static final Map<String, Map<Integer, RoundState>> roundStates = new ConcurrentHashMap<>();
     private static final Map<String, Integer> currentRoundNumbers = new ConcurrentHashMap<>();
     private static final Map<String, String> roundWinners = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, Future<?>> roundTimeoutTasks = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Future<?>> roundTimeoutTasks = new ConcurrentHashMap<>();
     private static final Map<String, Set<String>> usedWordsPerGame = new ConcurrentHashMap<>();
     private static final Map<String, Map<String, Integer>> gameWinCounts = new ConcurrentHashMap<>();
     private static final Map<String, Long> roundStartTimes = new ConcurrentHashMap<>();
+    private static final Map<String, Long> lobbyCountdownStartTimes = new ConcurrentHashMap<>();
 
     private static final ScheduledExecutorService countdownScheduler =
             Executors.newSingleThreadScheduledExecutor();
@@ -118,7 +119,7 @@ public class GameServiceImpl extends GameServicePOA {
 
         Lobby target = null;
         for (Lobby l : lobbies.values()) {
-            if (l.players.size() < l.minimumPlayers) {
+            if (l.players.size() < l.minimumPlayers && lobbyCountdownStartTimes.containsKey(l.token)) {
                 target = l;
                 break;
             }
@@ -162,6 +163,10 @@ public class GameServiceImpl extends GameServicePOA {
             lobbies.put(newToken, target);
             gameWinCounts.put(newToken, new ConcurrentHashMap<>());
             System.out.println("[GameService DEBUG] Created lobby=" + newToken + " with gameId=" + gameId);
+
+            // Start countdown for new lobby
+            lobbyCountdownStartTimes.put(newToken, System.currentTimeMillis());
+            scheduleCountdown(newToken, target);
         }
 
         if (!target.players.contains(playerID)) {
@@ -182,45 +187,59 @@ public class GameServiceImpl extends GameServicePOA {
             }
         }
 
-        if (target.players.size() >= target.minimumPlayers) {
-            ScheduledFuture<?> oldTask = pendingCountdowns.remove(target.token);
-            if (oldTask != null) oldTask.cancel(false);
-            Lobby lobbyRef = target;
-            ScheduledFuture<?> newTask = countdownScheduler.schedule(() -> {
-                for (WaitingRoomGameCallbackService cb : lobbyRef.waitingCallbacks) {
-                    try {
-                        cb.notifyCountdownStart(lobbyRef.token, lobbyRef.countdownSeconds, sessionToken);
-                        System.out.println("[GameService DEBUG] Sent notifyCountdownStart to session=" + sessionToken);
-                    } catch (Exception e) {
-                        System.err.println("[GameService ERROR] Failed to notify countdown start: " + e.getMessage());
-                    }
-                }
-                countdownScheduler.schedule(() -> {
-                    for (Map.Entry<String, GameCallBackService> entry : lobbyRef.callbacks.entrySet()) {
-                        String callbackSessionToken = entry.getKey();
-                        GameCallBackService gcb = entry.getValue();
-                        try {
-                            gcb.notifyGameStart(lobbyRef.token, callbackSessionToken);
-                            System.out.println("[GameService DEBUG] Sent notifyGameStart to session=" + callbackSessionToken);
-                        } catch (Exception e) {
-                            System.err.println("[GameService ERROR] Failed to notify game start for session=" + callbackSessionToken + ": " + e.getMessage());
-                        }
-                    }
-                    countdownScheduler.schedule(() -> {
-                        try {
-                            startRound(lobbyRef.token, 1);
-                            System.out.println("[GameService DEBUG] Scheduled and started round 1 for lobby=" + lobbyRef.token);
-                        } catch (GameNotFoundException e) {
-                            System.err.println("[GameService ERROR] Failed to start round 1: " + e.getMessage());
-                        }
-                    }, 5, TimeUnit.SECONDS);
-                }, lobbyRef.countdownSeconds, TimeUnit.SECONDS);
-            }, 100, TimeUnit.MILLISECONDS);
-            pendingCountdowns.put(target.token, newTask);
-        }
-
         debugPrintAllLobbies("joinLobby");
         return target.token;
+    }
+
+    private void scheduleCountdown(String gameToken, Lobby lobby) {
+        ScheduledFuture<?> countdownTask = countdownScheduler.schedule(() -> {
+            pendingCountdowns.remove(gameToken);
+            if (lobby.players.size() >= lobby.minimumPlayers) {
+                try {
+                    startGame(lobby.players.get(0), sessionToGame.entrySet().stream()
+                            .filter(e -> e.getValue().equals(gameToken))
+                            .findFirst()
+                            .map(Map.Entry::getKey)
+                            .orElse(null));
+                    System.out.println("[GameService DEBUG] Countdown ended, started game for lobby=" + gameToken);
+                } catch (NotEnoughPlayersException e) {
+                    System.err.println("[GameService ERROR] Unexpected: Not enough players after countdown: " + e.getMessage());
+                }
+            } else {
+                for (WaitingRoomGameCallbackService cb : lobby.waitingCallbacks) {
+                    try {
+                        cb.notifyCountdownReset(gameToken, sessionToGame.entrySet().stream()
+                                .filter(e -> e.getValue().equals(gameToken))
+                                .findFirst()
+                                .map(Map.Entry::getKey)
+                                .orElse(null));
+                        System.out.println("[GameService DEBUG] Sent notifyCountdownReset to session for lobby=" + gameToken);
+                    } catch (Exception e) {
+                        System.err.println("[GameService ERROR] Failed to notify countdown reset: " + e.getMessage());
+                    }
+                }
+                lobbies.remove(gameToken);
+                sessionToGame.entrySet().removeIf(e -> e.getValue().equals(gameToken));
+                sessionToWaitingCallback.entrySet().removeIf(e -> e.getValue().equals(gameToken));
+                lobbyCountdownStartTimes.remove(gameToken);
+                System.out.println("[GameService DEBUG] Lobby " + gameToken + " removed due to insufficient players");
+            }
+        }, lobby.countdownSeconds, TimeUnit.SECONDS);
+        pendingCountdowns.put(gameToken, countdownTask);
+
+        // Notify all clients of countdown start
+        for (WaitingRoomGameCallbackService cb : lobby.waitingCallbacks) {
+            try {
+                cb.notifyCountdownStart(gameToken, lobby.countdownSeconds, sessionToGame.entrySet().stream()
+                        .filter(e -> e.getValue().equals(gameToken))
+                        .findFirst()
+                        .map(Map.Entry::getKey)
+                        .orElse(null));
+                System.out.println("[GameService DEBUG] Sent notifyCountdownStart for lobby=" + gameToken);
+            } catch (Exception e) {
+                System.err.println("[GameService ERROR] Failed to notify countdown start: " + e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -247,22 +266,12 @@ public class GameServiceImpl extends GameServicePOA {
                 }
             }
 
-            if (lobby.players.size() < DEFAULT_MIN_PLAYERS) {
+            if (lobby.players.isEmpty()) {
                 ScheduledFuture<?> future = pendingCountdowns.remove(gameToken);
                 if (future != null) future.cancel(false);
-                for (WaitingRoomGameCallbackService cb : lobby.waitingCallbacks) {
-                    try {
-                        cb.notifyCountdownReset(gameToken, sessionToken);
-                        System.out.println("[GameService DEBUG] Sent notifyCountdownReset to session=" + sessionToken);
-                    } catch (Exception e) {
-                        System.err.println("[GameService ERROR] Failed to notify countdown reset: " + e.getMessage());
-                    }
-                }
-            }
-
-            if (lobby.players.isEmpty()) {
                 lobbies.remove(gameToken);
                 gameWinCounts.remove(gameToken);
+                lobbyCountdownStartTimes.remove(gameToken);
                 System.out.println("[GameService DEBUG] Lobby " + gameToken + " removed (empty)");
             }
         }
@@ -300,15 +309,51 @@ public class GameServiceImpl extends GameServicePOA {
             cb.notifyPlayerJoined(gameToken, lobby.players.size(), sessionToken);
             System.out.println("[GameService DEBUG] Initial player count notification sent to session=" + sessionToken +
                     ", count=" + lobby.players.size());
+            Long startTime = lobbyCountdownStartTimes.get(gameToken);
+            if (startTime != null) {
+                long elapsed = (System.currentTimeMillis() - startTime) / 1000;
+                long remaining = Math.max(0, lobby.countdownSeconds - elapsed);
+                cb.notifyCountdownStart(gameToken, (int) remaining, sessionToken);
+                System.out.println("[GameService DEBUG] Sent notifyCountdownStart with remaining=" + remaining + " to session=" + sessionToken);
+            }
         } catch (Exception e) {
-            System.err.println("[GameService ERROR] Failed to send initial player count notification: " + e.getMessage());
+            System.err.println("[GameService ERROR] Failed to send initial notifications: " + e.getMessage());
         }
     }
 
     @Override
     public String getLobbyStatus(String sessionToken)
             throws NotLoggedInException, GameTimeOutException, NotEnoughPlayersException {
-        return "";
+        if (sessionToken == null || !sessionToGame.containsKey(sessionToken)) {
+            System.err.println("[GameService ERROR] getLobbyStatus: Invalid session token");
+            throw new NotLoggedInException();
+        }
+        String gameToken = sessionToGame.get(sessionToken);
+        Lobby lobby = lobbies.get(gameToken);
+        if (lobby == null) {
+            System.err.println("[GameService ERROR] getLobbyStatus: Lobby not found for gameToken=" + gameToken);
+            throw new GameTimeOutException();
+        }
+
+        String status = currentRoundNumbers.containsKey(gameToken) ? "in_progress" : "waiting";
+        int playerCount = lobby.players.size();
+        long remainingSeconds = -1;
+        Long startTime = lobbyCountdownStartTimes.get(gameToken);
+        if (startTime != null) {
+            long elapsed = (System.currentTimeMillis() - startTime) / 1000;
+            remainingSeconds = Math.max(0, lobby.countdownSeconds - elapsed);
+        }
+
+        String result = String.format(
+                "Lobby %s: %s, Players: %d/%d, Countdown: %s",
+                gameToken,
+                status,
+                playerCount,
+                lobby.minimumPlayers,
+                remainingSeconds >= 0 ? remainingSeconds + " seconds" : "inactive"
+        );
+        System.out.println("[GameService DEBUG] getLobbyStatus: " + result);
+        return result;
     }
 
     @Override
@@ -344,6 +389,12 @@ public class GameServiceImpl extends GameServicePOA {
         } catch (SQLException e) {
             System.err.println("[GameService ERROR] Error updating game status: " + e.getMessage());
         }
+
+        ScheduledFuture<?> countdown = pendingCountdowns.remove(token);
+        if (countdown != null) {
+            countdown.cancel(false);
+        }
+        lobbyCountdownStartTimes.remove(token);
 
         for (Map.Entry<String, GameCallBackService> entry : lobby.callbacks.entrySet()) {
             String callbackSessionToken = entry.getKey();
@@ -790,6 +841,7 @@ public class GameServiceImpl extends GameServicePOA {
         roundWinners.keySet().removeIf(k -> k.startsWith(gameToken + ":"));
         roundStartTimes.keySet().removeIf(k -> k.startsWith(gameToken + ":"));
         gameWinCounts.remove(gameToken);
+        lobbyCountdownStartTimes.remove(gameToken);
         System.out.println("[GameService DEBUG] Cleaned up game: " + gameToken);
     }
 

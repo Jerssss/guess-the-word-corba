@@ -1,19 +1,14 @@
-// File: Client_Java/player/model/WaitingRoomModel.java
 package Client_Java.player.model;
 
 import Client_Java.player.SessionManager;
 import GameIDL.GameService;
+import GameIDL.NotEnoughPlayersException;
+import GameIDL.GameTimeOutException;
+import GameIDL.NotLoggedInException;
 import PlayerCallBackIDL.GameCallBackService;
 import PlayerCallBackIDL.WaitingRoomGameCallbackService;
 import org.omg.CORBA.StringHolder;
 
-/**
- * Model for the waiting room:
- * - joins and leaves the lobby
- * - fetches settings
- * - queries player counts
- * - registers waiting-room and game-start callbacks
- */
 public class WaitingRoomModel {
     private final GameService gameService;
 
@@ -25,7 +20,7 @@ public class WaitingRoomModel {
         try {
             String sessionToken = SessionManager.getSessionToken();
             String gameToken = gameService.joinLobby(playerId, sessionToken);
-            SessionManager.setGameToken(gameToken); // Store token centrally
+            SessionManager.setGameToken(gameToken);
             return gameToken;
         } catch (Exception e) {
             System.err.println("[WaitingRoomModel] joinLobby failed: " + e.getMessage());
@@ -87,7 +82,7 @@ public class WaitingRoomModel {
 
     public int getNumberOfPlayersJoined() {
         try {
-            return (int) gameService.getNumberOfPlayersJoined(
+            return gameService.getNumberOfPlayersJoined(
                     SessionManager.getLoggedInPlayer().getPlayerId(),
                     SessionManager.getSessionToken()
             );
@@ -98,7 +93,25 @@ public class WaitingRoomModel {
         }
     }
 
-    public int startGame(int playerId) throws Exception {
-        return gameService.startGame(playerId, SessionManager.getSessionToken());
+    public int startGame(int playerId) throws NotEnoughPlayersException, GameTimeOutException, NotLoggedInException {
+        try {
+            return gameService.startGame(playerId, SessionManager.getSessionToken());
+        } catch (NotEnoughPlayersException e) {
+            throw e;
+        } catch (Exception e) {
+            System.err.println("[WaitingRoomModel] startGame failed: " + e.getMessage());
+            throw new RuntimeException("Failed to start game", e);
+        }
+    }
+
+    public String getLobbyStatus() throws NotLoggedInException, GameTimeOutException, NotEnoughPlayersException {
+        try {
+            return gameService.getLobbyStatus(SessionManager.getSessionToken());
+        } catch (NotLoggedInException | GameTimeOutException | NotEnoughPlayersException e) {
+            throw e;
+        } catch (Exception e) {
+            System.err.println("[WaitingRoomModel] getLobbyStatus failed: " + e.getMessage());
+            throw new RuntimeException("Failed to get lobby status", e);
+        }
     }
 }

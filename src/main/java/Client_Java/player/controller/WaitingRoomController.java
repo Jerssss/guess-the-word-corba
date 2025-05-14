@@ -11,12 +11,11 @@ import PlayerCallBackIDL.GameCallBackServiceHelper;
 import PlayerCallBackIDL.GameCallBackServicePOA;
 import PlayerCallBackIDL.WaitingRoomGameCallbackService;
 import PlayerCallBackIDL.WaitingRoomGameCallbackServiceHelper;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import javafx.util.Duration;
 
 public class WaitingRoomController {
     private final WaitingRoomModel model;
@@ -25,8 +24,7 @@ public class WaitingRoomController {
     private final int minimumPlayers;
     private int countdown;
     private String gameToken;
-    private ScheduledExecutorService scheduler;
-
+    private Timeline countdownTimeline;
 
     public WaitingRoomController(WaitingRoomModel model, WaitingRoomView view) {
         this.model = model;
@@ -40,25 +38,27 @@ public class WaitingRoomController {
 
     private void startFlow() {
         int playerId = SessionManager.getLoggedInPlayer().getPlayerId();
-        this.gameToken = model.joinLobby(playerId); // Store gameToken
+        this.gameToken = model.joinLobby(playerId);
         if (this.gameToken == null) {
             System.err.println("[WaitingRoom] joinLobby failed");
+            Platform.runLater(() -> {
+                try {
+                    ViewNavigator.goToLobby();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
             return;
         }
         registerWaitingRoomCallback(playerId);
         registerGameStartCallback(playerId);
         view.setWaitingPlayersCount(model.getNumberOfPlayersJoined());
-        view.setRemainingTime(countdown);
     }
 
     private void registerWaitingRoomCallback(int playerId) {
-        WaitingRoomCallbackServiceImpl servant =
-                new WaitingRoomCallbackServiceImpl(this);
-        org.omg.CORBA.Object cbRef =
-                PlayerClient_Java.getClientModel()
-                        .registerWaitingRoomCallback(servant);
-        WaitingRoomGameCallbackService stub =
-                WaitingRoomGameCallbackServiceHelper.narrow(cbRef);
+        WaitingRoomCallbackServiceImpl servant = new WaitingRoomCallbackServiceImpl(this);
+        org.omg.CORBA.Object cbRef = PlayerClient_Java.getClientModel().registerWaitingRoomCallback(servant);
+        WaitingRoomGameCallbackService stub = WaitingRoomGameCallbackServiceHelper.narrow(cbRef);
         model.registerWaitingRoomCallback(playerId, stub);
     }
 
@@ -75,39 +75,56 @@ public class WaitingRoomController {
             @Override
             public void notifyGameEnd(String gt, String st, String w) {}
         };
-        org.omg.CORBA.Object cbRef =
-                PlayerClient_Java.getClientModel()
-                        .registerGameCallback(servant);
-        GameCallBackService stub =
-                GameCallBackServiceHelper.narrow(cbRef);
+        org.omg.CORBA.Object cbRef = PlayerClient_Java.getClientModel().registerGameCallback(servant);
+        GameCallBackService stub = GameCallBackServiceHelper.narrow(cbRef);
         model.registerGameStartCallback(playerId, stub);
     }
 
     public void onPlayerCountUpdate(int totalPlayers) {
-        Platform.runLater(() -> view.setWaitingPlayersCount(totalPlayers));
+        Platform.runLater(() -> {
+            view.setWaitingPlayersCount(totalPlayers);
+            System.out.println("[WaitingRoom] Updated player count to " + totalPlayers);
+        });
     }
 
     public void onCountdownStart(int seconds) {
-        this.countdown = seconds;
-        Platform.runLater(() -> view.setRemainingTime(seconds));
-
-        if (scheduler != null) scheduler.shutdownNow();
-        scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.scheduleAtFixedRate(() -> {
-            countdown--;
-            Platform.runLater(() -> view.setRemainingTime(countdown));
-            if (countdown <= 0) {
-                scheduler.shutdown();
+        Platform.runLater(() -> {
+            if (countdownTimeline != null) {
+                countdownTimeline.stop();
             }
-        }, 1, 1, TimeUnit.SECONDS);
+            countdown = seconds;
+            view.setRemainingTime(countdown);
+            countdownTimeline = new Timeline(new KeyFrame(Duration.seconds(1), evt -> {
+                countdown--;
+                view.setRemainingTime(countdown);
+                if (countdown <= 0) {
+                    countdownTimeline.stop();
+                    view.setRemainingTime(0);
+                }
+            }));
+            countdownTimeline.setCycleCount(seconds + 1);
+            countdownTimeline.play();
+            System.out.println("[WaitingRoom] Started countdown: " + seconds + " seconds");
+        });
     }
 
     public void onCountdownReset() {
-        if (scheduler != null) scheduler.shutdownNow();
-        countdown = initialCountdown;
-        Platform.runLater(() -> view.setRemainingTime(countdown));
+        Platform.runLater(() -> {
+            if (countdownTimeline != null) {
+                countdownTimeline.stop();
+            }
+            countdown = initialCountdown;
+            view.setRemainingTime(0);
+            int playerId = SessionManager.getLoggedInPlayer().getPlayerId();
+            model.leaveLobby(playerId);
+            try {
+                ViewNavigator.goToLobby();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            System.out.println("[WaitingRoom] Countdown reset, returning to lobby");
+        });
     }
-
 
     private void onReadyToStart() {
         Platform.runLater(() -> {
@@ -120,7 +137,9 @@ public class WaitingRoomController {
     }
 
     private void onCancel(ActionEvent evt) {
-        if (scheduler != null) scheduler.shutdownNow();
+        if (countdownTimeline != null) {
+            countdownTimeline.stop();
+        }
         int playerId = SessionManager.getLoggedInPlayer().getPlayerId();
         model.leaveLobby(playerId);
         Platform.runLater(() -> {
