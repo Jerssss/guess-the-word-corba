@@ -20,6 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -131,6 +132,38 @@ public class GameRoomView {
         Platform.runLater(() -> {
             setupAlphabet();
             disableAlphabetButtons(); // Disable buttons initially
+
+            // Add key event handler for keyboard input
+            if (blanksFlowPane.getScene() != null) {
+                blanksFlowPane.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    String key = event.getText().toUpperCase();
+                    if (key.length() == 1) {
+                        char letter = key.charAt(0);
+                        if (letter >= 'A' && letter <= 'Z') {
+                            Button button = alphabetButtons.get(letter);
+                            if (button != null && !button.isDisabled() && controller != null) {
+                                try {
+                                    // Check if round is initialized (via reflection or public method if added)
+                                    java.lang.reflect.Field field = GameRoomController.class.getDeclaredField("isRoundInitialized");
+                                    field.setAccessible(true);
+                                    boolean isRoundInitialized = (boolean) field.get(controller);
+                                    if (isRoundInitialized) {
+                                        System.out.println("[DEBUG] Keyboard input: Letter " + letter);
+                                        handleLetterGuess(letter);
+                                    } else {
+                                        System.out.println("[DEBUG] Ignoring keyboard input for " + letter + ": Round not initialized");
+                                    }
+                                } catch (Exception e) {
+                                    System.err.println("[ERROR] Failed to check round initialization: " + e.getMessage());
+                                }
+                            }
+                        }
+                    }
+                    event.consume(); // Prevent further processing of the key event
+                });
+            } else {
+                System.err.println("[ERROR] Scene not set for blanksFlowPane in initialize");
+            }
         });
         quitButton.setOnAction(this::handleQuitButton);
     }
@@ -647,30 +680,30 @@ public class GameRoomView {
                 }
 
                 // 5. Create and show stage
-                Stage poppyStage = new Stage();
-                poppyStage.initOwner(mainStage);
-                poppyStage.initStyle(StageStyle.TRANSPARENT);
+                Stage popupStage = new Stage();
+                popupStage.initOwner(mainStage);
+                popupStage.initStyle(StageStyle.TRANSPARENT);
 
                 Scene popupScene = new Scene(container);
                 popupScene.setFill(Color.TRANSPARENT);
-                poppyStage.setScene(popupScene);
+                popupStage.setScene(popupScene);
 
                 // 6. Perfect centering
-                poppyStage.addEventHandler(WindowEvent.WINDOW_SHOWN, (event) -> {
+                popupStage.addEventHandler(WindowEvent.WINDOW_SHOWN, (event) -> {
                     container.applyCss();
                     container.layout();
                     double centerX = mainStage.getX() + (mainStage.getWidth() - container.getWidth())/2;
                     double centerY = mainStage.getY() + (mainStage.getHeight() - container.getHeight())/2;
-                    poppyStage.setX(centerX);
-                    poppyStage.setY(centerY);
+                    popupStage.setX(centerX);
+                    popupStage.setY(centerY);
                 });
 
-                poppyStage.show();
+                popupStage.show();
 
                 // 7. Auto-close
                 PauseTransition pause = new PauseTransition(Duration.seconds(5));
                 pause.setOnFinished(e -> {
-                    poppyStage.close();
+                    popupStage.close();
                     mainRoot.getChildren().remove(overlay);
                     if (hasMoreRounds) {
                         controller.onEndPopupClosed();
