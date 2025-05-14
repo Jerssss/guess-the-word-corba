@@ -9,6 +9,7 @@ import GameIDL.NotLoggedInException;
 import PlayerCallBackIDL.GameCallBackService;
 import PlayerCallBackIDL.GameCallBackServiceHelper;
 import PlayerCallBackIDL.GameCallBackServicePOA;
+import javafx.application.Platform;
 import org.omg.CORBA.Object;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
@@ -75,7 +76,7 @@ public class GameRoomController {
         if (newRound <= roundNumber) return;
 
         roundNumber = newRound;
-        view.showRoundStartScene(newRound);
+        Platform.runLater(() -> view.showRoundStartScene(newRound));
     }
 
     public void handleServerRoundStart(int roundNum) {
@@ -163,17 +164,19 @@ public class GameRoomController {
     public void showRoundEnd(String winnerName, String secretWord) {
         if (endPopupShowing) return;
         endPopupShowing = true;
-        view.showRoundEndPopup(winnerName, secretWord, true);
+        Platform.runLater(() -> view.showRoundEndPopup(winnerName, secretWord, true));
     }
 
     public void showGameEnd(String champion) {
-        view.showGameEndPopup(champion);
-        try {
-            ViewNavigator.goToLobby(); // Navigate back to lobby after game ends
-        } catch (Exception e) {
-            System.err.println("[ERROR] Failed to navigate to lobby: " + e.getMessage());
-            e.printStackTrace();
-        }
+        Platform.runLater(() -> {
+            view.showGameEndPopup(champion);
+            try {
+                ViewNavigator.goToLobby();
+            } catch (Exception e) {
+                System.err.println("[ERROR] Failed to navigate to lobby: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
     }
 
     public void onEndPopupClosed() {
