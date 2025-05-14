@@ -1,4 +1,4 @@
-package Client_Java.admin.model;
+package Client_Java.admin;
 
 import AdminIDL.AdminService;
 import AdminIDL.AdminServiceHelper;
@@ -9,14 +9,14 @@ import org.omg.CORBA.Object;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
 
-public class AdminClientModel {
+public class AdminClient_Model {
     public static AuthenticationService authService;
     public static AdminService adminService;
 
     public void init() {
         try {
             // Initialize ORB
-            String[] orbArgs = {"-ORBInitialPort", "1050", "-ORBInitialHost", "192.168.100.105"};
+            String[] orbArgs = {"-ORBInitialPort", "1050", "-ORBInitialHost", "localhost"};
             ORB orb = ORB.init(orbArgs, null);
 
             // Obtain Naming Service reference

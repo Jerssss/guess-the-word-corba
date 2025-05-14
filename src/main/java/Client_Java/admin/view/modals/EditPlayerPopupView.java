@@ -8,7 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -23,14 +22,10 @@ public class EditPlayerPopupView {
     @FXML private TextField userIdTextField;
     @FXML private TextField usernameTextField;
     @FXML private TextField passwordTextField;
-    @FXML private TextField fullNameTextField;
-    @FXML private TextField gamePointsTextField;
     @FXML private Text titleLabel;
     @FXML private Text userIdLabel;
     @FXML private Text usernameLabel;
     @FXML private Text passwordLabel;
-    @FXML private Text fullNameLabel;
-    @FXML private Text gameWinsLabel;
     @FXML private Label promptLabel;
     @FXML private GridPane gridPane;
     @FXML private ImageView backgroundImageView;
@@ -101,12 +96,6 @@ public class EditPlayerPopupView {
         if (passwordTextField != null) {
             passwordTextField.setText(player.getPassword() != null ? player.getPassword() : "");
         }
-        if (fullNameTextField != null) {
-            fullNameTextField.setText(player.getName() != null ? player.getName() : "");
-        }
-        if (gamePointsTextField != null) {
-            gamePointsTextField.setText(String.valueOf(player.getGameWins()));
-        }
     }
 
     private void savePlayer() {
@@ -147,12 +136,6 @@ public class EditPlayerPopupView {
         }
         if (passwordLabel != null) {
             passwordLabel.setFont(Font.font(quickPencil.getFamily(), 32));
-        }
-        if (fullNameLabel != null) {
-            fullNameLabel.setFont(Font.font(quickPencil.getFamily(), 32));
-        }
-        if (gameWinsLabel != null) {
-            gameWinsLabel.setFont(Font.font(quickPencil.getFamily(), 32));
         }
         if (userIdTextField != null) {
             userIdTextField.setFont(Font.font(quickPencil.getFamily(), 32));

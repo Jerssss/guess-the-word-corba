@@ -1,7 +1,6 @@
 package Client_Java.admin;
 
 import Client_Java.admin.controller.AdminLogInPageController;
-import Client_Java.admin.model.AdminClientModel;
 import Client_Java.admin.model.AdminLogInPageModel;
 import Client_Java.admin.view.AdminLogInPageView;
 import Shared_Files.AdminAccount;
@@ -21,7 +20,7 @@ public class AdminClient_Java extends Application {
     private static String sessionToken;
 
     public static void main(String[] args) {
-        AdminClientModel clientModel = new AdminClientModel();
+        AdminClient_Model clientModel = new AdminClient_Model();
         clientModel.init(); // Initialize CORBA connections
         launch(args);
     }
@@ -43,7 +42,7 @@ public class AdminClient_Java extends Application {
                 System.err.println("[ERROR] AdminLoginPageView is NULL after FXML load!");
             } else {
                 System.out.println("[DEBUG] AdminLoginPageView controller loaded successfully.");
-                AdminLogInPageModel model = new AdminLogInPageModel(AdminClientModel.authService);
+                AdminLogInPageModel model = new AdminLogInPageModel(AdminClient_Model.authService);
                 new AdminLogInPageController(model, loginPageView);
             }
 
