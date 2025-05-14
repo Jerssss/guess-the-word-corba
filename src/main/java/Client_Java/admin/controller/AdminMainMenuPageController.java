@@ -104,8 +104,21 @@ public class AdminMainMenuPageController {
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent loginView = loader.load();
 
+            // Get the view controller from the loader
+            AdminLogInPageView loginPageView = loader.getController();
+            if (loginPageView == null) {
+                System.err.println("[ERROR] AdminLogInPageView is null after FXML load!");
+                return;
+            }
+
+            // Initialize the model and controller
+            AdminLogInPageModel model = new AdminLogInPageModel(AdminClientModel.authService);
+            new AdminLogInPageController(model, loginPageView);
+
+            // Set the scene and stage
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(loginView));
+            Scene scene = new Scene(loginView);
+            stage.setScene(scene);
             stage.centerOnScreen();
             stage.setResizable(false);
             stage.show();

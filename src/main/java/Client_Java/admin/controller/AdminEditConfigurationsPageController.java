@@ -19,6 +19,7 @@ public class AdminEditConfigurationsPageController {
         this.model = model;
         attachEventHandlers();
         attachCurrentGameConfigurations();
+        view.setActionCancelButton(event -> view.showAdminMainMenu(AdminClient_Java.getLoggidInAdmin()));
     }
 
     public void attachCurrentGameConfigurations() {
