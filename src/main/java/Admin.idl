@@ -28,8 +28,8 @@ module AdminIDL {
             raises(AccountNotFoundException, AccountCurrentlyActiveException, NotLoggedInException);
 
         // Search for a player by username
-        string searchPlayer(in string username, in string sessionToken, in long adminID)
-            raises(NotLoggedInException, PlayerNotFoundException);
+        StringList searchPlayers(in string query, in string sessionToken, in long adminID)
+                raises (NotLoggedInException, PlayerNotFoundException);
 
         // Get the current game waiting time
         long getCurrentWaitingTime(in string sessionToken, in long adminID)

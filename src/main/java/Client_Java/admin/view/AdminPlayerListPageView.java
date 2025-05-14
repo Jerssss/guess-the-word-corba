@@ -34,7 +34,6 @@ import javafx.stage.StageStyle;
 import javafx.scene.effect.DropShadow;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
-import javafx.scene.input.MouseEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +82,7 @@ public class AdminPlayerListPageView {
         loadCustomFonts();
         applyFonts();
         initializeTableColumns();
-        playersTable.setItems(playerData);
+        playersTable.setPlaceholder(new Label("No players found"));
         setupButtonHoverEffects();
     }
 
@@ -313,8 +312,6 @@ public class AdminPlayerListPageView {
             if (!fxmlFile.exists()) {
                 throw new IOException("FXML file not found: " + fxmlFile.getAbsolutePath());
             }
-            System.out.println("[DEBUG] Loading FXML: " + fxmlFile.getAbsolutePath());
-
             FXMLLoader loader = new FXMLLoader(fxmlFile.toURI().toURL());
             Scene scene = new Scene(loader.load());
 
@@ -363,12 +360,29 @@ public class AdminPlayerListPageView {
         }
     }
 
+//    public void updateTable(List<PlayerAccount> data) {
+//        playerData.setAll(data);
+//        playersTable.setItems(null);
+//        playersTable.setItems(playerData);
+//        playersTable.refresh();
+//        System.out.println("[ADMIN CLIENT | " + new Date() + "] Player data updated. New table size: " + playerData.size());
+//        /*
+//        public void updateTable(List<PlayerAccount> data) {
+//    Platform.runLater(() -> {
+//        playerData.setAll(data); // Update the source data
+//        playersTable.refresh(); // Refresh the UI
+//        System.out.println("[ADMIN CLIENT | " + new Date() + "] Player data updated. New table size: " + playerData.size());
+//    });
+//}
+//         */
+//    }
+
     public void updateTable(List<PlayerAccount> data) {
-        playerData.setAll(data);
-        playersTable.setItems(null);
-        playersTable.setItems(playerData);
-        playersTable.refresh();
-        System.out.println("[ADMIN CLIENT | " + new Date() + "] Player data updated. New table size: " + playerData.size());
+        Platform.runLater(() -> {
+            playerData.setAll(data);
+            playersTable.refresh();
+            System.out.println("[ADMIN CLIENT | " + new Date() + "] Player data updated. Table size: " + playerData.size());
+        });
     }
 
     private void loadCustomFonts() {

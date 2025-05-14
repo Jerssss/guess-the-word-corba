@@ -24,7 +24,7 @@ public class PlayerAccount {
         this.gameWins = gameWins;
     }
 
-    public PlayerAccount(int playerID, String name, String username, String password, int gameWins) {
+    public PlayerAccount(int playerID, String username, String password, String name, int gameWins) {
         this.playerID = playerID;
         this.name = name;
         this.username = username;

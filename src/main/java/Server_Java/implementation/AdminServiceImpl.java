@@ -2,6 +2,9 @@ package Server_Java.implementation;
 
 import Server_Java.database.DatabaseConnection;
 import AdminIDL.*;
+import Shared_Files.PlayerAccount;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -89,7 +92,7 @@ public class AdminServiceImpl extends AdminServicePOA {
             throw new AdminIDL.NotLoggedInException();
         }
 
-        query = "SELECT player_id, name, username, password, game_wins FROM players;";
+        query = "SELECT player_id, username, password, name, game_wins FROM players;";
         List<String> players = new ArrayList<>();
         try (Connection con = DatabaseConnection.getConnection()) {
             PreparedStatement stmt = con.prepareStatement(query);
@@ -97,11 +100,11 @@ public class AdminServiceImpl extends AdminServicePOA {
 
             while (resultSet.next()) {
                 String playerID = resultSet.getString(1);
-                String name = resultSet.getString(2);
-                String username = resultSet.getString(3);
-                String password = resultSet.getString(4);
+                String username = resultSet.getString(2);
+                String password = resultSet.getString(3);
+                String name = resultSet.getString(4);
                 int gameWins = resultSet.getInt(5);
-                String entry = String.join(",", playerID, name, username, password, String.valueOf(gameWins));
+                String entry = String.join(",", playerID, username, password, name, String.valueOf(gameWins));
                 players.add(entry);
             }
             // Get the current timestamp and print the action
@@ -179,8 +182,57 @@ public class AdminServiceImpl extends AdminServicePOA {
     }
 
     @Override
-    public String searchPlayer(String username, String sessionToken, int adminID) throws NotLoggedInException, PlayerNotFoundException {
-        return "";
+    public String[] searchPlayers(String query, String sessionToken, int adminID) throws NotLoggedInException, PlayerNotFoundException {
+        if (sessionToken == null) {
+            System.err.println("[AdminService ERROR] searchPlayers: Null session token for adminID=" + adminID);
+            throw new AdminIDL.NotLoggedInException();
+        }
+        if (!isValidAdmin(adminID)) {
+            System.err.println("[AdminService ERROR] searchPlayers: Invalid adminID=" + adminID);
+            throw new AdminIDL.NotLoggedInException();
+        }
+
+        String sqlQuery = "SELECT player_id, username, password, name, game_wins FROM players " +
+                "WHERE CAST(player_id AS CHAR) LIKE ? " +
+                "OR username LIKE ? " +
+                "OR name LIKE ? " +
+                "OR CAST(game_wins AS CHAR) LIKE ?";
+        List<String> players = new ArrayList<>();
+        try (Connection con = DatabaseConnection.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sqlQuery)) {
+            String likeQuery = "%" + query + "%";
+            stmt.setString(1, likeQuery);
+            stmt.setString(2, likeQuery);
+            stmt.setString(3, likeQuery);
+            stmt.setString(4, likeQuery);
+            ResultSet resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                String playerID = resultSet.getString(1);
+                String username = resultSet.getString(2);
+                String password = resultSet.getString(3);
+                String name = resultSet.getString(4);
+                int gameWins = resultSet.getInt(5);
+                String entry = String.join(",", playerID, username, password, name, String.valueOf(gameWins));
+                players.add(entry);
+            }
+
+            if (players.isEmpty()) {
+                System.err.println("[AdminService INFO] searchPlayers: No players found for query=" + query);
+                throw new PlayerNotFoundException();
+            }
+
+            LocalDateTime timestamp = LocalDateTime.now();
+            String formattedTimestamp = timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            System.out.println("[" + formattedTimestamp + "] [Admin: " + adminID + "] - Action: Searched Players - Query: " + query + ", Results: " + players.size());
+
+        } catch (SQLException e) {
+            System.err.println("[AdminService ERROR] Database connection error: " + e.getMessage());
+            e.printStackTrace();
+            throw new PlayerNotFoundException();
+        }
+
+        return players.toArray(new String[0]);
     }
 
     @Override
@@ -213,7 +265,7 @@ public class AdminServiceImpl extends AdminServicePOA {
         String formattedTimestamp = timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         // Print the action details
-        System.out.println("[" + formattedTimestamp +"] [Admin: " + adminID + "] - Action: Retreived Game Round Duration");
+        System.out.println("[" + formattedTimestamp +"] [Admin: " + adminID + "] - Action: Retreived Game Lobby Waiting Time");
         return waitingTime;
     }
 
