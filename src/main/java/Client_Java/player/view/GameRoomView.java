@@ -443,9 +443,6 @@ public class GameRoomView {
         if (lifeCountLabel1 != null) { // Use lifeCountLabel1 as per FXML
             lifeCountLabel1.setText(String.valueOf(lives));
             updateHeartsImage(lives);
-            if (lives == 0 && roundTimer != null) {
-                roundTimer.stop();
-            }
         } else {
             System.err.println("[ERROR] lifeCountLabel1 is null in updateLifeCount");
         }
