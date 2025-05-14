@@ -1,6 +1,7 @@
 // File: AdminLogInPageController.java
 package Client_Java.admin.controller;
 
+import Client_Java.admin.AdminClient_Model;
 import Client_Java.admin.AdminClient_Java;
 import Client_Java.admin.model.*;
 import Client_Java.admin.view.*;
@@ -75,7 +76,7 @@ public class AdminLogInPageController {
             }
 
             AdminMainMenuPageModel pageModel = new AdminMainMenuPageModel(
-                    AdminClientModel.adminService,
+                    AdminClient_Model.adminService,
                     AdminClient_Java.getSessionToken(),
                     admin.getAdmin_id()
             );
@@ -83,7 +84,7 @@ public class AdminLogInPageController {
             new AdminMainMenuPageController(
                     pageView,
                     pageModel,
-                    AdminClientModel.adminService,
+                    AdminClient_Model.adminService,
                     AdminClient_Java.getSessionToken(),
                     admin.getAdmin_id()
             );

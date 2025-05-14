@@ -2,7 +2,7 @@ package Client_Java.admin.view;
 
 import Client_Java.admin.AdminClient_Java;
 import Client_Java.admin.controller.AdminMainMenuPageController;
-import Client_Java.admin.model.AdminClientModel;
+import Client_Java.admin.AdminClient_Model;
 import Client_Java.admin.model.AdminMainMenuPageModel;
 import Client_Java.admin.view.modals.DeletePlayerConfirmationPopupView;
 import Client_Java.admin.view.modals.EditPlayerPopupView;
@@ -322,7 +322,7 @@ public class AdminPlayerListPageView {
             System.out.println("[DEBUG] AdminMainMenuPageView loaded successfully.");
 
             AdminMainMenuPageModel pageModel = new AdminMainMenuPageModel(
-                    AdminClientModel.adminService,
+                    AdminClient_Model.adminService,
                     AdminClient_Java.getSessionToken(),
                     admin.getAdmin_id()
             );
@@ -330,7 +330,7 @@ public class AdminPlayerListPageView {
             new AdminMainMenuPageController(
                     pageView,
                     pageModel,
-                    AdminClientModel.adminService,
+                    AdminClient_Model.adminService,
                     AdminClient_Java.getSessionToken(),
                     admin.getAdmin_id()
             );

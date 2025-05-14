@@ -2,7 +2,7 @@ package Client_Java.admin.view;
 
 import Client_Java.admin.AdminClient_Java;
 import Client_Java.admin.controller.AdminMainMenuPageController;
-import Client_Java.admin.model.AdminClientModel;
+import Client_Java.admin.AdminClient_Model;
 import Client_Java.admin.model.AdminMainMenuPageModel;
 import Client_Java.admin.view.modals.CreatePlayerConfirmationPopupView;
 import Shared_Files.AdminAccount;
@@ -214,7 +214,7 @@ public class AdminCreateAccountPageView {
             System.out.println("[DEBUG] AdminMainMenuPageView loaded successfully.");
 
             AdminMainMenuPageModel pageModel = new AdminMainMenuPageModel(
-                    AdminClientModel.adminService,
+                    AdminClient_Model.adminService,
                     AdminClient_Java.getSessionToken(),
                     admin.getAdmin_id()
             );
@@ -222,7 +222,7 @@ public class AdminCreateAccountPageView {
             new AdminMainMenuPageController(
                     pageView,
                     pageModel,
-                    AdminClientModel.adminService,
+                    AdminClient_Model.adminService,
                     AdminClient_Java.getSessionToken(),
                     admin.getAdmin_id()
             );
@@ -357,6 +357,12 @@ public class AdminCreateAccountPageView {
 
     public void setNoticeVisible(boolean visible) {
         noticeLabel.setVisible(visible);
+    }
+
+    public void handleClearInputFields() {
+        fullNameTextField.clear();
+        usernameTextField.clear();
+        passwordTextField.clear();
     }
 
 

@@ -1,5 +1,6 @@
 package Client_Java.admin.controller;
 
+import Client_Java.admin.AdminClient_Model;
 import Client_Java.admin.model.*;
 import Client_Java.admin.view.*;
 import AdminIDL.AdminService;
@@ -112,7 +113,7 @@ public class AdminMainMenuPageController {
             }
 
             // Initialize the model and controller
-            AdminLogInPageModel model = new AdminLogInPageModel(AdminClientModel.authService);
+            AdminLogInPageModel model = new AdminLogInPageModel(AdminClient_Model.authService);
             new AdminLogInPageController(model, loginPageView);
 
             // Set the scene and stage

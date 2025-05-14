@@ -1,14 +1,14 @@
 package Client_Java.admin.controller;
 
 import Client_Java.admin.AdminClient_Java;
-import Client_Java.admin.model.AdminClientModel;
 import Client_Java.admin.model.AdminCreateAccountPageModel;
 import Client_Java.admin.view.AdminCreateAccountPageView;
 import AdminIDL.AccountExistsException;
 import AdminIDL.NotLoggedInException;
-import Shared_Files.AdminAccount;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.util.Duration;
 
 public class AdminCreateAccountPageController {
 
@@ -58,6 +58,14 @@ public class AdminCreateAccountPageController {
                 model.createPlayer(fullname, username, password);
                 view.setNoticeLabelText("Player account created successfully.");
                 view.setNoticeVisible(true);
+
+                // Add a 2-second delay to hide the notice label
+                PauseTransition delay = new PauseTransition(Duration.seconds(2));
+                delay.setOnFinished(event -> {
+                    view.setNoticeVisible(false);
+                    view.handleClearInputFields();
+                });
+                delay.play();
             } catch (AccountExistsException e) {
                 view.setNoticeLabelText("Error: Account already exists.");
                 view.setNoticeVisible(true);
