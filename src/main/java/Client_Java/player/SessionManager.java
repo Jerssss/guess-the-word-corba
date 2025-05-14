@@ -14,50 +14,99 @@ public class SessionManager {
     private static ORB orb;
     private static POA rootPoa;
     private static GameService gameService;
-    private static AuthenticationService authService;  // ← new
+    private static AuthenticationService authService;
 
-    public static void initOrb(ORB orbRef, POA poaRef) {
-        orb     = orbRef;
+    // --------------------
+    // ORB & POA management
+    // --------------------
+    public static synchronized void initOrb(ORB orbRef, POA poaRef) {
+        System.out.println("[DEBUG][SessionManager] initOrb()");
+        orb = orbRef;
         rootPoa = poaRef;
     }
-    public static ORB getOrb() { return orb; }
-    public static POA getPoa() { return rootPoa; }
+    public static synchronized ORB getOrb() {
+        System.out.println("[DEBUG][SessionManager] getOrb() -> " + orb);
+        return orb;
+    }
+    public static synchronized POA getPoa() {
+        System.out.println("[DEBUG][SessionManager] getPoa() -> " + rootPoa);
+        return rootPoa;
+    }
 
-    public static void setSessionToken(String token) {
+    // ---------------
+    // Session Token
+    // ---------------
+    public static synchronized void setSessionToken(String token) {
+        System.out.println("[DEBUG][SessionManager] setSessionToken(" + token + ")");
         sessionToken = token;
     }
-    public static String getSessionToken() {
+    public static synchronized String getSessionToken() {
+        System.out.println("[DEBUG][SessionManager] getSessionToken() -> " + sessionToken);
         return sessionToken;
     }
 
-    public static void setGameToken(String token) {
+    // ------------
+    // Game Token
+    // ------------
+    public static synchronized void setGameToken(String token) {
+        System.out.println("[DEBUG][SessionManager] setGameToken(" + token + ")");
         gameToken = token;
     }
-    public static String getGameToken() {
+    public static synchronized String getGameToken() {
+        System.out.println("[DEBUG][SessionManager] getGameToken() -> " + gameToken);
         return gameToken;
     }
 
-    public static void setLoggedInPlayer(PlayerAccount acct) {
+    // -------------------
+    // Logged-in Player
+    // -------------------
+    public static synchronized void setLoggedInPlayer(PlayerAccount acct) {
+        String user = (acct != null ? acct.getUsername() : "null");
+        System.out.println("[DEBUG][SessionManager] setLoggedInPlayer(" + user + ")");
         loggedInPlayer = acct;
     }
-    public static PlayerAccount getLoggedInPlayer() {
+    public static synchronized PlayerAccount getLoggedInPlayer() {
+        System.out.println("[DEBUG][SessionManager] getLoggedInPlayer() -> " +
+                (loggedInPlayer != null ? loggedInPlayer.getUsername() : "null"));
         return loggedInPlayer;
     }
 
-    public static void setGameService(GameService svc) {
+    // ----------------
+    // Game Service
+    // ----------------
+    public static synchronized void setGameService(GameService svc) {
+        System.out.println("[DEBUG][SessionManager] setGameService(" + svc + ")");
         gameService = svc;
     }
-    public static GameService getGameService() {
+    public static synchronized GameService getGameService() {
+        System.out.println("[DEBUG][SessionManager] getGameService() -> " + gameService);
         return gameService;
     }
 
-    /**
-     * Set and get methods for your CORBA AuthenticationService
-     */
-    public static void setAuthService(AuthenticationService svc) {
+    // -----------------------
+    // Authentication Service
+    // -----------------------
+    public static synchronized void setAuthService(AuthenticationService svc) {
+        System.out.println("[DEBUG][SessionManager] setAuthService(" + svc + ")");
         authService = svc;
     }
-    public static AuthenticationService getAuthService() {
+    public static synchronized AuthenticationService getAuthService() {
+        System.out.println("[DEBUG][SessionManager] getAuthService() -> " + authService);
         return authService;
+    }
+
+    // -----------------------
+    // Clear everything
+    // -----------------------
+    public static synchronized void clearSession() {
+        System.out.println("[DEBUG][SessionManager] clearSession()");
+        gameToken = null;
+        sessionToken = null;
+        loggedInPlayer = null;
+        // (OPTIONAL) if you ever need to clear services/ORB too:
+        // orb = null;
+        // rootPoa = null;
+        // gameService = null;
+        // authService = null;
     }
 }

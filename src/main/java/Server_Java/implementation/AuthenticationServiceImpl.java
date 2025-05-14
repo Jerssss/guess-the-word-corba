@@ -1,5 +1,6 @@
 package Server_Java.implementation;
 
+import Client_Java.player.SessionManager;
 import Server_Java.database.DatabaseConnection;
 import AuthenticationIDL.AlreadyLoggedInException;
 import AuthenticationIDL.AuthenticationException;
@@ -15,96 +16,106 @@ import java.util.Map;
 import java.util.UUID;
 
 public class AuthenticationServiceImpl extends AuthenticationServicePOA {
-
-
-    // Track active player callbacks and session tokens
     private final Map<Integer, LoginCallbackService> activePlayerCallbacks =
             Collections.synchronizedMap(new HashMap<>());
     private final Map<Integer, String> sessionTokens =
             Collections.synchronizedMap(new HashMap<>());
 
-    /** new: allow external code to check if a token is known/valid */
-    public synchronized boolean isTokenValid(String token) {
-        return sessionTokens.containsValue(token);
-    }
-
     @Override
-    public synchronized String login(String username, String password, IntHolder playerID, LoginCallbackService cb)
+    public synchronized String login(String username, String password,
+                                     IntHolder playerID, LoginCallbackService cb)
             throws AuthenticationException, AlreadyLoggedInException {
+        System.out.println("[DEBUG][AuthService] login() start for username='" + username + "'");
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // 1. Verify credentials
-            String query = "SELECT player_id, password, is_logged_in FROM players WHERE username = ?";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
+            // 1. Verify credentials: fetch player_id, stored password, and login flag
+            String lookup =
+                    "SELECT player_id, password, is_logged_in " +
+                            "FROM players " +
+                            "WHERE username = ?";
+            PreparedStatement fetchStmt = conn.prepareStatement(lookup);
+            fetchStmt.setString(1, username);
+            ResultSet rs = fetchStmt.executeQuery();
 
             if (!rs.next()) {
+                System.out.println("[DEBUG][AuthService] login() failed: username not found");
                 throw new AuthenticationException("Invalid username or password.");
             }
 
             int id = rs.getInt("player_id");
             String storedPwd = rs.getString("password");
             boolean isLoggedIn = rs.getBoolean("is_logged_in");
+            System.out.println("[DEBUG][AuthService] fetched player_id=" + id
+                    + ", is_logged_in=" + isLoggedIn);
 
+            // 2. Check password
             if (!storedPwd.equals(password)) {
+                System.out.println("[DEBUG][AuthService] login() failed: bad password for player_id=" + id);
                 throw new AuthenticationException("Invalid username or password.");
             }
 
-            // 2. If already logged in, force logout via callback
+            // 3. If already logged in, force-logout that session
             if (isLoggedIn && activePlayerCallbacks.containsKey(id)) {
+                String oldToken = sessionTokens.get(id);
+                System.out.println("[DEBUG][AuthService] existing session for playerID="
+                        + id + ", oldToken=" + oldToken + " → forcing logout");
                 try {
-                    String oldToken = sessionTokens.get(id);
                     activePlayerCallbacks.get(id).notifyForcedLogout(id, oldToken);
                 } catch (Exception e) {
-                    System.err.println("[AuthService] Failed to notify previous session for user " + id);
+                    System.err.println("[ERROR][AuthService] callback failed for playerID=" + id);
                     e.printStackTrace();
                 }
-                // Clean up old session
                 activePlayerCallbacks.remove(id);
                 sessionTokens.remove(id);
+                System.out.println("[DEBUG][AuthService] old session removed for playerID=" + id);
             }
 
-            // 3. Update DB: mark logged in
-            PreparedStatement update = conn.prepareStatement(
-                    "UPDATE players SET is_logged_in = 1 WHERE player_id = ?");
-            update.setInt(1, id);
-            update.executeUpdate();
+            // 4. Mark in DB as logged in
+            String markLoggedIn =
+                    "UPDATE players SET is_logged_in = 1 WHERE player_id = ?";
+            PreparedStatement updateStmt = conn.prepareStatement(markLoggedIn);
+            updateStmt.setInt(1, id);
+            updateStmt.executeUpdate();
+            System.out.println("[DEBUG][AuthService] players.is_logged_in set to 1 for player_id=" + id);
 
-            // 4. Generate new session token and store callback
+            // 5. Generate new token and store callback
             String newToken = UUID.randomUUID().toString();
             activePlayerCallbacks.put(id, cb);
             sessionTokens.put(id, newToken);
 
-            // 5. Return values
+            System.out.println("[DEBUG][AuthService] login() success for playerID="
+                    + id + ", newToken=" + newToken);
             playerID.value = id;
             return newToken;
 
         } catch (SQLException ex) {
-            System.err.println("[AuthService] Database error during login: " + ex.getMessage());
-            throw new AuthenticationException("Failed to connect to the Database");
+            System.err.println("[ERROR][AuthService] DB error during login: " + ex.getMessage());
+            throw new AuthenticationException("Database failure");
         }
     }
 
     @Override
     public synchronized void logout(int playerID, String sessionToken)
             throws NotLoggedInException {
-        // Validate session
-        String token = sessionTokens.get(playerID);
-        if (token == null || !token.equals(sessionToken)) {
+        System.out.println("[DEBUG][AuthService] logout() called for playerID="
+                + playerID + ", token=" + sessionToken);
+        String expected = sessionTokens.get(playerID);
+        if (expected == null || !expected.equals(sessionToken)) {
+            System.err.println("[WARN][AuthService] invalid logout token for playerID=" + playerID);
             throw new NotLoggedInException();
         }
-        // Update DB and clear session
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            PreparedStatement update = conn.prepareStatement(
-                    "UPDATE players SET is_logged_in = 0 WHERE player_id = ?");
-            update.setInt(1, playerID);
-            update.executeUpdate();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE players SET is_logged_in = 0 WHERE player_id = ?")) {
+            stmt.setInt(1, playerID);
+            stmt.executeUpdate();
+            System.out.println("[DEBUG][AuthService] players.is_logged_in set to 0 for player_id=" + playerID);
 
             activePlayerCallbacks.remove(playerID);
             sessionTokens.remove(playerID);
+            System.out.println("[DEBUG][AuthService] logout() complete for playerID=" + playerID);
         } catch (SQLException ex) {
-            System.err.println("[AuthService] Database error during logout: " + ex.getMessage());
-            // ignore or log
+            System.err.println("[ERROR][AuthService] DB error on logout: " + ex.getMessage());
         }
     }
 
