@@ -25,6 +25,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -43,8 +44,12 @@ public class GameRoomView {
     @FXML private FlowPane blanksFlowPane;
     @FXML private Label roundLabel;
     @FXML private Label lifeCountLabel;
-    @FXML private Label lifeCountLabel1; // Players count
+    @FXML private Label playerCountLabel; // Players count
     @FXML private Label timerLabel;
+    @FXML private Text timeLabel;
+    @FXML private Text playersLabel;
+
+
     @FXML private Button quitButton;
 
     @FXML private ImageView heartsImageView;
@@ -127,6 +132,7 @@ public class GameRoomView {
     @FXML
     private void initialize() {
         loadCustomFonts();
+        applyFonts();
         loadImage(gameRoomBackgroundImage, "/images/testUI/game_room.png");
         setupLetterImages();
         Platform.runLater(() -> {
@@ -188,23 +194,96 @@ public class GameRoomView {
         }
     }
 
-    private void loadCustomFonts() {
+    // Helper method to load a font and log details
+    private Font loadFont(String path, String fontName) {
         try {
-            amaticSC = Font.loadFont(getClass().getResourceAsStream(AMATICSC_FONT_PATH), 10);
-            pencilant = Font.loadFont(getClass().getResourceAsStream(PENCILANT_FONT_PATH), 10);
-
-            if (amaticSC == null) {
-                System.err.println("[ERROR] AmaticSC font not loaded. Using system font.");
-                amaticSC = Font.font("System", 12);
+            InputStream is = getClass().getResourceAsStream(path);
+            if (is == null) {
+                System.err.println("[ERROR] Font resource not found: " + path);
+                return null;
             }
-            if (pencilant == null) {
-                System.err.println("[ERROR] Pencilant font not loaded. Using system font.");
-                pencilant = Font.font("System", 12);
+            Font font = Font.loadFont(is, 10);
+            is.close();
+            if (font != null) {
+                System.out.println("[DEBUG] Successfully loaded font: " + fontName + ", Family: " + font.getFamily() + ", Path: " + path);
+            } else {
+                System.err.println("[ERROR] Failed to load font: " + fontName + " from " + path);
             }
+            return font;
+        } catch (IOException e) {
+            System.err.println("[ERROR] IO Exception loading font " + fontName + " from " + path + ": " + e.getMessage());
+            return null;
         } catch (Exception e) {
-            System.err.println("[ERROR] Font loading exception: " + e.getMessage());
-            amaticSC = Font.font("System", 12);
-            pencilant = Font.font("System", 12);
+            System.err.println("[ERROR] Unexpected error loading font " + fontName + " from " + path + ": " + e.getMessage());
+            return null;
+        }
+    }
+
+    private void loadCustomFonts() {
+        // Load fonts
+        pencilant = loadFont(PENCILANT_FONT_PATH, "Pencilant Script");
+        quickPencil = loadFont(QUICKPENCIL_FONT_PATH, "Quick Pencil Regular");
+        amaticSC = loadFont(AMATICSC_FONT_PATH, "AmaticSC Bold");
+
+        // Verify font family names and set fallbacks
+        if (pencilant == null || !pencilant.getFamily().toLowerCase().contains("pencilant")) {
+            System.err.println("[WARNING] Pencilant font not loaded or incorrect family. Using fallback: Arial");
+            pencilant = Font.font("Arial", 12);
+        }
+        if (quickPencil == null || !quickPencil.getFamily().toLowerCase().contains("quick pencil")) {
+            System.err.println("[WARNING] QuickPencil font not loaded or incorrect family. Using fallback: Arial");
+            quickPencil = Font.font("Arial", 12);
+        }
+        if (amaticSC == null || !amaticSC.getFamily().toLowerCase().contains("amatic")) {
+            System.err.println("[WARNING] AmaticSC font not loaded or incorrect family. Using fallback: Arial");
+            amaticSC = Font.font("Arial", 12);
+        }
+
+        // Log final font families
+        System.out.println("[DEBUG] Font families - Pencilant: " + pencilant.getFamily() +
+                ", QuickPencil: " + quickPencil.getFamily() +
+                ", AmaticSC: " + amaticSC.getFamily());
+    }
+
+    private void applyFonts() {
+        // Apply fonts to labels
+        if (roundLabel != null) {
+            roundLabel.setFont(Font.font(pencilant.getFamily(), 34));
+            System.out.println("[DEBUG] Applied font to roundLabel: " + pencilant.getFamily() + ", size: 34");
+        }
+        if (playerCountLabel != null) {
+            playerCountLabel.setFont(Font.font(pencilant.getFamily(), 36));
+            System.out.println("[DEBUG] Applied font to lifeCountLabel1: " + pencilant.getFamily() + ", size: 36");
+        }
+        if (timerLabel != null) {
+            timerLabel.setFont(Font.font(pencilant.getFamily(), 38));
+            System.out.println("[DEBUG] Applied font to timerLabel: " + pencilant.getFamily() + ", size: 38");
+        }
+        if (timeLabel != null) {
+            timeLabel.setFont(Font.font(pencilant.getFamily(), 38));
+            System.out.println("[DEBUG] Applied font to timerLabel: " + pencilant.getFamily() + ", size: 38");
+        }if (playersLabel != null) {
+            playersLabel.setFont(Font.font(pencilant.getFamily(), 38));
+            System.out.println("[DEBUG] Applied font to timerLabel: " + pencilant.getFamily() + ", size: 38");
+        }
+        // Apply font to quit button
+        if (quitButton != null) {
+            quitButton.setFont(Font.font(pencilant.getFamily(), 34));
+            System.out.println("[DEBUG] Applied font to quitButton: " + pencilant.getFamily() + ", size: 34");
+        }
+        // Apply fonts to blank labels (for word guessing)
+        for (Label blankLabel : blankLabels) {
+            if (blankLabel != null) {
+                blankLabel.setFont(Font.font(pencilant.getFamily(), 88));
+                System.out.println("[DEBUG] Applied font to blankLabel: " + pencilant.getFamily() + ", size: 88");
+            }
+        }
+        // Apply fonts to alphabet buttons
+        for (Button btn : alphabetButtons.values()) {
+            if (btn != null) {
+                btn.setFont(Font.font(pencilant.getFamily(), 20));
+                System.out.println("[DEBUG] Applied font to alphabet button: " + pencilant.getFamily() + ", size: 20");
+            }
         }
     }
 
@@ -288,9 +367,9 @@ public class GameRoomView {
         String[] row2 = {"I", "J", "K", "L", "M", "N", "O", "P", "Q"};
         String[] row3 = {"R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
-        final String baseStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
-        final String hoverStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
-        final String disabledStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: grey; -fx-text-fill: white; -fx-opacity: 0.0;";
+        final String baseStyle = "-fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
+        final String hoverStyle = "-fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
+        final String disabledStyle = "-fx-background-color: grey; -fx-text-fill: white; -fx-opacity: 0.0;";
 
         int buttonIndex = 0;
         for (int i = 0; i < row1.length && buttonIndex < alphabetPane.getChildren().size(); i++) {
@@ -368,6 +447,7 @@ public class GameRoomView {
         if (buttonIndex != 26) {
             System.err.println("[WARNING] Expected 26 alphabet buttons, found " + buttonIndex);
         }
+        applyFonts(); // Ensure alphabet buttons get fonts after setup
     }
 
     private void handleLetterGuess(char letter) {
@@ -406,7 +486,7 @@ public class GameRoomView {
         Button button = alphabetButtons.get(letter);
         if (button != null) {
             button.setDisable(true);
-            button.setStyle("-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: grey; -fx-text-fill: white; -fx-opacity: 0.0;");
+            button.setStyle("-fx-background-color: grey; -fx-text-fill: white; -fx-opacity: 0.0;");
         } else {
             System.err.println("[ERROR] Button not found for letter: " + letter);
         }
@@ -416,12 +496,12 @@ public class GameRoomView {
         System.out.println("[DEBUG] Disabling alphabet buttons");
         alphabetButtons.values().forEach(btn -> {
             btn.setDisable(true);
-            btn.setStyle("-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: grey; -fx-text-fill: white; -fx-opacity: 0.0;");
+            btn.setStyle("-fx-background-color: grey; -fx-text-fill: white; -fx-opacity: 0.0;");
         });
     }
 
     public void enableAlphabetButtons() {
-        final String baseStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
+        final String baseStyle = "-fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
         System.out.println("[DEBUG] Enabling alphabet buttons");
         alphabetButtons.values().forEach(btn -> {
             btn.setDisable(false);
@@ -430,7 +510,7 @@ public class GameRoomView {
     }
 
     public void resetAlphabetButtons() {
-        final String baseStyle = "-fx-font-size: 20; -fx-font-family: 'Pencilant Script'; -fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
+        final String baseStyle = "-fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
         alphabetButtons.values().forEach(btn -> {
             btn.setDisable(false);
             btn.setStyle(baseStyle);
@@ -440,8 +520,8 @@ public class GameRoomView {
     }
 
     public void updateLifeCount(int lives) {
-        if (lifeCountLabel1 != null) { // Use lifeCountLabel1 as per FXML
-            lifeCountLabel1.setText(String.valueOf(lives));
+        if (playerCountLabel != null) { // Use lifeCountLabel1 as per FXML
+            playerCountLabel.setText(String.valueOf(lives));
             updateHeartsImage(lives);
         } else {
             System.err.println("[ERROR] lifeCountLabel1 is null in updateLifeCount");
@@ -493,13 +573,14 @@ public class GameRoomView {
             blankImg.setTranslateY(50);
 
             Label lbl = new Label("_");
-            lbl.setStyle("-fx-font-size:88; -fx-font-family:'Quick Pencil Regular'; -fx-text-fill:#61ff82;");
+            lbl.setStyle("-fx-text-fill:#61ff82;"); // Keep text color
             lbl.setPrefSize(58, 68);
             lbl.setAlignment(javafx.geometry.Pos.CENTER);
             cell.getChildren().addAll(blankImg, lbl);
             blanksFlowPane.getChildren().add(cell);
             blankLabels.add(lbl);
         }
+        applyFonts(); // Re-apply fonts to include new blank labels
         System.out.println("[DEBUG] setupBlanks completed, blankLabels size: " + blankLabels.size());
     }
 
@@ -763,7 +844,7 @@ public class GameRoomView {
     public FlowPane getBlanksFlowPane() { return blanksFlowPane; }
     public Label getRoundLabel() { return roundLabel; }
     public Label getLifeCountLabel() { return lifeCountLabel; }
-    public Label getLifeCountLabel1() { return lifeCountLabel1; }
+    public Label getLifeCountLabel1() { return playerCountLabel; }
     public Label getTimerLabel() { return timerLabel; }
     public Button getQuitButton() { return quitButton; }
 }

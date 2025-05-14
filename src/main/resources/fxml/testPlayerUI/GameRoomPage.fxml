@@ -50,12 +50,12 @@
                         <Glow level="0.45" />
                      </effect>
                   </Label>
-                  <Text fill="#fff3be" layoutX="15.0" layoutY="43.0" rotate="3.4" text="Time: ">
+                  <Text fx:id="timeLabel" fill="#fff3be" layoutX="15.0" layoutY="43.0" rotate="3.4" text="Time: ">
                      <font>
                         <Font name="Pencilant Script" size="38.0" />
                      </font>
                   </Text>
-                  <Label fx:id="lifeCountLabel1" layoutX="134.0" layoutY="57.0" rotate="3.4" text="5" textFill="WHITE">
+                  <Label fx:id="playerCountLabel" layoutX="134.0" layoutY="57.0" rotate="3.4" text="5" textFill="WHITE">
                      <font>
                         <Font name="Pencilant Script" size="36.0" />
                      </font>
@@ -63,7 +63,7 @@
                         <Glow level="0.45" />
                      </effect>
                   </Label>
-                  <Text fill="#fff3be" layoutX="14.0" layoutY="93.0" rotate="3.4" text="Players:">
+                  <Text fx:id="playersLabel" fill="#fff3be" layoutX="14.0" layoutY="93.0" rotate="3.4" text="Players:">
                      <font>
                         <Font name="Pencilant Script" size="38.0" />
                      </font>
@@ -382,7 +382,7 @@
             </Pane>
             <Pane layoutX="279.0" layoutY="278.0" prefHeight="200.0" prefWidth="707.0">
                <children>
-                  <FlowPane fx:id="blanksFlowPane" prefHeight="200.0" prefWidth="707.0">
+                  <FlowPane fx:id="blanksFlowPane" alignment="CENTER" prefHeight="200.0" prefWidth="707.0">
                      <children>
                         <Pane prefHeight="68.0" prefWidth="58.0">
                            <children>
