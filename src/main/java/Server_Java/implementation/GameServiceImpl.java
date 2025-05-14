@@ -426,16 +426,24 @@ public class GameServiceImpl extends GameServicePOA {
     ) throws NotLoggedInException {
         Lobby lobby = lobbies.get(gameToken);
         if (lobby == null) {
-            System.err.println("[GameService ERROR] registerCallBack: Lobby not found for gameToken=" + gameToken);
             throw new NotLoggedInException();
         }
         lobby.callbacks.put(sessionToken, cb);
-        sessionToCallback.put(sessionToken, cb);
         System.out.println("[GameService DEBUG] registerCallBack: playerID=" + playerID +
                 ", lobby=" + gameToken +
                 " (gameCallbacks=" + lobby.callbacks.size() + ")");
-    }
 
+        // Check if a round is active and notify the late joiner
+        Integer currentRound = currentRoundNumbers.get(gameToken); // Assume a map tracking active rounds
+        if (currentRound != null) {
+            try {
+                cb.notifyRoundStart(gameToken, currentRound, sessionToken);
+                System.out.println("[GameService DEBUG] Sent notifyRoundStart for round=" + currentRound + " to late joiner playerID=" + playerID);
+            } catch (Exception e) {
+                System.err.println("[GameService ERROR] Failed to notify late joiner: " + e.getMessage());
+            }
+        }
+    }
     // Starts a new round in the game with a new word.
     @Override
     public synchronized int startRound(
