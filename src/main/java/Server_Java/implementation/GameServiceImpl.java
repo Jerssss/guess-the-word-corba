@@ -206,7 +206,7 @@ public class GameServiceImpl extends GameServicePOA {
             }
         }
 
-        // 4)If enough players are in the waiting lobby, start a countdown to begin the game.
+        // 4) If enough players are in the waiting lobby, start a countdown to begin the game.
         if (target.players.size() >= target.minimumPlayers) {
             // Cancel any existing pending countdown for this lobby
             ScheduledFuture<?> oldTask = pendingCountdowns.remove(target.token);
@@ -231,14 +231,27 @@ public class GameServiceImpl extends GameServicePOA {
 
                 // B) Schedule the game to start after the countdown finishes.
                 countdownScheduler.schedule(() -> {
-                    for (GameCallBackService gcb : lobbyRef.callbacks.values()) {
+                    for (Map.Entry<String, GameCallBackService> entry : lobbyRef.callbacks.entrySet()) {
+                        String callbackSessionToken = entry.getKey();
+                        GameCallBackService gcb = entry.getValue();
                         try {
-                            gcb.notifyGameStart(lobbyRef.token, sessionToken);
+                            gcb.notifyGameStart(lobbyRef.token, callbackSessionToken);
+                            System.out.println("[GameService DEBUG] Sent notifyGameStart to session=" + callbackSessionToken);
                         } catch (Exception e) {
-                            System.err.println("[GameService ERROR] Failed to notify game start: " + e.getMessage());
+                            System.err.println("[GameService ERROR] Failed to notify game start for session=" + callbackSessionToken + ": " + e.getMessage());
                         }
                     }
                     System.out.println("[GameService DEBUG] notifyGameStart sent for lobby=" + lobbyRef.token);
+
+                    // Schedule the first round
+                    countdownScheduler.schedule(() -> {
+                        try {
+                            startRound(lobbyRef.token, 1);
+                            System.out.println("[GameService DEBUG] Scheduled and started round 1 for lobby=" + lobbyRef.token);
+                        } catch (GameNotFoundException e) {
+                            System.err.println("[GameService ERROR] Failed to start round 1: " + e.getMessage());
+                        }
+                    }, 5, TimeUnit.SECONDS);
                 }, lobbyRef.countdownSeconds, TimeUnit.SECONDS);
             }, 100, TimeUnit.MILLISECONDS);
 
@@ -374,7 +387,6 @@ public class GameServiceImpl extends GameServicePOA {
     public synchronized int startGame(int playerID, String sessionToken)
             throws NotEnoughPlayersException {
 
-        // Get the lobby for the player's session.
         String token = sessionToGame.get(sessionToken);
         Lobby lobby = (token == null ? null : lobbies.get(token));
         if (lobby == null || lobby.players.size() < DEFAULT_MIN_PLAYERS) {
@@ -393,25 +405,28 @@ public class GameServiceImpl extends GameServicePOA {
             System.err.println("[GameService ERROR] Error updating game status: " + e.getMessage());
         }
 
-        // 1) Notify all players that the game is starting.
-        for (GameCallBackService cb : lobby.callbacks.values()) {
+        // Notify all players that the game is starting.
+        for (Map.Entry<String, GameCallBackService> entry : lobby.callbacks.entrySet()) {
+            String callbackSessionToken = entry.getKey();
+            GameCallBackService cb = entry.getValue();
             try {
-                cb.notifyGameStart(token, sessionToken);
-                System.out.println("[GameService DEBUG] Sent notifyGameStart to session=" + sessionToken);
+                cb.notifyGameStart(token, callbackSessionToken);
+                System.out.println("[GameService DEBUG] Sent notifyGameStart to session=" + callbackSessionToken);
             } catch (Exception e) {
-                System.err.println("[GameService ERROR] Failed to notify game start: " + e.getMessage());
+                System.err.println("[GameService ERROR] Failed to notify game start for session=" + callbackSessionToken + ": " + e.getMessage());
             }
         }
         System.out.println("[GameService DEBUG] notifyGameStart sent for lobby=" + token);
 
-        // 2) Start the first round of the game.
-        try {
-            startRound(token, 1, playerID, sessionToken);
-            System.out.println("[GameService DEBUG] Started round 1 for lobby=" + token);
-        } catch (Exception e) {
-            System.err.println("[GameService ERROR] Failed to start round 1: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // Schedule the first round to start after a short delay (e.g., 5 seconds).
+        countdownScheduler.schedule(() -> {
+            try {
+                startRound(token, 1);
+                System.out.println("[GameService DEBUG] Scheduled and started round 1 for lobby=" + token);
+            } catch (GameNotFoundException e) {
+                System.err.println("[GameService ERROR] Failed to start round 1: " + e.getMessage());
+            }
+        }, 5, TimeUnit.SECONDS);
 
         return lobby.players.size();
     }
@@ -434,7 +449,7 @@ public class GameServiceImpl extends GameServicePOA {
                 " (gameCallbacks=" + lobby.callbacks.size() + ")");
 
         // Check if a round is active and notify the late joiner
-        Integer currentRound = currentRoundNumbers.get(gameToken); // Assume a map tracking active rounds
+        Integer currentRound = currentRoundNumbers.get(gameToken);
         if (currentRound != null) {
             try {
                 cb.notifyRoundStart(gameToken, currentRound, sessionToken);
@@ -444,15 +459,16 @@ public class GameServiceImpl extends GameServicePOA {
             }
         }
     }
-    // Starts a new round in the game with a new word.
+
     @Override
-    public synchronized int startRound(
-            String gameToken,
-            int roundNumber,
-            int playerID,
-            String sessionToken
-    ) throws GameNotFoundException, NotLoggedInException {
-        System.out.println("[GameService DEBUG] startRound called for gameToken=" + gameToken + ", round=" + roundNumber + ", playerID=" + playerID + ", sessionToken=" + sessionToken + ", thread=" + Thread.currentThread().getId());
+    public int startRound(String gameToken, int roundNumber, int playerID, String sessionToken) throws GameNotFoundException, NotLoggedInException {
+        return 0;
+    }
+
+    // Starts a new round in the game with a new word (server-internal).
+    public synchronized void startRound(String gameToken, int roundNumber)
+            throws GameNotFoundException {
+        System.out.println("[GameService DEBUG] startRound called for gameToken=" + gameToken + ", round=" + roundNumber + ", thread=" + Thread.currentThread().getId());
 
         // Check if the lobby exists.
         Lobby lobby = lobbies.get(gameToken);
@@ -470,7 +486,7 @@ public class GameServiceImpl extends GameServicePOA {
             ResultSet rs = stmt.executeQuery();
             if (rs.next() && rs.getInt(1) > 0) {
                 System.out.println("[GameService DEBUG] Round already exists for gameId=" + lobby.gameId + ", round=" + roundNumber);
-                return lobby.players.size();
+                return;
             }
         } catch (SQLException e) {
             System.err.println("[GameService ERROR] Error checking existing round: " + e.getMessage());
@@ -482,7 +498,7 @@ public class GameServiceImpl extends GameServicePOA {
         String currentWord;
         do {
             currentWord = WORDS.get(RAND.nextInt(WORDS.size())).toUpperCase();
-        } while (usedWords.contains(currentWord)); // Ensure word is unique within the game
+        } while (usedWords.contains(currentWord));
         usedWords.add(currentWord);
         roundWords.put(roundKey, currentWord);
         System.out.println("[GameService DEBUG] Assigned new word for gameToken=" + gameToken + ", round=" + roundNumber + ": " + currentWord);
@@ -499,7 +515,7 @@ public class GameServiceImpl extends GameServicePOA {
         } catch (SQLException e) {
             if (e.getSQLState().equals("23000")) { // Duplicate key error
                 System.out.println("[GameService DEBUG] Round already exists for gameId=" + lobby.gameId + ", round=" + roundNumber);
-                return lobby.players.size();
+                return;
             }
             System.err.println("[GameService ERROR] Error creating round record: " + e.getMessage());
             throw new RuntimeException("Failed to create round record", e);
@@ -508,21 +524,22 @@ public class GameServiceImpl extends GameServicePOA {
         // Update the current round number
         currentRoundNumbers.put(gameToken, roundNumber);
 
-        // Set up round state for each player (e.g., guessed letters).
-        Map<Integer, RoundState> perPlayerMap =
-                roundStates.computeIfAbsent(gameToken, t -> new ConcurrentHashMap<>());
+        // Set up round state for each player
+        Map<Integer, RoundState> perPlayerMap = roundStates.computeIfAbsent(gameToken, t -> new ConcurrentHashMap<>());
         perPlayerMap.clear();
         for (Integer pid : lobby.players) {
             perPlayerMap.put(pid, new RoundState(currentWord));
         }
 
         // Notify all players that the round has started.
-        for (GameCallBackService cb : lobby.callbacks.values()) {
+        for (Map.Entry<String, GameCallBackService> entry : lobby.callbacks.entrySet()) {
+            String sessionToken = entry.getKey();
+            GameCallBackService cb = entry.getValue();
             try {
                 cb.notifyRoundStart(gameToken, roundNumber, sessionToken);
-                System.out.println("[GameService DEBUG] Sent notifyRoundStart for round=" + roundNumber);
+                System.out.println("[GameService DEBUG] Sent notifyRoundStart for round=" + roundNumber + " to session=" + sessionToken);
             } catch (Exception e) {
-                System.err.println("[GameService ERROR] Failed to notify round start: " + e.getMessage());
+                System.err.println("[GameService ERROR] Failed to notify round start for session=" + sessionToken + ": " + e.getMessage());
             }
         }
 
@@ -537,8 +554,6 @@ public class GameServiceImpl extends GameServicePOA {
                 TimeUnit.SECONDS
         );
         roundTimeoutTasks.put(gameToken, task);
-
-        return lobby.players.size();
     }
 
     // Handles what happens when a round's time runs out.
@@ -585,19 +600,11 @@ public class GameServiceImpl extends GameServicePOA {
         if (roundNumber < lobby.totalRounds) {
             // Schedule the next round start
             countdownScheduler.schedule(() -> {
-                Integer anyPid = lobby.players.isEmpty() ? null : lobby.players.get(0);
-                String anySession = sessionToGame.entrySet().stream()
-                        .filter(e -> gameToken.equals(e.getValue()))
-                        .map(Map.Entry::getKey)
-                        .findFirst()
-                        .orElse(null);
-                if (anyPid != null && anySession != null) {
-                    try {
-                        startRound(gameToken, roundNumber + 1, anyPid, anySession);
-                        System.out.println("[GameService DEBUG] Scheduled next round=" + (roundNumber + 1));
-                    } catch (Exception e) {
-                        System.err.println("[GameService ERROR] Failed to schedule next round: " + e.getMessage());
-                    }
+                try {
+                    startRound(gameToken, roundNumber + 1);
+                    System.out.println("[GameService DEBUG] Scheduled next round=" + (roundNumber + 1));
+                } catch (GameNotFoundException e) {
+                    System.err.println("[GameService ERROR] Failed to schedule next round: " + e.getMessage());
                 }
             }, lobby.nextRoundDelay, TimeUnit.SECONDS);
         } else {
@@ -693,12 +700,14 @@ public class GameServiceImpl extends GameServicePOA {
                 } catch (NotLoggedInException e) {
                     System.err.println("[GameService ERROR] Failed to get game winner: " + e.getMessage());
                 }
-                for (GameCallBackService cb : lobby.callbacks.values()) {
+                for (Map.Entry<String, GameCallBackService> entry : lobby.callbacks.entrySet()) {
+                    String sessionToken = entry.getKey();
+                    GameCallBackService cb = entry.getValue();
                     try {
-                        cb.notifyGameEnd(gameToken, anySession, finalGameWinner);
-                        System.out.println("[GameService DEBUG] Sent notifyGameEnd with winner=" + (finalGameWinner.isEmpty() ? "none" : finalGameWinner));
+                        cb.notifyGameEnd(gameToken, sessionToken, finalGameWinner);
+                        System.out.println("[GameService DEBUG] Sent notifyGameEnd with winner=" + (finalGameWinner.isEmpty() ? "none" : finalGameWinner) + " to session=" + sessionToken);
                     } catch (Exception e) {
-                        System.err.println("[GameService ERROR] Failed to notify game end: " + e.getMessage());
+                        System.err.println("[GameService ERROR] Failed to notify game end for session=" + sessionToken + ": " + e.getMessage());
                     }
                 }
                 cleanupGame(gameToken);
@@ -792,22 +801,24 @@ public class GameServiceImpl extends GameServicePOA {
                 // If all players have lost, end the round.
                 if (allLost) {
                     // a) Notify players the round ended with no winner.
-                    lobby.callbacks.values().forEach(cb -> {
+                    for (Map.Entry<String, GameCallBackService> entry : lobby.callbacks.entrySet()) {
+                        String callbackSessionToken = entry.getKey();
+                        GameCallBackService cb = entry.getValue();
                         try {
-                            cb.notifyRoundEnd(gameToken, sessionToken, "", word);
-                            System.out.println("[GameService DEBUG] Sent notifyRoundEnd (no winner), word=" + word + ", session=" + sessionToken);
+                            cb.notifyRoundEnd(gameToken, callbackSessionToken, "", word);
+                            System.out.println("[GameService DEBUG] Sent notifyRoundEnd (no winner), word=" + word + ", session=" + callbackSessionToken);
                         } catch (Exception e) {
-                            System.err.println("[GameService ERROR] Failed to notify round end: " + e.getMessage());
+                            System.err.println("[GameService ERROR] Failed to notify round end for session=" + callbackSessionToken + ": " + e.getMessage());
                         }
-                    });
+                    }
 
                     if (roundNum < lobby.totalRounds) {
                         // b) schedule next round after delay
                         countdownScheduler.schedule(() -> {
                             try {
-                                startRound(gameToken, roundNum + 1, playerID, sessionToken);
+                                startRound(gameToken, roundNum + 1);
                                 System.out.println("[GameService DEBUG] Scheduled next round=" + (roundNum + 1));
-                            } catch (Exception e) {
+                            } catch (GameNotFoundException e) {
                                 System.err.println("[GameService ERROR] Failed to schedule next round: " + e.getMessage());
                             }
                         }, lobby.nextRoundDelay, TimeUnit.SECONDS);
@@ -835,14 +846,16 @@ public class GameServiceImpl extends GameServicePOA {
                             }
 
                             // Notify players the game ended with no winner.
-                            lobby.callbacks.values().forEach(cb -> {
+                            for (Map.Entry<String, GameCallBackService> entry : lobby.callbacks.entrySet()) {
+                                String callbackSessionToken = entry.getKey();
+                                GameCallBackService cb = entry.getValue();
                                 try {
-                                    cb.notifyGameEnd(gameToken, sessionToken, "");
-                                    System.out.println("[GameService DEBUG] Sent notifyGameEnd (no winner)");
+                                    cb.notifyGameEnd(gameToken, callbackSessionToken, "");
+                                    System.out.println("[GameService DEBUG] Sent notifyGameEnd (no winner) to session=" + callbackSessionToken);
                                 } catch (Exception e) {
-                                    System.err.println("[GameService ERROR] Failed to notify game end: " + e.getMessage());
+                                    System.err.println("[GameService ERROR] Failed to notify game end for session="  + ": " + e.getMessage());
                                 }
-                            });
+                            }
                             cleanupGame(gameToken);
                         }, lobby.nextRoundDelay, TimeUnit.SECONDS);
                     }
@@ -862,14 +875,16 @@ public class GameServiceImpl extends GameServicePOA {
             String username = lookupUsername(playerID);
 
             // a) Notify players the round ended with a winner.
-            lobby.callbacks.values().forEach(cb -> {
+            for (Map.Entry<String, GameCallBackService> entry : lobby.callbacks.entrySet()) {
+                String callbackSessionToken = entry.getKey();
+                GameCallBackService cb = entry.getValue();
                 try {
-                    cb.notifyRoundEnd(gameToken, sessionToken, username, word);
-                    System.out.println("[GameService DEBUG] Sent notifyRoundEnd with winner=" + username + ", word=" + word + ", session=" + sessionToken);
+                    cb.notifyRoundEnd(gameToken, callbackSessionToken, username, word);
+                    System.out.println("[GameService DEBUG] Sent notifyRoundEnd with winner=" + username + ", word=" + word + ", session=" + callbackSessionToken);
                 } catch (Exception e) {
-                    System.err.println("[GameService ERROR] Failed to notify round end: " + e.getMessage());
+                    System.err.println("[GameService ERROR] Failed to notify round end for session=" + callbackSessionToken + ": " + e.getMessage());
                 }
-            });
+            }
             roundWinners.put(gameToken + ":" + roundNum, username);
             updateRoundWinnerInDB(gameToken, roundNum, username);
 
@@ -877,9 +892,9 @@ public class GameServiceImpl extends GameServicePOA {
                 // b) schedule next round
                 countdownScheduler.schedule(() -> {
                     try {
-                        startRound(gameToken, roundNum + 1, playerID, sessionToken);
+                        startRound(gameToken, roundNum + 1);
                         System.out.println("[GameService DEBUG] Scheduled next round=" + (roundNum + 1));
-                    } catch (Exception e) {
+                    } catch (GameNotFoundException e) {
                         System.err.println("[GameService ERROR] Failed to schedule next round: " + e.getMessage());
                     }
                 }, lobby.nextRoundDelay, TimeUnit.SECONDS);
@@ -928,14 +943,16 @@ public class GameServiceImpl extends GameServicePOA {
                     }
 
                     // Notify players the game ended with a winner.
-                    lobby.callbacks.values().forEach(cb -> {
+                    for (Map.Entry<String, GameCallBackService> entry : lobby.callbacks.entrySet()) {
+                        String callbackSessionToken = entry.getKey();
+                        GameCallBackService cb = entry.getValue();
                         try {
-                            cb.notifyGameEnd(gameToken, sessionToken, username);
-                            System.out.println("[GameService DEBUG] Sent notifyGameEnd with winner=" + username);
+                            cb.notifyGameEnd(gameToken, callbackSessionToken, username);
+                            System.out.println("[GameService DEBUG] Sent notifyGameEnd with winner=" + username + " to session=" + callbackSessionToken);
                         } catch (Exception e) {
-                            System.err.println("[GameService ERROR] Failed to notify game end: " + e.getMessage());
+                            System.err.println("[GameService ERROR] Failed to notify game end for session=" + callbackSessionToken + ": " + e.getMessage());
                         }
-                    });
+                    }
                     cleanupGame(gameToken);
                 }, lobby.nextRoundDelay, TimeUnit.SECONDS);
             }
