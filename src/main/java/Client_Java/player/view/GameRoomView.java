@@ -40,75 +40,136 @@ import java.util.List;
 import java.util.Map;
 
 public class GameRoomView {
-    @FXML private ImageView gameRoomBackgroundImage;
-    @FXML private FlowPane blanksFlowPane;
-    @FXML private Label roundLabel;
-    @FXML private Label lifeCountLabel;
-    @FXML private Label playerCountLabel; // Players count
-    @FXML private Label timerLabel;
-    @FXML private Text timeLabel;
-    @FXML private Text playersLabel;
+    @FXML
+    private ImageView gameRoomBackgroundImage;
+    @FXML
+    private FlowPane blanksFlowPane;
+    @FXML
+    private Label roundLabel;
+    @FXML
+    private Label lifeCountLabel;
+    @FXML
+    private Label playerCountLabel; // Players count
+    @FXML
+    private Label timerLabel;
+    @FXML
+    private Text timeLabel;
+    @FXML
+    private Text playersLabel;
 
+    @FXML
+    private Button quitButton;
 
-    @FXML private Button quitButton;
-
-    @FXML private ImageView heartsImageView;
+    @FXML
+    private ImageView heartsImageView;
 
     // Correct guess ImageViews
-    @FXML private ImageView correctGuessA;
-    @FXML private ImageView correctGuessB;
-    @FXML private ImageView correctGuessC;
-    @FXML private ImageView correctGuessD;
-    @FXML private ImageView correctGuessE;
-    @FXML private ImageView correctGuessF;
-    @FXML private ImageView correctGuessG;
-    @FXML private ImageView correctGuessH;
-    @FXML private ImageView correctGuessI;
-    @FXML private ImageView correctGuessJ;
-    @FXML private ImageView correctGuessK;
-    @FXML private ImageView correctGuessL;
-    @FXML private ImageView correctGuessM;
-    @FXML private ImageView correctGuessN;
-    @FXML private ImageView correctGuessO;
-    @FXML private ImageView correctGuessP;
-    @FXML private ImageView correctGuessQ;
-    @FXML private ImageView correctGuessR;
-    @FXML private ImageView correctGuessS;
-    @FXML private ImageView correctGuessT;
-    @FXML private ImageView correctGuessU;
-    @FXML private ImageView correctGuessV;
-    @FXML private ImageView correctGuessW;
-    @FXML private ImageView correctGuessX;
-    @FXML private ImageView correctGuessY;
-    @FXML private ImageView correctGuessZ;
+    @FXML
+    private ImageView correctGuessA;
+    @FXML
+    private ImageView correctGuessB;
+    @FXML
+    private ImageView correctGuessC;
+    @FXML
+    private ImageView correctGuessD;
+    @FXML
+    private ImageView correctGuessE;
+    @FXML
+    private ImageView correctGuessF;
+    @FXML
+    private ImageView correctGuessG;
+    @FXML
+    private ImageView correctGuessH;
+    @FXML
+    private ImageView correctGuessI;
+    @FXML
+    private ImageView correctGuessJ;
+    @FXML
+    private ImageView correctGuessK;
+    @FXML
+    private ImageView correctGuessL;
+    @FXML
+    private ImageView correctGuessM;
+    @FXML
+    private ImageView correctGuessN;
+    @FXML
+    private ImageView correctGuessO;
+    @FXML
+    private ImageView correctGuessP;
+    @FXML
+    private ImageView correctGuessQ;
+    @FXML
+    private ImageView correctGuessR;
+    @FXML
+    private ImageView correctGuessS;
+    @FXML
+    private ImageView correctGuessT;
+    @FXML
+    private ImageView correctGuessU;
+    @FXML
+    private ImageView correctGuessV;
+    @FXML
+    private ImageView correctGuessW;
+    @FXML
+    private ImageView correctGuessX;
+    @FXML
+    private ImageView correctGuessY;
+    @FXML
+    private ImageView correctGuessZ;
 
     // Wrong guess ImageViews
-    @FXML private ImageView wrongGuessA;
-    @FXML private ImageView wrongGuessB;
-    @FXML private ImageView wrongGuessC;
-    @FXML private ImageView wrongGuessD;
-    @FXML private ImageView wrongGuessE;
-    @FXML private ImageView wrongGuessF;
-    @FXML private ImageView wrongGuessG;
-    @FXML private ImageView wrongGuessH;
-    @FXML private ImageView wrongGuessI;
-    @FXML private ImageView wrongGuessJ;
-    @FXML private ImageView wrongGuessK;
-    @FXML private ImageView wrongGuessL;
-    @FXML private ImageView wrongGuessM;
-    @FXML private ImageView wrongGuessN;
-    @FXML private ImageView wrongGuessO;
-    @FXML private ImageView wrongGuessP;
-    @FXML private ImageView wrongGuessQ;
-    @FXML private ImageView wrongGuessR;
-    @FXML private ImageView wrongGuessS;
-    @FXML private ImageView wrongGuessT;
-    @FXML private ImageView wrongGuessU;
-    @FXML private ImageView wrongGuessV;
-    @FXML private ImageView wrongGuessW;
-    @FXML private ImageView wrongGuessX;
-    @FXML private ImageView wrongGuessY;
-    @FXML private ImageView wrongGuessZ;
+    @FXML
+    private ImageView wrongGuessA;
+    @FXML
+    private ImageView wrongGuessB;
+    @FXML
+    private ImageView wrongGuessC;
+    @FXML
+    private ImageView wrongGuessD;
+    @FXML
+    private ImageView wrongGuessE;
+    @FXML
+    private ImageView wrongGuessF;
+    @FXML
+    private ImageView wrongGuessG;
+    @FXML
+    private ImageView wrongGuessH;
+    @FXML
+    private ImageView wrongGuessI;
+    @FXML
+    private ImageView wrongGuessJ;
+    @FXML
+    private ImageView wrongGuessK;
+    @FXML
+    private ImageView wrongGuessL;
+    @FXML
+    private ImageView wrongGuessM;
+    @FXML
+    private ImageView wrongGuessN;
+    @FXML
+    private ImageView wrongGuessO;
+    @FXML
+    private ImageView wrongGuessP;
+    @FXML
+    private ImageView wrongGuessQ;
+    @FXML
+    private ImageView wrongGuessR;
+    @FXML
+    private ImageView wrongGuessS;
+    @FXML
+    private ImageView wrongGuessT;
+    @FXML
+    private ImageView wrongGuessU;
+    @FXML
+    private ImageView wrongGuessV;
+    @FXML
+    private ImageView wrongGuessW;
+    @FXML
+    private ImageView wrongGuessX;
+    @FXML
+    private ImageView wrongGuessY;
+    @FXML
+    private ImageView wrongGuessZ;
 
     private Font amaticSC;
     private Font pencilant;
@@ -128,6 +189,9 @@ public class GameRoomView {
     private Timeline roundTimer;
     private int secondsRemaining;
     private final List<Label> blankLabels = new ArrayList<>();
+    private boolean isKeyboardInputEnabled = false; // Track keyboard input state
+    private Stage lostPopupStage; // Track the "You lost" popup
+    private Rectangle lostOverlay; // Track the overlay for the "You lost" popup
 
     @FXML
     private void initialize() {
@@ -138,38 +202,7 @@ public class GameRoomView {
         Platform.runLater(() -> {
             setupAlphabet();
             disableAlphabetButtons(); // Disable buttons initially
-
-            // Add key event handler for keyboard input
-            if (blanksFlowPane.getScene() != null) {
-                blanksFlowPane.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                    String key = event.getText().toUpperCase();
-                    if (key.length() == 1) {
-                        char letter = key.charAt(0);
-                        if (letter >= 'A' && letter <= 'Z') {
-                            Button button = alphabetButtons.get(letter);
-                            if (button != null && !button.isDisabled() && controller != null) {
-                                try {
-                                    // Check if round is active
-                                    java.lang.reflect.Field field = GameRoomController.class.getDeclaredField("isRoundActive");
-                                    field.setAccessible(true);
-                                    boolean isRoundActive = (boolean) field.get(controller);
-                                    if (isRoundActive) {
-                                        System.out.println("[DEBUG] Keyboard input: Letter " + letter);
-                                        handleLetterGuess(letter);
-                                    } else {
-                                        System.out.println("[DEBUG] Ignoring keyboard input for " + letter + ": Round not active");
-                                    }
-                                } catch (Exception e) {
-                                    System.err.println("[ERROR] Failed to check round active state: " + e.getMessage());
-                                }
-                            }
-                        }
-                    }
-                    event.consume(); // Prevent further processing of the key event
-                });
-            } else {
-                System.err.println("[ERROR] Scene not set for blanksFlowPane in initialize");
-            }
+            setupKeyboardInput(); // Set up keyboard input
         });
         quitButton.setOnAction(this::handleQuitButton);
     }
@@ -194,7 +227,6 @@ public class GameRoomView {
         }
     }
 
-    // Helper method to load a font and log details
     private Font loadFont(String path, String fontName) {
         try {
             InputStream is = getClass().getResourceAsStream(path);
@@ -220,12 +252,10 @@ public class GameRoomView {
     }
 
     private void loadCustomFonts() {
-        // Load fonts
         pencilant = loadFont(PENCILANT_FONT_PATH, "Pencilant Script");
         quickPencil = loadFont(QUICKPENCIL_FONT_PATH, "Quick Pencil Regular");
         amaticSC = loadFont(AMATICSC_FONT_PATH, "AmaticSC Bold");
 
-        // Verify font family names and set fallbacks
         if (pencilant == null || !pencilant.getFamily().toLowerCase().contains("pencilant")) {
             System.err.println("[WARNING] Pencilant font not loaded or incorrect family. Using fallback: Arial");
             pencilant = Font.font("Arial", 12);
@@ -239,21 +269,19 @@ public class GameRoomView {
             amaticSC = Font.font("Arial", 12);
         }
 
-        // Log final font families
         System.out.println("[DEBUG] Font families - Pencilant: " + pencilant.getFamily() +
                 ", QuickPencil: " + quickPencil.getFamily() +
                 ", AmaticSC: " + amaticSC.getFamily());
     }
 
     private void applyFonts() {
-        // Apply fonts to labels
         if (roundLabel != null) {
             roundLabel.setFont(Font.font(pencilant.getFamily(), 34));
             System.out.println("[DEBUG] Applied font to roundLabel: " + pencilant.getFamily() + ", size: 34");
         }
         if (playerCountLabel != null) {
             playerCountLabel.setFont(Font.font(pencilant.getFamily(), 36));
-            System.out.println("[DEBUG] Applied font to lifeCountLabel1: " + pencilant.getFamily() + ", size: 36");
+            System.out.println("[DEBUG] Applied font to playerCountLabel: " + pencilant.getFamily() + ", size: 36");
         }
         if (timerLabel != null) {
             timerLabel.setFont(Font.font(pencilant.getFamily(), 38));
@@ -261,24 +289,22 @@ public class GameRoomView {
         }
         if (timeLabel != null) {
             timeLabel.setFont(Font.font(pencilant.getFamily(), 38));
-            System.out.println("[DEBUG] Applied font to timerLabel: " + pencilant.getFamily() + ", size: 38");
-        }if (playersLabel != null) {
-            playersLabel.setFont(Font.font(pencilant.getFamily(), 38));
-            System.out.println("[DEBUG] Applied font to timerLabel: " + pencilant.getFamily() + ", size: 38");
+            System.out.println("[DEBUG] Applied font to timeLabel: " + pencilant.getFamily() + ", size: 38");
         }
-        // Apply font to quit button
+        if (playersLabel != null) {
+            playersLabel.setFont(Font.font(pencilant.getFamily(), 38));
+            System.out.println("[DEBUG] Applied font to playersLabel: " + pencilant.getFamily() + ", size: 38");
+        }
         if (quitButton != null) {
             quitButton.setFont(Font.font(pencilant.getFamily(), 34));
             System.out.println("[DEBUG] Applied font to quitButton: " + pencilant.getFamily() + ", size: 34");
         }
-        // Apply fonts to blank labels (for word guessing)
         for (Label blankLabel : blankLabels) {
             if (blankLabel != null) {
                 blankLabel.setFont(Font.font(pencilant.getFamily(), 88));
                 System.out.println("[DEBUG] Applied font to blankLabel: " + pencilant.getFamily() + ", size: 88");
             }
         }
-        // Apply fonts to alphabet buttons
         for (Button btn : alphabetButtons.values()) {
             if (btn != null) {
                 btn.setFont(Font.font(pencilant.getFamily(), 20));
@@ -288,7 +314,6 @@ public class GameRoomView {
     }
 
     private void setupLetterImages() {
-        // Map correct letter ImageViews
         correctLetterImages.put('A', correctGuessA);
         correctLetterImages.put('B', correctGuessB);
         correctLetterImages.put('C', correctGuessC);
@@ -316,7 +341,6 @@ public class GameRoomView {
         correctLetterImages.put('Y', correctGuessY);
         correctLetterImages.put('Z', correctGuessZ);
 
-        // Map wrong letter ImageViews
         wrongLetterImages.put('A', wrongGuessA);
         wrongLetterImages.put('B', wrongGuessB);
         wrongLetterImages.put('C', wrongGuessC);
@@ -368,7 +392,7 @@ public class GameRoomView {
         String[] row3 = {"R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
         final String baseStyle = "-fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
-        final String hoverStyle = "-fx-background-color: transparent; -fx-text-fill: white; -fx-opacity: 0.0;";
+        final String hoverStyle = "-fx-background-color: transparent; -fx-background-image: url('" + LETTER_HOVER_IMAGE_PATH + "'); -fx-background-size: cover; -fx-text-fill: white;";
         final String disabledStyle = "-fx-background-color: grey; -fx-text-fill: white; -fx-opacity: 0.0;";
 
         int buttonIndex = 0;
@@ -447,7 +471,43 @@ public class GameRoomView {
         if (buttonIndex != 26) {
             System.err.println("[WARNING] Expected 26 alphabet buttons, found " + buttonIndex);
         }
-        applyFonts(); // Ensure alphabet buttons get fonts after setup
+        applyFonts();
+    }
+
+    private void setupKeyboardInput() {
+        if (blanksFlowPane.getScene() != null) {
+            blanksFlowPane.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                if (!isKeyboardInputEnabled) {
+                    System.out.println("[DEBUG] Keyboard input disabled, ignoring key: " + event.getText());
+                    event.consume();
+                    return;
+                }
+                String key = event.getText().toUpperCase();
+                if (key.length() == 1) {
+                    char letter = key.charAt(0);
+                    if (letter >= 'A' && letter <= 'Z') {
+                        Button button = alphabetButtons.get(letter);
+                        if (button != null && !button.isDisabled() && controller != null) {
+                            System.out.println("[DEBUG] Keyboard input: Letter " + letter);
+                            handleLetterGuess(letter);
+                        }
+                    }
+                }
+                event.consume();
+            });
+        } else {
+            System.err.println("[ERROR] Scene not set for blanksFlowPane in setupKeyboardInput");
+        }
+    }
+
+    public void enableKeyboardInput() {
+        isKeyboardInputEnabled = true;
+        System.out.println("[DEBUG] Keyboard input enabled");
+    }
+
+    public void disableKeyboardInput() {
+        isKeyboardInputEnabled = false;
+        System.out.println("[DEBUG] Keyboard input disabled");
     }
 
     private void handleLetterGuess(char letter) {
@@ -520,11 +580,11 @@ public class GameRoomView {
     }
 
     public void updateLifeCount(int lives) {
-        if (playerCountLabel != null) { // Use lifeCountLabel1 as per FXML
+        if (playerCountLabel != null) {
             playerCountLabel.setText(String.valueOf(lives));
             updateHeartsImage(lives);
         } else {
-            System.err.println("[ERROR] lifeCountLabel1 is null in updateLifeCount");
+            System.err.println("[ERROR] playerCountLabel is null in updateLifeCount");
         }
     }
 
@@ -573,14 +633,14 @@ public class GameRoomView {
             blankImg.setTranslateY(50);
 
             Label lbl = new Label("_");
-            lbl.setStyle("-fx-text-fill:#61ff82;"); // Keep text color
+            lbl.setStyle("-fx-text-fill:#61ff82;");
             lbl.setPrefSize(58, 68);
             lbl.setAlignment(javafx.geometry.Pos.CENTER);
             cell.getChildren().addAll(blankImg, lbl);
             blanksFlowPane.getChildren().add(cell);
             blankLabels.add(lbl);
         }
-        applyFonts(); // Re-apply fonts to include new blank labels
+        applyFonts();
         System.out.println("[DEBUG] setupBlanks completed, blankLabels size: " + blankLabels.size());
     }
 
@@ -608,9 +668,154 @@ public class GameRoomView {
         roundTimer.play();
     }
 
+    public void stopCountdown() {
+        if (roundTimer != null) {
+            roundTimer.stop();
+            secondsRemaining = 0;
+            updateTimerLabel();
+            System.out.println("[DEBUG] Countdown stopped");
+        }
+    }
+
     private void updateTimerLabel() {
-        int m = secondsRemaining / 60, s = secondsRemaining % 60;
-        timerLabel.setText(String.format("%02d:%02d", m, s));
+        int minutes = secondsRemaining / 60;
+        int seconds = secondsRemaining % 60;
+        timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
+    }
+
+    public void showLostMessage(String message) {
+        Platform.runLater(() -> {
+            try {
+                Stage mainStage = ViewNavigator.getStage();
+                if (mainStage == null) return;
+
+                StackPane mainRoot = (StackPane) mainStage.getScene().getRoot();
+                lostOverlay = new Rectangle();
+                lostOverlay.setFill(Color.rgb(0, 0, 0, 0.5));
+                lostOverlay.widthProperty().bind(mainRoot.widthProperty());
+                lostOverlay.heightProperty().bind(mainRoot.heightProperty());
+                mainRoot.getChildren().add(lostOverlay);
+
+                StackPane container = new StackPane();
+                container.setBackground(new Background(new BackgroundFill(
+                        Color.web("#F5F5DC"),
+                        new CornerRadii(12),
+                        Insets.EMPTY)));
+                container.setBorder(new Border(new BorderStroke(
+                        Color.web("#8B4513", 0.3),
+                        BorderStrokeStyle.SOLID,
+                        new CornerRadii(12),
+                        new BorderWidths(0.75))));
+                container.setEffect(new DropShadow(8, Color.rgb(0, 0, 0, 0.15)));
+                container.setPadding(new Insets(20));
+
+                Label messageLabel = new Label(message);
+                messageLabel.setFont(Font.font(pencilant.getFamily(), 34));
+                messageLabel.setTextFill(Color.web("#8B4513"));
+                container.getChildren().add(messageLabel);
+
+                lostPopupStage = new Stage();
+                lostPopupStage.initOwner(mainStage);
+                lostPopupStage.initStyle(StageStyle.TRANSPARENT);
+
+                Scene popupScene = new Scene(container);
+                popupScene.setFill(Color.TRANSPARENT);
+                lostPopupStage.setScene(popupScene);
+
+                lostPopupStage.addEventHandler(WindowEvent.WINDOW_SHOWN, event -> {
+                    container.applyCss();
+                    container.layout();
+                    double centerX = mainStage.getX() + (mainStage.getWidth() - container.getWidth()) / 2;
+                    double centerY = mainStage.getY() + (mainStage.getHeight() - container.getHeight()) / 2;
+                    lostPopupStage.setX(centerX);
+                    lostPopupStage.setY(centerY);
+                });
+
+                lostPopupStage.show();
+                System.out.println("[DEBUG] Showing 'You lost' popup");
+            } catch (Exception e) {
+                System.err.println("[ERROR] Failed to show lost message: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void closeLostMessage() {
+        Platform.runLater(() -> {
+            if (lostPopupStage != null && lostPopupStage.isShowing()) {
+                lostPopupStage.close();
+                lostPopupStage = null;
+                System.out.println("[DEBUG] Closed 'You lost' popup");
+            }
+            if (lostOverlay != null) {
+                StackPane mainRoot = (StackPane) ViewNavigator.getStage().getScene().getRoot();
+                mainRoot.getChildren().remove(lostOverlay);
+                lostOverlay = null;
+            }
+        });
+    }
+
+    public void showGameOverMessage(String message) {
+        Platform.runLater(() -> {
+            try {
+                Stage mainStage = ViewNavigator.getStage();
+                if (mainStage == null) return;
+
+                StackPane mainRoot = (StackPane) mainStage.getScene().getRoot();
+                Rectangle overlay = new Rectangle();
+                overlay.setFill(Color.rgb(0, 0, 0, 0.5));
+                overlay.widthProperty().bind(mainRoot.widthProperty());
+                overlay.heightProperty().bind(mainRoot.heightProperty());
+                mainRoot.getChildren().add(overlay);
+
+                StackPane container = new StackPane();
+                container.setBackground(new Background(new BackgroundFill(
+                        Color.web("#F5F5DC"),
+                        new CornerRadii(12),
+                        Insets.EMPTY)));
+                container.setBorder(new Border(new BorderStroke(
+                        Color.web("#8B4513", 0.3),
+                        BorderStrokeStyle.SOLID,
+                        new CornerRadii(12),
+                        new BorderWidths(0.75))));
+                container.setEffect(new DropShadow(8, Color.rgb(0, 0, 0, 0.15)));
+                container.setPadding(new Insets(20));
+
+                Label messageLabel = new Label(message);
+                messageLabel.setFont(Font.font(pencilant.getFamily(), 34));
+                messageLabel.setTextFill(Color.web("#8B4513"));
+                container.getChildren().add(messageLabel);
+
+                Stage popupStage = new Stage();
+                popupStage.initOwner(mainStage);
+                popupStage.initStyle(StageStyle.TRANSPARENT);
+
+                Scene popupScene = new Scene(container);
+                popupScene.setFill(Color.TRANSPARENT);
+                popupStage.setScene(popupScene);
+
+                popupStage.addEventHandler(WindowEvent.WINDOW_SHOWN, event -> {
+                    container.applyCss();
+                    container.layout();
+                    double centerX = mainStage.getX() + (mainStage.getWidth() - container.getWidth()) / 2;
+                    double centerY = mainStage.getY() + (mainStage.getHeight() - container.getHeight()) / 2;
+                    popupStage.setX(centerX);
+                    popupStage.setY(centerY);
+                });
+
+                popupStage.show();
+
+                PauseTransition pause = new PauseTransition(Duration.seconds(3));
+                pause.setOnFinished(e -> {
+                    popupStage.close();
+                    mainRoot.getChildren().remove(overlay);
+                });
+                pause.play();
+            } catch (Exception e) {
+                System.err.println("[ERROR] Failed to show game over message: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
     }
 
     public void scheduleRetryRoundStart(int newRound, int seconds) {
@@ -634,7 +839,6 @@ public class GameRoomView {
                 ctrl.setGameTitle("What's The Word?");
                 ctrl.setRoundNumber(roundNum);
 
-                // Create styled container
                 StackPane container = new StackPane(popupRoot);
                 container.setBackground(new Background(new BackgroundFill(
                         Color.web("#F5F5DC"),
@@ -648,7 +852,6 @@ public class GameRoomView {
                 container.setEffect(new DropShadow(8, Color.rgb(0, 0, 0, 0.15)));
                 StackPane.setMargin(popupRoot, new Insets(12));
 
-                // Create undecorated popup stage
                 Stage popupStage = new Stage();
                 popupStage.initModality(Modality.APPLICATION_MODAL);
                 popupStage.initOwner(mainStage);
@@ -658,17 +861,14 @@ public class GameRoomView {
                 popupScene.setFill(Color.TRANSPARENT);
                 popupStage.setScene(popupScene);
 
-                // Calculate center position relative to main window
-                container.layout(); // Force layout pass to get proper dimensions
-                popupStage.sizeToScene(); // Size stage to content
+                container.layout();
+                popupStage.sizeToScene();
 
-                // Get main window position and size
                 double mainX = mainStage.getX();
                 double mainY = mainStage.getY();
                 double mainWidth = mainStage.getWidth();
                 double mainHeight = mainStage.getHeight();
 
-                // Calculate center position
                 double popupWidth = container.getBoundsInLocal().getWidth();
                 double popupHeight = container.getBoundsInLocal().getHeight();
 
@@ -699,7 +899,8 @@ public class GameRoomView {
                     return;
                 }
 
-                // 1. Create overlay
+                closeLostMessage(); // Ensure "You lost" popup is closed
+
                 StackPane mainRoot = (StackPane) mainStage.getScene().getRoot();
                 Rectangle overlay = new Rectangle();
                 overlay.setFill(Color.rgb(0, 0, 0, 0.5));
@@ -707,17 +908,14 @@ public class GameRoomView {
                 overlay.heightProperty().bind(mainRoot.heightProperty());
                 mainRoot.getChildren().add(overlay);
 
-                // 2. Load FXML
-                String fxmlPath = (winnerName != null && !winnerName.trim().isEmpty())
+                String fxmlPath = (winnerName != null && !winnerName.trim().isEmpty() && !winnerName.equals("Unknown"))
                         ? "/fxml/player/RoundWinnerPopup.fxml"
                         : "/fxml/player/NoWinnerPopup.fxml";
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
                 Parent popupRoot = loader.load();
 
-                // 3. Create container with styling
                 StackPane container = new StackPane(popupRoot);
-                if (winnerName != null && !winnerName.trim().isEmpty()) {
-                    // Special handling for RoundWinnerPopup
+                if (winnerName != null && !winnerName.trim().isEmpty() && !winnerName.equals("Unknown")) {
                     container.setBackground(new Background(new BackgroundFill(
                             Color.web("#F5F5DC"),
                             new CornerRadii(12),
@@ -733,7 +931,6 @@ public class GameRoomView {
                     container.setMaxSize(816, 554);
                     StackPane.setMargin(popupRoot, new Insets(8));
                 } else {
-                    // Normal handling for NoWinnerPopup
                     container.setBackground(new Background(new BackgroundFill(
                             Color.web("#F5F5DC"),
                             new CornerRadii(12),
@@ -747,8 +944,7 @@ public class GameRoomView {
                     StackPane.setMargin(popupRoot, new Insets(12));
                 }
 
-                // 4. Set up controller
-                if (winnerName != null && !winnerName.trim().isEmpty()) {
+                if (winnerName != null && !winnerName.trim().isEmpty() && !winnerName.equals("Unknown")) {
                     RoundWinnerPopupView controller = loader.getController();
                     controller.setWinnerName(winnerName);
                     controller.setWinningWord(secretWord);
@@ -757,7 +953,6 @@ public class GameRoomView {
                     controller.setSecretWord(secretWord);
                 }
 
-                // 5. Create and show stage
                 Stage popupStage = new Stage();
                 popupStage.initOwner(mainStage);
                 popupStage.initStyle(StageStyle.TRANSPARENT);
@@ -766,19 +961,17 @@ public class GameRoomView {
                 popupScene.setFill(Color.TRANSPARENT);
                 popupStage.setScene(popupScene);
 
-                // 6. Perfect centering
-                popupStage.addEventHandler(WindowEvent.WINDOW_SHOWN, (event) -> {
+                popupStage.addEventHandler(WindowEvent.WINDOW_SHOWN, event -> {
                     container.applyCss();
                     container.layout();
-                    double centerX = mainStage.getX() + (mainStage.getWidth() - container.getWidth())/2;
-                    double centerY = mainStage.getY() + (mainStage.getHeight() - container.getHeight())/2;
+                    double centerX = mainStage.getX() + (mainStage.getWidth() - container.getWidth()) / 2;
+                    double centerY = mainStage.getY() + (mainStage.getHeight() - container.getHeight()) / 2;
                     popupStage.setX(centerX);
                     popupStage.setY(centerY);
                 });
 
                 popupStage.show();
 
-                // 7. Auto-close
                 PauseTransition pause = new PauseTransition(Duration.seconds(5));
                 pause.setOnFinished(e -> {
                     popupStage.close();
@@ -788,7 +981,6 @@ public class GameRoomView {
                     }
                 });
                 pause.play();
-
             } catch (Exception e) {
                 System.err.println("[ERROR] Failed to show round end popup: " + e.getMessage());
                 controller.onEndPopupClosed();
@@ -800,6 +992,7 @@ public class GameRoomView {
     public void showGameEndPopup(String champion) {
         Platform.runLater(() -> {
             try {
+                closeLostMessage(); // Close "You lost" popup if open
                 Stage stage = ViewNavigator.getStage();
                 if (stage == null) {
                     navigateToLobby();
@@ -827,6 +1020,7 @@ public class GameRoomView {
 
     private void handleQuitButton(ActionEvent e) {
         if (roundTimer != null) roundTimer.stop();
+        closeLostMessage();
         navigateToLobby();
     }
 
@@ -839,12 +1033,31 @@ public class GameRoomView {
         }
     }
 
-    // Getters
-    public ImageView getGameRoomBackgroundImage() { return gameRoomBackgroundImage; }
-    public FlowPane getBlanksFlowPane() { return blanksFlowPane; }
-    public Label getRoundLabel() { return roundLabel; }
-    public Label getLifeCountLabel() { return lifeCountLabel; }
-    public Label getLifeCountLabel1() { return playerCountLabel; }
-    public Label getTimerLabel() { return timerLabel; }
-    public Button getQuitButton() { return quitButton; }
+    public ImageView getGameRoomBackgroundImage() {
+        return gameRoomBackgroundImage;
+    }
+
+    public FlowPane getBlanksFlowPane() {
+        return blanksFlowPane;
+    }
+
+    public Label getRoundLabel() {
+        return roundLabel;
+    }
+
+    public Label getLifeCountLabel() {
+        return lifeCountLabel;
+    }
+
+    public Label getLifeCountLabel1() {
+        return playerCountLabel;
+    }
+
+    public Label getTimerLabel() {
+        return timerLabel;
+    }
+
+    public Button getQuitButton() {
+        return quitButton;
+    }
 }

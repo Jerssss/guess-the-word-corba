@@ -70,17 +70,17 @@ public class GameRoomModel {
         }
     }
 
-    public List<Integer> guessLetter(String gameToken, int playerId, String sessionToken, char letter, long guessTime) {
+    public List<Integer> guessLetter(String gameToken, int playerId, String sessionToken, char letter, long guessTime) throws MaxAttemptsReachedException {
         try {
             if (guessTime > Integer.MAX_VALUE || guessTime < Integer.MIN_VALUE) {
                 System.err.println("[GameRoomModel] guessTime out of range: " + guessTime);
-                guessTime = Integer.MAX_VALUE; // Fallback to max int
+                guessTime = Integer.MAX_VALUE;
             }
             int[] positions = gameService.guessLetter(gameToken, playerId, sessionToken, letter, (int) guessTime);
             return Arrays.stream(positions).boxed().collect(Collectors.toList());
         } catch (MaxAttemptsReachedException e) {
             System.out.println("[DEBUG][GameRoomModel] guessLetter: Max attempts reached for letter " + letter);
-            throw new RuntimeException(e);
+            throw e; // Propagate exception without wrapping
         } catch (GameNotFoundException | AlreadyGuessedLetterException | NotLoggedInException e) {
             System.err.println("[GameRoomModel] guessLetter failed: " + e.getMessage());
             throw new RuntimeException(e);
