@@ -18,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -35,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.function.UnaryOperator;
 
 public class AdminEditConfigurationsPageView {
 
@@ -82,6 +84,22 @@ public class AdminEditConfigurationsPageView {
         loadCustomFonts();
         applyFonts();
         setupButtonHoverEffects(); // Add this line
+        // Restrict text fields to numeric input only
+        UnaryOperator<TextFormatter.Change> numericFilter = change -> {
+            String newText = change.getControlNewText();
+            if (newText.matches("\\d*")) { // Allow only digits (0-9)
+                return change;
+            }
+            return null; // Reject non-numeric input
+        };
+
+        if (waitingTimeLabel != null) {
+            waitingTimeLabel.setTextFormatter(new TextFormatter<>(numericFilter));
+        }
+
+        if (roundLengthLabel != null) {
+            roundLengthLabel.setTextFormatter(new TextFormatter<>(numericFilter));
+        }
         System.out.println("AdminEditConfigurationsPageView initialized");
     }
 

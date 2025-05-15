@@ -21,9 +21,28 @@ public class AdminServiceImpl extends AdminServicePOA {
 
     public static int generatePlayerID() {
         Random random = new Random();
-        int id = random.nextInt(90000) + 10000; // Generates a number between 10000 and 99999
+        int id;
+        boolean isUnique;
+
+        do {
+            id = random.nextInt(90000) + 10000; // Generates a number between 10000 and 99999
+            isUnique = true;
+
+            // Check if ID exists in database
+            try (Connection conn = DatabaseConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(
+                         "SELECT COUNT(*) FROM players WHERE player_id = ?")) {
+                stmt.setInt(1, id);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next() && rs.getInt(1) > 0) {
+                    isUnique = false;
+                }
+            } catch (SQLException e) {
+                System.err.println("[PlayerService ERROR] Error checking player ID=" + id + ": " + e.getMessage());
+            }
+        } while (!isUnique);
+
         return id;
-        // TODO - check existing player id to prevent duplication
     }
 
     // Checks if a admin ID is valid by looking it up in the database.
@@ -54,8 +73,22 @@ public class AdminServiceImpl extends AdminServicePOA {
             throw new AdminIDL.NotLoggedInException();
         }
 
-        // TODO apply the account exists exception
-        query ="INSERT INTO players (player_id, name, username, password) " +
+        // Check if username already exists
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT COUNT(*) FROM players WHERE username = ?")) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                System.err.println("[AdminService ERROR] createPlayer: Username already exists: " + username);
+                throw new AccountExistsException("Username " + username + " is already taken");
+            }
+        } catch (SQLException e) {
+            System.err.println("[AdminService ERROR] Error checking username=" + username + ": " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        String query = "INSERT INTO players (player_id, name, username, password) " +
                 "VALUES (?, ?, ?, ?); ";
 
         try (Connection con = DatabaseConnection.getConnection();
@@ -73,13 +106,12 @@ public class AdminServiceImpl extends AdminServicePOA {
 
             // Print the action details
             System.out.println("[" + formattedTimestamp +"] [Admin: " + adminID + "] - Action: Player Created  - Details: Player ID: " + player_id +", Username: " + username);
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new RuntimeException(e);
-        }catch (Exception e1){
+        } catch (Exception e1) {
             e1.printStackTrace();
         }
     }
-
     @Override
     public String[] viewPlayers(String sessionToken, int adminID) throws NotLoggedInException {
         if (sessionToken == null) {
@@ -133,6 +165,21 @@ public class AdminServiceImpl extends AdminServicePOA {
             throw new AdminIDL.NotLoggedInException();
         }
 
+        // Check if player exists
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT COUNT(*) FROM players WHERE player_id = ?")) {
+            stmt.setInt(1, playerID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) == 0) {
+                System.err.println("[AdminService ERROR] modifyPlayer: Player not found for playerID=" + playerID);
+                throw new AccountNotFoundException("Player with ID " + playerID + " not found");
+            }
+        } catch (SQLException e) {
+            System.err.println("[AdminService ERROR] Error checking playerID=" + playerID + ": " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+
         query = "UPDATE players SET password = ? WHERE player_id = ?";
         try (Connection con = DatabaseConnection.getConnection()) {
             PreparedStatement stmt = con.prepareStatement(query);
@@ -161,6 +208,21 @@ public class AdminServiceImpl extends AdminServicePOA {
         if (!isValidAdmin(adminID)) {
             System.err.println("[AdminService ERROR] createPlayer: Invalid adminID=" + adminID);
             throw new AdminIDL.NotLoggedInException();
+        }
+
+        // Check if player exists
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT COUNT(*) FROM players WHERE player_id = ?")) {
+            stmt.setInt(1, playerID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) == 0) {
+                System.err.println("[AdminService ERROR] deletePlayer: Player not found for playerID=" + playerID);
+                throw new AccountNotFoundException("Player with ID " + playerID + " not found");
+            }
+        } catch (SQLException e) {
+            System.err.println("[AdminService ERROR] Error checking playerID=" + playerID + ": " + e.getMessage());
+            throw new RuntimeException(e);
         }
 
         query = "DELETE FROM players WHERE player_id = ?";
@@ -221,10 +283,6 @@ public class AdminServiceImpl extends AdminServicePOA {
                 System.err.println("[AdminService INFO] searchPlayers: No players found for query=" + query);
                 throw new PlayerNotFoundException();
             }
-
-            LocalDateTime timestamp = LocalDateTime.now();
-            String formattedTimestamp = timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            System.out.println("[" + formattedTimestamp + "] [Admin: " + adminID + "] - Action: Searched Players - Query: " + query + ", Results: " + players.size());
 
         } catch (SQLException e) {
             System.err.println("[AdminService ERROR] Database connection error: " + e.getMessage());
