@@ -190,8 +190,10 @@ public class GameRoomView {
     private int secondsRemaining;
     private final List<Label> blankLabels = new ArrayList<>();
     private boolean isKeyboardInputEnabled = false; // Track keyboard input state
-    private Stage lostPopupStage; // Track the "You lost" popup
-    private Rectangle lostOverlay; // Track the overlay for the "You lost" popup
+    private boolean endPopupShowing = false; // Track if round end popup is showing
+    private boolean waitingPopupShowing = false; // Track if waiting popup is showing
+    private Stage waitingPopupStage; // Track the waiting popup
+    private Rectangle waitingOverlay; // Track the overlay for the waiting popup
 
     @FXML
     private void initialize() {
@@ -683,18 +685,24 @@ public class GameRoomView {
         timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
     }
 
-    public void showLostMessage(String message) {
+    public void showWaitingMessage(String message) {
         Platform.runLater(() -> {
             try {
+                if (waitingPopupShowing) {
+                    System.out.println("[DEBUG] Waiting popup already showing, ignoring");
+                    return;
+                }
+                waitingPopupShowing = true;
+
                 Stage mainStage = ViewNavigator.getStage();
                 if (mainStage == null) return;
 
                 StackPane mainRoot = (StackPane) mainStage.getScene().getRoot();
-                lostOverlay = new Rectangle();
-                lostOverlay.setFill(Color.rgb(0, 0, 0, 0.5));
-                lostOverlay.widthProperty().bind(mainRoot.widthProperty());
-                lostOverlay.heightProperty().bind(mainRoot.heightProperty());
-                mainRoot.getChildren().add(lostOverlay);
+                waitingOverlay = new Rectangle();
+                waitingOverlay.setFill(Color.rgb(0, 0, 0, 0.5));
+                waitingOverlay.widthProperty().bind(mainRoot.widthProperty());
+                waitingOverlay.heightProperty().bind(mainRoot.heightProperty());
+                mainRoot.getChildren().add(waitingOverlay);
 
                 StackPane container = new StackPane();
                 container.setBackground(new Background(new BackgroundFill(
@@ -714,52 +722,63 @@ public class GameRoomView {
                 messageLabel.setTextFill(Color.web("#8B4513"));
                 container.getChildren().add(messageLabel);
 
-                lostPopupStage = new Stage();
-                lostPopupStage.initOwner(mainStage);
-                lostPopupStage.initStyle(StageStyle.TRANSPARENT);
+                waitingPopupStage = new Stage();
+                waitingPopupStage.initOwner(mainStage);
+                waitingPopupStage.initStyle(StageStyle.TRANSPARENT);
 
                 Scene popupScene = new Scene(container);
                 popupScene.setFill(Color.TRANSPARENT);
-                lostPopupStage.setScene(popupScene);
+                waitingPopupStage.setScene(popupScene);
 
-                lostPopupStage.addEventHandler(WindowEvent.WINDOW_SHOWN, event -> {
+                waitingPopupStage.addEventHandler(WindowEvent.WINDOW_SHOWN, event -> {
                     container.applyCss();
                     container.layout();
                     double centerX = mainStage.getX() + (mainStage.getWidth() - container.getWidth()) / 2;
                     double centerY = mainStage.getY() + (mainStage.getHeight() - container.getHeight()) / 2;
-                    lostPopupStage.setX(centerX);
-                    lostPopupStage.setY(centerY);
+                    waitingPopupStage.setX(centerX);
+                    waitingPopupStage.setY(centerY);
                 });
 
-                lostPopupStage.show();
-                System.out.println("[DEBUG] Showing 'You lost' popup");
+                waitingPopupStage.show();
+                System.out.println("[DEBUG] Showing waiting popup with message: " + message);
             } catch (Exception e) {
-                System.err.println("[ERROR] Failed to show lost message: " + e.getMessage());
+                System.err.println("[ERROR] Failed to show waiting message: " + e.getMessage());
                 e.printStackTrace();
             }
         });
     }
 
-    public void closeLostMessage() {
+    public void closeWaitingMessage() {
         Platform.runLater(() -> {
-            if (lostPopupStage != null && lostPopupStage.isShowing()) {
-                lostPopupStage.close();
-                lostPopupStage = null;
-                System.out.println("[DEBUG] Closed 'You lost' popup");
+            if (waitingPopupStage != null && waitingPopupShowing) {
+                waitingPopupStage.close();
+                waitingPopupStage = null;
+                waitingPopupShowing = false;
+                System.out.println("[DEBUG] Closed waiting popup");
             }
-            if (lostOverlay != null) {
+            if (waitingOverlay != null) {
                 StackPane mainRoot = (StackPane) ViewNavigator.getStage().getScene().getRoot();
-                mainRoot.getChildren().remove(lostOverlay);
-                lostOverlay = null;
+                mainRoot.getChildren().remove(waitingOverlay);
+                waitingOverlay = null;
             }
         });
     }
 
-    public void showGameOverMessage(String message) {
+    public void showRoundEndPopup(String message, boolean hasMoreRounds) {
         Platform.runLater(() -> {
             try {
+                if (endPopupShowing) {
+                    System.out.println("[DEBUG] Round end popup already showing, ignoring");
+                    return;
+                }
+                endPopupShowing = true;
+                closeWaitingMessage(); // Close waiting popup if open
+
                 Stage mainStage = ViewNavigator.getStage();
-                if (mainStage == null) return;
+                if (mainStage == null) {
+                    controller.onEndPopupClosed();
+                    return;
+                }
 
                 StackPane mainRoot = (StackPane) mainStage.getScene().getRoot();
                 Rectangle overlay = new Rectangle();
@@ -805,17 +824,67 @@ public class GameRoomView {
 
                 popupStage.show();
 
-                PauseTransition pause = new PauseTransition(Duration.seconds(3));
+                PauseTransition pause = new PauseTransition(Duration.seconds(5));
                 pause.setOnFinished(e -> {
                     popupStage.close();
                     mainRoot.getChildren().remove(overlay);
+                    endPopupShowing = false;
+                    if (hasMoreRounds) {
+                        controller.onEndPopupClosed();
+                    }
                 });
                 pause.play();
             } catch (Exception e) {
-                System.err.println("[ERROR] Failed to show game over message: " + e.getMessage());
+                System.err.println("[ERROR] Failed to show round end popup: " + e.getMessage());
+                endPopupShowing = false;
+                controller.onEndPopupClosed();
                 e.printStackTrace();
             }
         });
+    }
+
+    public void showGameEndPopup(String champion) {
+        Platform.runLater(() -> {
+            try {
+                closeWaitingMessage(); // Close waiting popup if open
+                Stage stage = ViewNavigator.getStage();
+                if (stage == null) {
+                    navigateToLobby();
+                    return;
+                }
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/GameWinnerPopup.fxml"));
+                Parent popupRoot = loader.load();
+
+                GameWinnerPopupView c = loader.getController();
+                c.setGameTitle("Game Over!");
+                c.setWinningUsername(champion != null ? champion : "Nobody");
+
+                stage.setScene(new Scene(popupRoot));
+                stage.centerOnScreen();
+
+                PauseTransition wait = new PauseTransition(Duration.seconds(5));
+                wait.setOnFinished(evt -> navigateToLobby());
+                wait.play();
+            } catch (IOException e) {
+                System.err.println("[ERROR] Failed to show game end popup: " + e.getMessage());
+                navigateToLobby();
+            }
+        });
+    }
+
+    private void handleQuitButton(ActionEvent e) {
+        if (roundTimer != null) roundTimer.stop();
+        closeWaitingMessage();
+        navigateToLobby();
+    }
+
+    private void navigateToLobby() {
+        try {
+            ViewNavigator.goToLobby();
+        } catch (Exception ex) {
+            System.err.println("[ERROR] Failed to return to lobby: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
     public void scheduleRetryRoundStart(int newRound, int seconds) {
@@ -888,149 +957,6 @@ public class GameRoomView {
                 controller.handleServerRoundStart(roundNum);
             }
         });
-    }
-
-    public void showRoundEndPopup(String winnerName, String secretWord, boolean hasMoreRounds) {
-        Platform.runLater(() -> {
-            try {
-                Stage mainStage = ViewNavigator.getStage();
-                if (mainStage == null) {
-                    controller.onEndPopupClosed();
-                    return;
-                }
-
-                closeLostMessage(); // Ensure "You lost" popup is closed
-
-                StackPane mainRoot = (StackPane) mainStage.getScene().getRoot();
-                Rectangle overlay = new Rectangle();
-                overlay.setFill(Color.rgb(0, 0, 0, 0.5));
-                overlay.widthProperty().bind(mainRoot.widthProperty());
-                overlay.heightProperty().bind(mainRoot.heightProperty());
-                mainRoot.getChildren().add(overlay);
-
-                String fxmlPath = (winnerName != null && !winnerName.trim().isEmpty() && !winnerName.equals("Unknown"))
-                        ? "/fxml/player/RoundWinnerPopup.fxml"
-                        : "/fxml/player/NoWinnerPopup.fxml";
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-                Parent popupRoot = loader.load();
-
-                StackPane container = new StackPane(popupRoot);
-                if (winnerName != null && !winnerName.trim().isEmpty() && !winnerName.equals("Unknown")) {
-                    container.setBackground(new Background(new BackgroundFill(
-                            Color.web("#F5F5DC"),
-                            new CornerRadii(12),
-                            Insets.EMPTY)));
-                    container.setBorder(new Border(new BorderStroke(
-                            Color.web("#8B4513", 0.3),
-                            BorderStrokeStyle.SOLID,
-                            new CornerRadii(12),
-                            new BorderWidths(2.0))));
-                    container.setEffect(new DropShadow(8, Color.rgb(0, 0, 0, 0.15)));
-                    container.setMinSize(816, 554);
-                    container.setPrefSize(816, 554);
-                    container.setMaxSize(816, 554);
-                    StackPane.setMargin(popupRoot, new Insets(8));
-                } else {
-                    container.setBackground(new Background(new BackgroundFill(
-                            Color.web("#F5F5DC"),
-                            new CornerRadii(12),
-                            Insets.EMPTY)));
-                    container.setBorder(new Border(new BorderStroke(
-                            Color.web("#8B4513", 0.3),
-                            BorderStrokeStyle.SOLID,
-                            new CornerRadii(12),
-                            new BorderWidths(0.75))));
-                    container.setEffect(new DropShadow(8, Color.rgb(0, 0, 0, 0.15)));
-                    StackPane.setMargin(popupRoot, new Insets(12));
-                }
-
-                if (winnerName != null && !winnerName.trim().isEmpty() && !winnerName.equals("Unknown")) {
-                    RoundWinnerPopupView controller = loader.getController();
-                    controller.setWinnerName(winnerName);
-                    controller.setWinningWord(secretWord);
-                } else {
-                    NoWinnerPopupView controller = loader.getController();
-                    controller.setSecretWord(secretWord);
-                }
-
-                Stage popupStage = new Stage();
-                popupStage.initOwner(mainStage);
-                popupStage.initStyle(StageStyle.TRANSPARENT);
-
-                Scene popupScene = new Scene(container);
-                popupScene.setFill(Color.TRANSPARENT);
-                popupStage.setScene(popupScene);
-
-                popupStage.addEventHandler(WindowEvent.WINDOW_SHOWN, event -> {
-                    container.applyCss();
-                    container.layout();
-                    double centerX = mainStage.getX() + (mainStage.getWidth() - container.getWidth()) / 2;
-                    double centerY = mainStage.getY() + (mainStage.getHeight() - container.getHeight()) / 2;
-                    popupStage.setX(centerX);
-                    popupStage.setY(centerY);
-                });
-
-                popupStage.show();
-
-                PauseTransition pause = new PauseTransition(Duration.seconds(5));
-                pause.setOnFinished(e -> {
-                    popupStage.close();
-                    mainRoot.getChildren().remove(overlay);
-                    if (hasMoreRounds) {
-                        controller.onEndPopupClosed();
-                    }
-                });
-                pause.play();
-            } catch (Exception e) {
-                System.err.println("[ERROR] Failed to show round end popup: " + e.getMessage());
-                controller.onEndPopupClosed();
-                e.printStackTrace();
-            }
-        });
-    }
-
-    public void showGameEndPopup(String champion) {
-        Platform.runLater(() -> {
-            try {
-                closeLostMessage(); // Close "You lost" popup if open
-                Stage stage = ViewNavigator.getStage();
-                if (stage == null) {
-                    navigateToLobby();
-                    return;
-                }
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player/GameWinnerPopup.fxml"));
-                Parent popupRoot = loader.load();
-
-                GameWinnerPopupView c = loader.getController();
-                c.setGameTitle("Game Over!");
-                c.setWinningUsername(champion != null ? champion : "Nobody");
-
-                stage.setScene(new Scene(popupRoot));
-                stage.centerOnScreen();
-
-                PauseTransition wait = new PauseTransition(Duration.seconds(5));
-                wait.setOnFinished(evt -> navigateToLobby());
-                wait.play();
-            } catch (IOException e) {
-                System.err.println("[ERROR] Failed to show game end popup: " + e.getMessage());
-                navigateToLobby();
-            }
-        });
-    }
-
-    private void handleQuitButton(ActionEvent e) {
-        if (roundTimer != null) roundTimer.stop();
-        closeLostMessage();
-        navigateToLobby();
-    }
-
-    private void navigateToLobby() {
-        try {
-            ViewNavigator.goToLobby();
-        } catch (Exception ex) {
-            System.err.println("[ERROR] Failed to return to lobby: " + ex.getMessage());
-            ex.printStackTrace();
-        }
     }
 
     public ImageView getGameRoomBackgroundImage() {

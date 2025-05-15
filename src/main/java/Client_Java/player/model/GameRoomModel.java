@@ -80,7 +80,7 @@ public class GameRoomModel {
             return Arrays.stream(positions).boxed().collect(Collectors.toList());
         } catch (MaxAttemptsReachedException e) {
             System.out.println("[DEBUG][GameRoomModel] guessLetter: Max attempts reached for letter " + letter);
-            throw e; // Propagate exception without wrapping
+            throw e;
         } catch (GameNotFoundException | AlreadyGuessedLetterException | NotLoggedInException e) {
             System.err.println("[GameRoomModel] guessLetter failed: " + e.getMessage());
             throw new RuntimeException(e);

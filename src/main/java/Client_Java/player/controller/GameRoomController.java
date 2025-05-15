@@ -34,10 +34,10 @@ public class GameRoomController {
     private boolean endPopupShowing = false;
     private boolean isRoundInitialized = false;
     private boolean isRoundActive = false;
-    private boolean maxAttemptsReached = false; // Track max attempts state
-    private boolean hasLost = false; // Track if player lost this round
+    private boolean hasLost = false;
     private final Map<String, Integer> winCounts = new HashMap<>();
     private long roundStartTime;
+    private boolean pendingLoss = false; // Track if player lost but waiting for round end
 
     public GameRoomController(
             GameRoomModel model,
@@ -89,14 +89,13 @@ public class GameRoomController {
         secretWord = model.getRandomWord(gameToken, roundNum, playerId, sessionToken);
         if (secretWord == null || secretWord.isEmpty()) {
             System.err.println("[ERROR] secretWord is null or empty, skipping round setup");
-            view.showRoundEndPopup(null, "Error: No word available", true);
             return;
         }
         System.out.println("[DEBUG] secretWord: " + secretWord);
         remainingLives = model.getNumberOfLives(sessionToken);
         wrongCount = 0;
-        maxAttemptsReached = false;
-        hasLost = false; // Reset loss state
+        hasLost = false;
+        pendingLoss = false;
         view.updateLifeCount(remainingLives);
         view.updateRoundLabel(roundNum);
         view.resetAlphabetButtons();
@@ -119,8 +118,8 @@ public class GameRoomController {
     }
 
     public void handleGuess(char letter) {
-        if (!isRoundInitialized || !isRoundActive || maxAttemptsReached || hasLost) {
-            System.err.println("[ERROR] Round not initialized, ended, max attempts reached, or player lost, ignoring guess for letter " + letter);
+        if (!isRoundInitialized || !isRoundActive || hasLost || pendingLoss) {
+            System.err.println("[ERROR] Round not initialized, ended, or player lost, ignoring guess for letter " + letter);
             return;
         }
         try {
@@ -164,7 +163,6 @@ public class GameRoomController {
                         view.disableAlphabetButtons();
                         view.disableKeyboardInput();
                         isRoundActive = false;
-                        // Wait for server callback to show round end popup
                     }
                 }
             }
@@ -173,52 +171,59 @@ public class GameRoomController {
             onMaxAttemptsReached();
         } catch (Exception e) {
             System.err.println("[ERROR] Unexpected error processing guess for letter " + letter + ": " + e.getMessage());
-            e.printStackTrace();
+
         }
     }
 
     private void onMaxAttemptsReached() {
-        maxAttemptsReached = true;
         hasLost = true;
+        pendingLoss = true;
         isRoundActive = false;
-        view.stopCountdown(); // Stop the timer
+        view.stopCountdown();
         view.disableAlphabetButtons();
         view.disableKeyboardInput();
-        view.showLostMessage("You lost! Waiting for other players...");
-        // Do not show round end popup here; wait for server callback
+        // Defer popup to notifyRoundEnd to get secretWord
+        view.showWaitingMessage("Out of lives! Waiting for round to end...");
     }
 
-    public boolean isMaxAttemptsReached() {
-        return maxAttemptsReached;
-    }
-
-    private void onRoundTimeExpired() {
-        isRoundActive = false;
-        if (!hasLost && !blankLabels.stream().noneMatch(l -> "_".equals(l))) {
-            hasLost = true; // Mark as lost if time expires without winning
-            view.showLostMessage("You lost! Waiting for other players...");
+    public void onRoundTimeExpired() {
+        if (!isRoundActive || hasLost || pendingLoss) {
+            System.out.println("[DEBUG] onRoundTimeExpired: Round inactive or player already lost, skipping");
+            return;
         }
+        hasLost = true;
+        pendingLoss = true;
+        isRoundActive = false;
+        view.stopCountdown();
         view.disableAlphabetButtons();
         view.disableKeyboardInput();
-        // Do not show round end popup here; wait for server callback
+        // Defer popup to notifyRoundEnd to get secretWord
+        view.showWaitingMessage("Time's up! Waiting for round to end...");
     }
 
     public void showRoundEnd(String winnerName, String secretWord) {
         if (endPopupShowing) {
-            System.out.println("[DEBUG] End popup already showing, ignoring showRoundEnd");
+            System.out.println("[DEBUG] Skipping showRoundEnd: popup already showing");
             return;
         }
         endPopupShowing = true;
         isRoundActive = false;
-        view.closeLostMessage(); // Close the "You lost" popup if open
+        view.closeWaitingMessage();
         view.disableAlphabetButtons();
         view.disableKeyboardInput();
-        view.showRoundEndPopup(winnerName, secretWord, roundNumber < model.getTotalRounds(sessionToken));
+        String message;
+        if (pendingLoss) {
+            message = (winnerName.isEmpty() ? "No winner! " : "Winner: " + winnerName + "! ") + "The word was: " + secretWord;
+            pendingLoss = false;
+        } else {
+            message = winnerName.isEmpty() ? "No winner! The word was: " + secretWord : "Winner: " + winnerName + "! The word was: " + secretWord;
+        }
+        view.showRoundEndPopup(message, roundNumber < model.getTotalRounds(sessionToken));
     }
 
     public void showGameEnd(String champion) {
         isRoundActive = false;
-        view.closeLostMessage(); // Close the "You lost" popup if open
+        view.closeWaitingMessage();
         view.disableAlphabetButtons();
         view.disableKeyboardInput();
         view.showGameEndPopup(champion);
@@ -233,7 +238,8 @@ public class GameRoomController {
     public void onEndPopupClosed() {
         endPopupShowing = false;
         isRoundInitialized = false;
-        hasLost = false; // Reset for next round
+        hasLost = false;
+        pendingLoss = false;
     }
 
     public void onRoundTimeExpiredFromView() {
