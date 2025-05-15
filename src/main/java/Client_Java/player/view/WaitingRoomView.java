@@ -1,6 +1,12 @@
+
+
+
 package Client_Java.player.view;
 
+
+import GameIDL.NotLoggedInException;
 import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -8,13 +14,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+
 import java.io.InputStream;
 
+
 public class WaitingRoomView {
+
 
     @FXML
     private Button cancelButton;
@@ -29,14 +37,18 @@ public class WaitingRoomView {
     @FXML
     private Label waitingRoomLabel;
     @FXML
+    private Label statusLabel; // Added for status messages
+    @FXML
     private ImageView waitingRoomBackgroundView;
     @FXML
     private ImageView flame1, flame2, flame3, flame4;
+
 
     private Font amaticSC;
     private Font maryKate;
     private final String AMATICSC_FONT_PATH = "/css/fonts/AmaticSC-Bold.ttf";
     private final String MARYKATE_FONT_PATH = "/css/fonts/FontsFree-Net-Marykate-Regular.ttf";
+
 
     public void initialize() {
         loadImage(waitingRoomBackgroundView, "/images/testUI/waiting_room.png");
@@ -45,10 +57,12 @@ public class WaitingRoomView {
         loadImage(flame3, "/images/testUI/fire-nobg.gif");
         loadImage(flame4, "/images/testUI/fire-nobg.gif");
 
+
         loadCustomFonts();
         applyFonts();
-        setupCancelButtonHover(); // Add hover effect for cancel button
+        setupCancelButtonHover();
     }
+
 
     private void setupCancelButtonHover() {
         if (cancelButton != null) {
@@ -59,6 +73,7 @@ public class WaitingRoomView {
                 st.play();
             });
 
+
             cancelButton.setOnMouseExited(e -> {
                 ScaleTransition st = new ScaleTransition(Duration.millis(200), cancelButton);
                 st.setToX(1.0);
@@ -67,6 +82,7 @@ public class WaitingRoomView {
             });
         }
     }
+
 
     private void applyFonts() {
         if (waitingRoomLabel != null) {
@@ -87,12 +103,17 @@ public class WaitingRoomView {
         if (secondsLabel != null) {
             secondsLabel.setFont(Font.font(amaticSC.getFamily(), 46));
         }
+        if (statusLabel != null) {
+            statusLabel.setFont(Font.font(maryKate.getFamily(), 40));
+        }
     }
+
 
     private void loadCustomFonts() {
         try {
             amaticSC = Font.loadFont(getClass().getResourceAsStream(AMATICSC_FONT_PATH), 10);
             maryKate = Font.loadFont(getClass().getResourceAsStream(MARYKATE_FONT_PATH), 10);
+
 
             if (amaticSC == null) {
                 System.err.println("AmaticSC font not loaded. Using system font.");
@@ -108,6 +129,7 @@ public class WaitingRoomView {
             maryKate = Font.font("System", 12);
         }
     }
+
 
     private void loadImage(ImageView imageView, String resourcePath) {
         try {
@@ -125,20 +147,40 @@ public class WaitingRoomView {
         }
     }
 
+
     @FXML
     public void setActionCancelButton(EventHandler<ActionEvent> event) {
         cancelButton.setOnAction(event);
     }
 
+
     public void setRemainingTime(int remainingTime) {
-        countdownLabel.setText(String.valueOf(remainingTime));
+        if (remainingTime >= 0) {
+            countdownLabel.setText(String.valueOf(remainingTime));
+            countdownLabel.setVisible(true);
+            secondsLabel.setVisible(true);
+        } else {
+            countdownLabel.setVisible(false);
+            secondsLabel.setVisible(false);
+        }
     }
+
 
     public void setWaitingPlayersCount(int playerCount) {
         playerCountLabel.setText(String.valueOf(playerCount));
     }
 
+
+    public void setStatusMessage(String message) {
+        if (statusLabel != null) {
+            statusLabel.setText(message);
+            statusLabel.setVisible(true);
+        }
+    }
+
+
     public void setSecondsLabel(Label secondsLabel) {
         this.secondsLabel = secondsLabel;
     }
 }
+

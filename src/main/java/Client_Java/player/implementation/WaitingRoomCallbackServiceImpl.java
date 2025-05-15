@@ -1,21 +1,27 @@
+
+
+
 package Client_Java.player.implementation;
 
+
 import Client_Java.player.controller.WaitingRoomController;
-import PlayerCallBackIDL.NotLoggedInException;
+import GameIDL.NotLoggedInException;
 import PlayerCallBackIDL.WaitingRoomGameCallbackServicePOA;
 import javafx.application.Platform;
 
+
 public class WaitingRoomCallbackServiceImpl extends WaitingRoomGameCallbackServicePOA {
     private final WaitingRoomController controller;
+
 
     public WaitingRoomCallbackServiceImpl(WaitingRoomController controller) {
         this.controller = controller;
         System.out.println("[DEBUG][WaitingRoomCallbackService] instantiated with controller=" + controller);
     }
 
+
     @Override
-    public void notifyPlayerJoined(String gameToken, int totalPlayers, String sessionToken)
-            throws NotLoggedInException {
+    public void notifyPlayerJoined(String gameToken, int totalPlayers, String sessionToken) {
         System.out.println("[DEBUG][WaitingRoomCallbackService] notifyPlayerJoined()"
                 + " gameToken=" + gameToken
                 + ", totalPlayers=" + totalPlayers
@@ -27,9 +33,9 @@ public class WaitingRoomCallbackServiceImpl extends WaitingRoomGameCallbackServi
         });
     }
 
+
     @Override
-    public void notifyCountdownStart(String gameToken, int countdownSeconds, String sessionToken)
-            throws NotLoggedInException {
+    public void notifyCountdownStart(String gameToken, int countdownSeconds, String sessionToken) {
         System.out.println("[DEBUG][WaitingRoomCallbackService] notifyCountdownStart()"
                 + " gameToken=" + gameToken
                 + ", countdownSeconds=" + countdownSeconds
@@ -41,9 +47,9 @@ public class WaitingRoomCallbackServiceImpl extends WaitingRoomGameCallbackServi
         });
     }
 
+
     @Override
-    public void notifyCountdownReset(String gameToken, String sessionToken)
-            throws NotLoggedInException {
+    public void notifyCountdownReset(String gameToken, String sessionToken) {
         System.out.println("[DEBUG][WaitingRoomCallbackService] notifyCountdownReset()"
                 + " gameToken=" + gameToken
                 + ", sessionToken=" + sessionToken
@@ -54,3 +60,4 @@ public class WaitingRoomCallbackServiceImpl extends WaitingRoomGameCallbackServi
         });
     }
 }
+

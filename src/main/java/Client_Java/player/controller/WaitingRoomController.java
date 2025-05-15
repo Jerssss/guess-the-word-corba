@@ -1,4 +1,6 @@
+
 package Client_Java.player.controller;
+
 
 import Client_Java.player.PlayerClient_Java;
 import Client_Java.player.SessionManager;
@@ -17,6 +19,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.util.Duration;
 
+
 public class WaitingRoomController {
     private final WaitingRoomModel model;
     private final WaitingRoomView view;
@@ -25,6 +28,7 @@ public class WaitingRoomController {
     private int countdown;
     private String gameToken;
     private Timeline countdownTimeline;
+
 
     public WaitingRoomController(WaitingRoomModel model, WaitingRoomView view) {
         this.model = model;
@@ -35,6 +39,7 @@ public class WaitingRoomController {
         view.setActionCancelButton(this::onCancel);
         startFlow();
     }
+
 
     private void startFlow() {
         int playerId = SessionManager.getLoggedInPlayer().getPlayerId();
@@ -53,7 +58,16 @@ public class WaitingRoomController {
         registerWaitingRoomCallback(playerId);
         registerGameStartCallback(playerId);
         view.setWaitingPlayersCount(model.getNumberOfPlayersJoined());
+        // Check and start countdown immediately
+        int remainingTime = model.getRemainingCountdownTime();
+        if (remainingTime >= 0) {
+            onCountdownStart(remainingTime);
+        } else {
+            view.setRemainingTime(-1);
+            view.setStatusMessage("Waiting for more players (" + model.getNumberOfPlayersJoined() + "/" + minimumPlayers + ")");
+        }
     }
+
 
     private void registerWaitingRoomCallback(int playerId) {
         WaitingRoomCallbackServiceImpl servant = new WaitingRoomCallbackServiceImpl(this);
@@ -61,6 +75,7 @@ public class WaitingRoomController {
         WaitingRoomGameCallbackService stub = WaitingRoomGameCallbackServiceHelper.narrow(cbRef);
         model.registerWaitingRoomCallback(playerId, stub);
     }
+
 
     private void registerGameStartCallback(int playerId) {
         GameCallBackServicePOA servant = new GameCallBackServicePOA() {
@@ -80,33 +95,61 @@ public class WaitingRoomController {
         model.registerGameStartCallback(playerId, stub);
     }
 
+
     public void onPlayerCountUpdate(int totalPlayers) {
         Platform.runLater(() -> {
             view.setWaitingPlayersCount(totalPlayers);
             System.out.println("[WaitingRoom] Updated player count to " + totalPlayers);
+            if (countdown <= 0) {
+                view.setStatusMessage("Waiting for more players (" + totalPlayers + "/" + minimumPlayers + ")");
+            } else {
+                view.setStatusMessage("Players: " + totalPlayers + "/" + minimumPlayers);
+            }
         });
     }
+
 
     public void onCountdownStart(int seconds) {
         Platform.runLater(() -> {
             if (countdownTimeline != null) {
                 countdownTimeline.stop();
             }
-            countdown = seconds;
+            countdown = Math.max(0, seconds);
             view.setRemainingTime(countdown);
-            countdownTimeline = new Timeline(new KeyFrame(Duration.seconds(1), evt -> {
-                countdown--;
-                view.setRemainingTime(countdown);
-                if (countdown <= 0) {
-                    countdownTimeline.stop();
-                    view.setRemainingTime(0);
+            if (countdown > 0) {
+                countdownTimeline = new Timeline(new KeyFrame(Duration.seconds(1), evt -> {
+                    countdown--;
+                    view.setRemainingTime(countdown);
+                    if (countdown <= 0) {
+                        countdownTimeline.stop();
+                        view.setRemainingTime(-1);
+                        // Return to lobby when countdown reaches zero
+                        int playerId = SessionManager.getLoggedInPlayer().getPlayerId();
+                        model.leaveLobby(playerId);
+                        try {
+                            ViewNavigator.goToLobby();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }));
+                countdownTimeline.setCycleCount(countdown + 1);
+                countdownTimeline.play();
+                view.setStatusMessage("Players: " + model.getNumberOfPlayersJoined() + "/" + minimumPlayers);
+                System.out.println("[WaitingRoom] Started countdown: " + countdown + " seconds");
+            } else {
+                // If countdown is already 0, return to lobby immediately
+                int playerId = SessionManager.getLoggedInPlayer().getPlayerId();
+                model.leaveLobby(playerId);
+                try {
+                    ViewNavigator.goToLobby();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }));
-            countdownTimeline.setCycleCount(seconds + 1);
-            countdownTimeline.play();
-            System.out.println("[WaitingRoom] Started countdown: " + seconds + " seconds");
+            }
         });
     }
+
 
     public void onCountdownReset() {
         Platform.runLater(() -> {
@@ -114,19 +157,17 @@ public class WaitingRoomController {
                 countdownTimeline.stop();
             }
             countdown = initialCountdown;
-            view.setRemainingTime(0);
-            int playerId = SessionManager.getLoggedInPlayer().getPlayerId();
-            model.leaveLobby(playerId);
-            try {
-                ViewNavigator.goToLobby();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            System.out.println("[WaitingRoom] Countdown reset, returning to lobby");
+            view.setRemainingTime(-1);
+            view.setStatusMessage("Waiting for more players (" + model.getNumberOfPlayersJoined() + "/" + minimumPlayers + ")");
+            System.out.println("[WaitingRoom] Countdown reset, continuing to wait for players");
         });
     }
 
+
     private void onReadyToStart() {
+        if (countdownTimeline != null) {
+            countdownTimeline.stop();
+        }
         Platform.runLater(() -> {
             try {
                 ViewNavigator.goToGameRoom(gameToken);
@@ -135,6 +176,7 @@ public class WaitingRoomController {
             }
         });
     }
+
 
     private void onCancel(ActionEvent evt) {
         if (countdownTimeline != null) {
@@ -151,3 +193,5 @@ public class WaitingRoomController {
         });
     }
 }
+
+
