@@ -104,7 +104,6 @@ public class GameServiceImpl extends GameServicePOA {
         }
     }
 
-    @Override
     public synchronized String joinLobby(int playerID, String sessionToken)
             throws NotLoggedInException {
         if (sessionToken == null) {
@@ -118,12 +117,14 @@ public class GameServiceImpl extends GameServicePOA {
         }
 
         Lobby target = null;
+        // Find any lobby that hasn't started yet (no rounds have begun)
         for (Lobby l : lobbies.values()) {
-            if (l.players.size() < l.minimumPlayers && lobbyCountdownStartTimes.containsKey(l.token)) {
+            if (!currentRoundNumbers.containsKey(l.token)) { // Lobby is still in waiting state
                 target = l;
                 break;
             }
         }
+
         if (target == null) {
             // Pre-fetch all settings in one query
             Map<String, Integer> settings = new HashMap<>();
@@ -201,6 +202,7 @@ public class GameServiceImpl extends GameServicePOA {
                     " (count=" + target.players.size() + ")");
         }
 
+        // Notify all waiting callbacks of the new player count
         for (WaitingRoomGameCallbackService cb : target.waitingCallbacks) {
             try {
                 cb.notifyPlayerJoined(target.token, target.players.size(), sessionToken);
@@ -215,11 +217,15 @@ public class GameServiceImpl extends GameServicePOA {
         return target.token;
     }
 
+
+
+
     private void scheduleCountdown(String gameToken, Lobby lobby) {
         ScheduledFuture<?> countdownTask = countdownScheduler.schedule(() -> {
             pendingCountdowns.remove(gameToken);
             if (lobby.players.size() >= lobby.minimumPlayers) {
                 try {
+                    // Start the game using the first player's session token
                     startGame(lobby.players.get(0), sessionToGame.entrySet().stream()
                             .filter(e -> e.getValue().equals(gameToken))
                             .findFirst()
@@ -230,6 +236,7 @@ public class GameServiceImpl extends GameServicePOA {
                     System.err.println("[GameService ERROR] Unexpected: Not enough players after countdown: " + e.getMessage());
                 }
             } else {
+                // Notify clients of countdown reset and remove the lobby
                 for (WaitingRoomGameCallbackService cb : lobby.waitingCallbacks) {
                     try {
                         cb.notifyCountdownReset(gameToken, sessionToGame.entrySet().stream()
