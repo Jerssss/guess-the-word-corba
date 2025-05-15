@@ -360,23 +360,6 @@ public class AdminPlayerListPageView {
         }
     }
 
-//    public void updateTable(List<PlayerAccount> data) {
-//        playerData.setAll(data);
-//        playersTable.setItems(null);
-//        playersTable.setItems(playerData);
-//        playersTable.refresh();
-//        System.out.println("[ADMIN CLIENT | " + new Date() + "] Player data updated. New table size: " + playerData.size());
-//        /*
-//        public void updateTable(List<PlayerAccount> data) {
-//    Platform.runLater(() -> {
-//        playerData.setAll(data); // Update the source data
-//        playersTable.refresh(); // Refresh the UI
-//        System.out.println("[ADMIN CLIENT | " + new Date() + "] Player data updated. New table size: " + playerData.size());
-//    });
-//}
-//         */
-//    }
-
     public void updateTable(List<PlayerAccount> data) {
         Platform.runLater(() -> {
             playerData.setAll(data);
@@ -418,5 +401,39 @@ public class AdminPlayerListPageView {
             System.err.println("Failed to load image: " + resourcePath);
             e.printStackTrace();
         }
+    }
+
+    public void showErrorAlert(String title, String content) {
+        System.out.println("[DEBUG] Displaying error alert: title=" + title + ", content=" + content);
+        Platform.runLater(() -> {
+            try {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle(title);
+                alert.setHeaderText(null);
+                alert.setContentText(content);
+                alert.initModality(Modality.APPLICATION_MODAL);
+                alert.initOwner(AdminClient_Java.getStage());
+
+                // Apply custom styling to make alert more noticeable
+                DialogPane dialogPane = alert.getDialogPane();
+                dialogPane.setStyle(
+                        "-fx-background-color: #F5F5DC;" +
+                                "-fx-border-color: #8B4513;" +
+                                "-fx-border-width: 1px;" +
+                                "-fx-font-family: '" + maryKate.getFamily() + "';"
+                );
+
+                // Ensure the alert is shown on the correct stage
+                Stage stage = (Stage) dialogPane.getScene().getWindow();
+                stage.setAlwaysOnTop(true);
+
+                System.out.println("[DEBUG] Showing alert dialog");
+                alert.showAndWait();
+                System.out.println("[DEBUG] Alert dialog closed");
+            } catch (Exception e) {
+                System.err.println("[ERROR] Failed to show error alert: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
     }
 }

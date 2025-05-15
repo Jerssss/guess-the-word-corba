@@ -87,7 +87,6 @@ public class AdminServiceImpl extends AdminServicePOA {
             System.err.println("[AdminService ERROR] Error checking username=" + username + ": " + e.getMessage());
             throw new RuntimeException(e);
         }
-
         String query = "INSERT INTO players (player_id, name, username, password) " +
                 "VALUES (?, ?, ?, ?); ";
 
@@ -223,6 +222,11 @@ public class AdminServiceImpl extends AdminServicePOA {
         } catch (SQLException e) {
             System.err.println("[AdminService ERROR] Error checking playerID=" + playerID + ": " + e.getMessage());
             throw new RuntimeException(e);
+        }
+
+        if (authService.activePlayerCallbacks.containsKey(playerID)) {
+            System.err.println("[AdminService ERROR] deletePlayer: Player is currently active, playerID=" + playerID);
+            throw new AccountCurrentlyActiveException("Cannot delete player with ID " + playerID + " because they are currently logged in");
         }
 
         query = "DELETE FROM players WHERE player_id = ?";
@@ -362,7 +366,6 @@ public class AdminServiceImpl extends AdminServicePOA {
         return roundDuration;
     }
 
-    //TODO edit the game config to only accept numbers
     @Override
     public void modifyWaitingTime(int waitTime, String sessionToken, int adminID) throws NotLoggedInException {
         if (sessionToken == null) {

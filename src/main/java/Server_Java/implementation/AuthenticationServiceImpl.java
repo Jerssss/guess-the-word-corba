@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class AuthenticationServiceImpl extends AuthenticationServicePOA {
-    private final Map<Integer, LoginCallbackService> activePlayerCallbacks =
+    final Map<Integer, LoginCallbackService> activePlayerCallbacks =
             Collections.synchronizedMap(new HashMap<>());
     private final Map<Integer, String> sessionTokens =
             Collections.synchronizedMap(new HashMap<>());

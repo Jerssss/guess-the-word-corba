@@ -41,17 +41,22 @@ public class AdminPlayerListPageModel {
 
     public boolean removePlayer(int playerID) throws AccountCurrentlyActiveException, AccountNotFoundException, NotLoggedInException {
         try {
+            System.out.println("[DEBUG] Model: Calling adminService.deletePlayer for playerID=" + playerID);
             adminService.deletePlayer(playerID, sessionToken, adminID);
+            System.out.println("[DEBUG] Model: deletePlayer succeeded for playerID=" + playerID);
             return true;
         } catch (AdminIDL.NotLoggedInException e) {
-            System.err.println("Error: Not logged in. " + e.getMessage());
-            return false;
+            System.err.println("[ERROR] Model: Not logged in. " + e.getMessage());
+            System.out.println("[DEBUG] Model: Throwing NotLoggedInException for playerID=" + playerID);
+            throw e;
         } catch (AccountNotFoundException e) {
-            System.err.println("Error: Account not found. " + e.getMessage());
-            return false;
+            System.err.println("[ERROR] Model: Account not found. " + e.getMessage());
+            System.out.println("[DEBUG] Model: Throwing AccountNotFoundException for playerID=" + playerID);
+            throw e;
         } catch (AccountCurrentlyActiveException e) {
-            System.err.println("Error: Account currently active. " + e.getMessage());
-            return false;
+            System.err.println("[ERROR] Model: Account currently active. " + e.getMessage());
+            System.out.println("[DEBUG] Model: Throwing AccountCurrentlyActiveException for playerID=" + playerID);
+            throw e;
         }
     }
 

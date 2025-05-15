@@ -81,19 +81,36 @@ public class AdminPlayerListPageController {
 
     private void setupDeletePlayerCallback() {
         view.setOnDeletePlayerCallback(player -> {
+            boolean success = false;
             try {
-                model.removePlayer(player.getPlayerId());
-                System.out.println("[INFO] Player deleted successfully: " + player.getUsername());
-                loadPlayers();
+                System.out.println("[DEBUG] Attempting to delete player: " + player.getUsername());
+                success = model.removePlayer(player.getPlayerId());
             } catch (AccountCurrentlyActiveException e) {
                 System.err.println("[ERROR] Cannot delete player: Account is currently active: " + player.getUsername());
+                System.out.println("[DEBUG] Caught AccountCurrentlyActiveException, triggering alert");
+                Platform.runLater(() -> view.showErrorAlert("Cannot Delete Player",
+                        "Player " + player.getUsername() + " is currently active and cannot be deleted."));
             } catch (AccountNotFoundException e) {
                 System.err.println("[ERROR] Cannot delete player: Account not found: " + player.getUsername());
+                System.out.println("[DEBUG] Caught AccountNotFoundException, triggering alert");
+                Platform.runLater(() -> view.showErrorAlert("Cannot Delete Player",
+                        "Player " + player.getUsername() + " was not found."));
             } catch (NotLoggedInException e) {
                 System.err.println("[ERROR] Cannot delete player: Not logged in: " + player.getUsername());
+                System.out.println("[DEBUG] Caught NotLoggedInException, triggering alert");
+                Platform.runLater(() -> view.showErrorAlert("Cannot Delete Player",
+                        "You are not logged in. Please log in and try again."));
             } catch (Exception e) {
                 System.err.println("[ERROR] Unexpected error deleting player: " + player.getUsername());
                 e.printStackTrace();
+                System.out.println("[DEBUG] Caught unexpected exception, triggering alert");
+                Platform.runLater(() -> view.showErrorAlert("Unexpected Error",
+                        "An unexpected error occurred while deleting player " + player.getUsername() + "."));
+            }
+
+            if (success) {
+                System.out.println("[INFO] Player deleted successfully: " + player.getUsername());
+                loadPlayers();
             }
         });
     }
